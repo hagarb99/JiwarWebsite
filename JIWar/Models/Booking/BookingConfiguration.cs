@@ -1,0 +1,50 @@
+﻿using GEWAR.Models;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Jiwar.Models
+{
+    public class BookingConfiguration : IEntityTypeConfiguration<Booking>
+    {
+        public void Configure(EntityTypeBuilder<Booking> builder)
+        {
+            // Table name and schema (اختياري)
+            builder.ToTable("Booking", "Transactions");
+
+            // Primary key
+            builder.HasKey(b => b.Id);
+
+            // Columns
+            builder.Property(b => b.PropertyID)
+                   .IsRequired();
+
+            builder.Property(b => b.CustomerID)
+                   .IsRequired();
+
+            builder.Property(b => b.OfferID)
+                   .IsRequired(false);
+
+            builder.Property(b => b.Status)
+                   .HasMaxLength(50)
+                   .IsRequired();
+
+            builder.Property(b => b.StartDate)
+                   .HasColumnType("datetime")
+                   .IsRequired(false);
+
+            builder.Property(b => b.EndDate)
+                   .HasColumnType("datetime")
+                   .IsRequired(false);
+
+            builder.Property(b => b.PaymentStatus)
+                   .HasMaxLength(50)
+                   .IsRequired(false);
+        }
+
+    }
+}

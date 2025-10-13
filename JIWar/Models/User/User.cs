@@ -16,6 +16,8 @@ namespace GEWAR.Models
         public string ProfilePicName { get; set; }
         public string UserType { get; set; }
            public DateTime RegistrationDate { get; set; }
+        public object SentMessages { get; internal set; }
+
         public static bool IsValidUserType(string userType)
         {
             return Enum.TryParse<UserTypeEnum>(userType, true, out var result) &&

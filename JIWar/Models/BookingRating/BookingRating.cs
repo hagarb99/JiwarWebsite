@@ -7,10 +7,9 @@ using System.Threading.Tasks;
 namespace GEWAR.Models.BookingRating
 {
 
-    public class BookingRating
+    public class BookingRating : BaseModel
     {
         
-        public int BookingRatingID { get; set; } // Primary Key
 
         
         public int BookingID { get; set; } // FK → Booking.BookingID
