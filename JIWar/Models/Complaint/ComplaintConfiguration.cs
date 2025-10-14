@@ -30,7 +30,7 @@ namespace GEWAR.Models
             builder.Property(c => c.CreatedDate)
                    .HasDefaultValueSql("GETUTCDATE()");
 
-            // 🔹 Relationships
+            //  Relationships
 
             // Each Complaint belongs to one User (who submitted it)
             builder.HasOne(c => c.User)

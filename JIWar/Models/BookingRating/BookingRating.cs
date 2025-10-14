@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace GEWAR.Models.BookingRating
+namespace GEWAR.Models
 {
 
     public class BookingRating : BaseModel
@@ -25,7 +25,7 @@ public string Comment { get; set; } // Optional comment
 
         public DateTime CreatedDate { get; set; } = DateTime.UtcNow; // When rating was created
 
-        // 🔗 Navigation properties
+        //  Navigation properties
         public virtual Booking Booking { get; set; }
         public virtual User User { get; set; }
     }
