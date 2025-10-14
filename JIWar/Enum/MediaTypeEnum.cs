@@ -1,7 +1,6 @@
 ﻿namespace GEWAR.Models
 {
-    public partial class PropertyMedia
-    {
+   
         public enum MediaTypeEnum
         {
             Image,
@@ -9,5 +8,5 @@
             FloorPlan,
             _360Tour 
         }
-    }
+    
 }

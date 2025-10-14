@@ -6,13 +6,11 @@ using System.Threading.Tasks;
 
 namespace Jiwar.Enum
 {
-    public class ChatTypeEnum
-    {
-        public enum MessageType
+       public enum MessageType
         {
             Text,
             Image,
             File
         }
-    }
+   
 }

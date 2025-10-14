@@ -24,8 +24,8 @@ namespace GEWAR.Models
 
             public static bool IsValidStatus(string status)
             {
-                return Enum.TryParse<StatusEnum>(status, true, out var result) &&
-                       Enum.IsDefined(typeof(StatusEnum), result);
+                return Enum.TryParse<StatusEnum2>(status, true, out var result) &&
+                       Enum.IsDefined(typeof(StatusEnum2), result);
             }
         }
     }
