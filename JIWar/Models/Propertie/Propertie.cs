@@ -19,5 +19,7 @@ namespace GEWAR.Models
         public string PropertyType { get; set; }
         public DateTime CreatedDate { get; set; }
         public string Status { get; set; }
+
+        public virtual ICollection<Offer> Offers { get; set; }
     }
 }

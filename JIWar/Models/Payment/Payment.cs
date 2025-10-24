@@ -6,8 +6,9 @@ using System.Threading.Tasks;
 
 namespace GEWAR.Models
 {
-    internal class Payment : BaseModel
+    public class Payment : BaseModel
     {
+        public int PaymentID { get; set; }
         public int UserID { get; set; }
         public string RelatedType { get; set; }
         public int RelatedID { get; set; }
@@ -15,5 +16,7 @@ namespace GEWAR.Models
         public string PaymentMethod { get; set; }
         public DateTime PaymentDate { get; set; } = DateTime.Now;
         public string Status { get; set; } = "Pending";
-   }
+
+        public User User { get; set; }
+    }
 }

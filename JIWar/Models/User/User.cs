@@ -25,7 +25,11 @@ namespace GEWAR.Models
         }
 
 
-
+        public virtual ICollection<InvestmentPortfolio> InvestmentPortfolios { get; set; } = new List<InvestmentPortfolio>();
+        public virtual ICollection<Offer> Offers { get; set; } = new List<Offer>();
+        public virtual ICollection<Notification> Notifications { get; set; } = new List<Notification>();
+        public virtual ICollection<Payment> Payments { get; set; } = new List<Payment>();
+        public virtual InteriorDesigner InteriorDesigner { get; set; }
 
 
     }
