@@ -1,12 +1,10 @@
 ﻿namespace GEWAR.Models
 {
-    public partial class Proposal
-    {
-        public enum StatusEnum
+     public enum StatusEnumReqPro
         {
             Pending,
             Accepted,
             Rejected
         }
-    }
+    
 }

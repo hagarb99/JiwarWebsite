@@ -20,11 +20,12 @@ namespace GEWAR.Models
             public DateTime? EndDate { get; set; }
             public decimal? RenovationCosts { get; set; }
 
-            public static bool IsValidProjectStatus(string status)
-            {
-                return Enum.TryParse<ProjectStatusEnum>(status, true, out var result) &&
-                       Enum.IsDefined(typeof(ProjectStatusEnum), result);
-            }
+            public ProjectStatusEnum ProjectStatusEnum { get; set; }
+            //public static bool IsValidProjectStatus(string status)
+            //{
+            //    return Enum.TryParse<ProjectStatusEnum>(status, true, out var result) &&
+            //           Enum.IsDefined(typeof(ProjectStatusEnum), result);
+            //}
         }
     }
 

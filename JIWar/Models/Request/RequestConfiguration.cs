@@ -35,15 +35,15 @@ namespace GEWAR.Configurations
                    .IsRequired();
 
             // ✅ Future navigation properties (if added later)
-            // builder.HasOne(r => r.Customer)
-            //        .WithMany()
-            //        .HasForeignKey(r => r.CustomerID)
-            //        .OnDelete(DeleteBehavior.Restrict);
+            builder.HasOne(r => r.user)
+                   .WithMany()
+                   .HasForeignKey(r => r.CustomerID)
+                   .OnDelete(DeleteBehavior.Restrict);
 
-            // builder.HasOne(r => r.Property)
-            //        .WithMany()
-            //        .HasForeignKey(r => r.PropertyID)
-            //        .OnDelete(DeleteBehavior.Restrict);
+            builder.HasOne(r => r.propertie)
+                   .WithMany()
+                   .HasForeignKey(r => r.PropertyID)
+                   .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

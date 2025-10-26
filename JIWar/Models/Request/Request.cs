@@ -14,11 +14,14 @@ namespace GEWAR.Models
         public string Description { get; set; }
         public string Status { get; set; }
         public DateTime CreatedDate { get; set; }
+        public StatusEnumReqPro StatusEnumRequest { get; set; }
+        public User user { get; set; }
+        public Propertie propertie { get; set; }
 
-        public static bool IsValidStatus(string status)
-        {
-            return Enum.TryParse<StatusEnum>(status, true, out var result) &&
-                   Enum.IsDefined(typeof(StatusEnum), result);
-        }
+        //public static bool IsValidStatus(string status)
+        //{
+        //    return Enum.TryParse<StatusEnum>(status, true, out var result) &&
+        //           Enum.IsDefined(typeof(StatusEnum), result);
+        //}
     }
 }
