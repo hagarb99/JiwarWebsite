@@ -1,5 +1,6 @@
 ﻿using GEWAR.Models;
 using GEWAR.Models.BookingRating;
+using JIWAR.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System;

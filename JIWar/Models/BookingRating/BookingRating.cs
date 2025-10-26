@@ -1,10 +1,11 @@
-﻿using System;
+﻿using GEWAR.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace GEWAR.Models
+namespace JIWAR.Models
 {
 
     public class BookingRating : BaseModel
