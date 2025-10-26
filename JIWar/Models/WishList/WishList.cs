@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,5 +13,8 @@ namespace GEWAR.Models
         public int PropertyID { get; set; }
         public DateTime AddedDate { get; set; }
         public string Notes { get; set; }
+
+        public virtual User User { get; set; }
+        public virtual Property Property { get; set; }
     }
 }

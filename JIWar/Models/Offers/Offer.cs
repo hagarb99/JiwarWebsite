@@ -17,5 +17,12 @@ namespace GEWAR.Models
         public DateTime OfferDate { get; set; } = DateTime.Now;
         public User Buyer { get; set; }
         public Propertie Propertie { get; set; }
+
+        public int UserID { get; set; }   // FK → User.Id
+
+        // other offer fields (e.g., Title, Price, etc.)
+
+        // Navigation property
+        public virtual User User { get; set; }
     }
 }
