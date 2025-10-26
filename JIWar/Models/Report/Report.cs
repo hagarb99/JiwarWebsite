@@ -1,12 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using GEWAR.Models;
 
 namespace GEWAR.Models
 {
-    internal class Report : BaseModel
-    {
-    }
+    public class Report : BaseModel
+{
+    public int UserID { get; set; }
+    public int? BookingID { get; set; }
+
+    public string ReportType { get; set; }
+    public string Description { get; set; }
+    public string Status { get; set; }
+
+    public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
+
+    // Navigation Properties
+    public virtual User User { get; set; }
+    public virtual Booking Booking { get; set; }
 }
+}
+

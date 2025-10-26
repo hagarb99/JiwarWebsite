@@ -6,12 +6,16 @@ using System.Threading.Tasks;
 
 namespace GEWAR.Models
 {
-    internal class RenovationCost : BaseModel
+    public class RenovationCost : BaseModel
     {
-       
-            public int ProjectID { get; set; }
-            public string CostType { get; set; }
-            public decimal? EstimatedValue { get; set; }
-        }
+        public int RenovationProjectID { get; set; } // FK → RenovationProject
+
+        public string CostType { get; set; }
+        public decimal? EstimatedValue { get; set; }
+
+        // Navigation
+        public virtual RenovationProject RenovationProject { get; set; }
     }
+
+}
 
