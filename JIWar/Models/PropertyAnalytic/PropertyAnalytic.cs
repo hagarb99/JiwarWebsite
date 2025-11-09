@@ -6,8 +6,7 @@ using System.Threading.Tasks;
 
 namespace GEWAR.Models
 {
-    public class PropertyAnalytic : BaseModel
-    {
+
          public class PropertyAnalytics : BaseModel
     {
         public int PropertyID { get; set; } // FK → Propertie.PropertyID
@@ -22,4 +21,3 @@ namespace GEWAR.Models
         public virtual Propertie Property { get; set; }
     }
     }
-}

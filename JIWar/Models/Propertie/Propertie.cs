@@ -24,5 +24,8 @@ namespace GEWAR.Models
 
         public virtual ICollection<PortfolioProperty> PortfolioProperties { get; set; }
 
+        public virtual ICollection<PropertyAnalytics> PropertyAnalytics { get; set; }
+
+
     }
 }
