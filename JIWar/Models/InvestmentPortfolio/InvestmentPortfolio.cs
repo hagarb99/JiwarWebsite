@@ -14,5 +14,8 @@ namespace GEWAR.Models
         public DateTime CreationDate { get; set; }
 
         public User User { get; set; }
+
+        public virtual ICollection<PortfolioProperty> PortfolioProperties { get; set; } // Navigation property(table PortfolioPropertie)
+
     }
 }

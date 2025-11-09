@@ -21,5 +21,8 @@ namespace GEWAR.Models
         public string Status { get; set; }
 
         public virtual ICollection<Offer> Offers { get; set; }
+
+        public virtual ICollection<PortfolioProperty> PortfolioProperties { get; set; }
+
     }
 }
