@@ -19,10 +19,6 @@ namespace GEWAR.Models
         public DateTime CreatedDate { get; set; }
 
         public StatusEnumReqPro StatusEnumReq { get; set; }
-        //public static bool IsValidStatus(string status)
-        //{
-        //    return Enum.TryParse<StatusEnum>(status, true, out var result) &&
-        //           Enum.IsDefined(typeof(StatusEnum), result);
-        //}
+       
     }
 }
