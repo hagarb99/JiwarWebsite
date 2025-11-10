@@ -26,6 +26,9 @@ namespace GEWAR.Models
 
         public virtual ICollection<PropertyAnalytics> PropertyAnalytics { get; set; }
 
+        public virtual ICollection<PropertyMedia> PropertyMedia { get; set; }
+
+
 
     }
 }
