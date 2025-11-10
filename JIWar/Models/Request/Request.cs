@@ -18,6 +18,14 @@ namespace GEWAR.Models
         public User user { get; set; }
         public Propertie propertie { get; set; }
 
+
+        public virtual ICollection<Proposal> Proposals { get; set; }  // one to many proposals
+
+                // علاقات أخرى لو عندك
+        public virtual User User { get; set; }
+        public virtual InteriorDesigner Designer { get; set; }
+
+
         //public static bool IsValidStatus(string status)
         //{
         //    return Enum.TryParse<StatusEnum>(status, true, out var result) &&
