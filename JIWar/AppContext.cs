@@ -70,7 +70,7 @@ namespace GEWAR
             modelBuilder.ApplyConfiguration(new OfferConfiguration());
             modelBuilder.ApplyConfiguration( new PaymentConfiguration());
             modelBuilder.ApplyConfiguration(new PortfolioPropertyConfiguration());
-            modelBuilder.ApplyConfiguration(new PropertieConfiguration());
+            modelBuilder.ApplyConfiguration(new Models.Configurations.PropertyConfiguration());
             modelBuilder.ApplyConfiguration(new PropertyAnalyticsConfiguration());
             modelBuilder.ApplyConfiguration(new PropertyMediaConfiguration());
             modelBuilder.ApplyConfiguration(new ProposalConfiguration());

@@ -18,6 +18,6 @@ namespace GEWAR.Models
         public DateTime AnalysisDate { get; set; } = DateTime.UtcNow; // تاريخ التحليل
 
         // Navigation property
-        public virtual Propertie Property { get; set; }
+        public virtual Property Property { get; set; }
     }
     }

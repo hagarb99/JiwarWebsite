@@ -15,7 +15,7 @@ namespace GEWAR.Models
 
         public User User { get; set; }
 
-        public virtual ICollection<PortfolioProperty> PortfolioProperties { get; set; } // Navigation property(table PortfolioPropertie)
+        public virtual ICollection<PortfolioProperty> PortfolioProperties { get; set; } = new List<PortfolioProperty>(); // Navigation property(table PortfolioPropertie)
 
     }
 }

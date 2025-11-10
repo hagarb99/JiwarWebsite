@@ -20,7 +20,7 @@ namespace GEWAR.Models.Configurations
                    .HasForeignKey(p => p.PortfolioID)
                    .OnDelete(DeleteBehavior.Cascade);
 
-            builder.HasOne(p => p.Propertie)
+            builder.HasOne(p => p.Property)
                    .WithMany(prop => prop.PortfolioProperties)
                    .HasForeignKey(p => p.PropertyID)
                    .OnDelete(DeleteBehavior.Restrict);

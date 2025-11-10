@@ -21,9 +21,6 @@ namespace Jiwar.Models.Offers
                 .HasColumnType("decimal(18,2)")
                 .IsRequired();
 
-            builder.Property(o => o.OfferStatus)
-                .HasMaxLength(20)
-                .IsRequired();
 
             builder.Property(o => o.OfferDate)
                 .HasDefaultValueSql("GETDATE()");
@@ -33,7 +30,7 @@ namespace Jiwar.Models.Offers
                 .HasForeignKey(o => o.BuyerID)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            builder.HasOne(o => o.Propertie)
+            builder.HasOne(o => o.Property)
                 .WithMany(p => p.Offers)
                 .HasForeignKey(o => o.PropertyID)
                 .OnDelete(DeleteBehavior.Cascade);

@@ -14,23 +14,24 @@ namespace Jiwar.Models
             builder.HasKey(p => p.Id);
 
             // Columns
-            builder.Propertie(p => p.FairValue_Estimate)
+            builder.Property(p => p.FairValue_Estimate)
                    .HasColumnType("decimal(18,2)")
                    .IsRequired(false);
 
-            builder.Propertie(p => p.Price_Influence_Factors)
+            builder.Property(p => p.Price_Influence_Factors)
                    .HasColumnType("nvarchar(max)")
                    .IsRequired(false);
 
-            builder.Propertie(p => p.AnalysisDate)
+            builder.Property(p => p.AnalysisDate)
                    .HasColumnType("datetime")
                    .HasDefaultValueSql("GETUTCDATE()");
 
             // Relationships
-            builder.HasOne(p => p.Propertie)
-                   .WithMany(prop => prop.PropertieAnalytics) // ⬅ لازم تضيفي الـ ICollection في كلاس Propertie
-                   .HasForeignKey(p => p.PropertieID)
-                   .OnDelete(DeleteBehavior.Cascade);
+            builder.HasOne(p => p.Property)
+        .WithMany(prop => prop.PropertyAnalytics)
+        .HasForeignKey(p => p.PropertyID)
+        .OnDelete(DeleteBehavior.Cascade);
+
         }
     }
 }

@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Jiwar.Models
 {
-    internal class PaymentConfiguration : IEntityTypeConfiguration<Payment>
+    public class PaymentConfiguration : IEntityTypeConfiguration<Payment>
     {
         public void Configure(EntityTypeBuilder<Payment> builder)
         {

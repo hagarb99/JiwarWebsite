@@ -1,0 +1,34 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace GEWAR.Models
+{
+    public class Property : BaseModel
+    {
+        public int PropertyID { get; set; }
+        public string OwnerID { get; set; }
+        public string Address { get; set; }
+        public string City { get; set; }
+        public decimal? Area_sqm { get; set; }
+        public int? NumBedrooms { get; set; }
+        public int? NumBathrooms { get; set; }
+        public string FinishingStatus { get; set; } = string.Empty;
+        public string PropertyType { get; set; } = string.Empty;
+        public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
+        public string Status { get; set; } = "Available";
+
+        public virtual ICollection<Offer> Offers { get; set; } = new List<Offer>();
+
+        public virtual ICollection<PortfolioProperty> PortfolioProperties { get; set; } = new List<PortfolioProperty>();
+
+        public virtual ICollection<PropertyAnalytics> PropertyAnalytics { get; set; } = new List<PropertyAnalytics>();
+
+        public virtual ICollection<PropertyMedia> PropertyMedia { get; set; } = new List<PropertyMedia>();
+
+
+
+    }
+}

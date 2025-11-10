@@ -19,6 +19,6 @@ namespace GEWAR.Models
 
         // Navigation properties 
         public virtual InvestmentPortfolio Portfolio { get; set; }
-        public virtual Propertie Propertie { get; set; }
+        public virtual Property Property { get; set; }
     }
 }

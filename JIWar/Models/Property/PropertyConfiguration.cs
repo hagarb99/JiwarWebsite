@@ -4,15 +4,15 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace GEWAR.Models.Configurations
 {
-    public class PropertieConfiguration : IEntityTypeConfiguration<Propertie>
+    public class PropertyConfiguration : IEntityTypeConfiguration<Property>
     {
-        public void Configure(EntityTypeBuilder<Propertie> builder)
+        public void Configure(EntityTypeBuilder<Property> builder)
         {
             // Table name & schema
             builder.ToTable("Properties", "RealEstate");
 
             // Primary Key
-            builder.HasKey(p => p.Id);
+            builder.HasKey(p => p.PropertyID);
 
             // Columns
             builder.Property(p => p.OwnerID)
@@ -55,13 +55,13 @@ namespace GEWAR.Models.Configurations
 
             // 1️ Property ↔ Offers (One-to-Many)
             builder.HasMany(p => p.Offers)
-                   .WithOne(o => o.Propertie)
+                   .WithOne(o => o.Property)
                    .HasForeignKey(o => o.PropertyID)
                    .OnDelete(DeleteBehavior.Cascade);
 
             // 2️ Property ↔ PortfolioProperty (Many-to-Many via join table)
             builder.HasMany(p => p.PortfolioProperties)
-                   .WithOne(pp => pp.Propertie)
+                   .WithOne(pp => pp.Property)
                    .HasForeignKey(pp => pp.PropertyID)
                    .OnDelete(DeleteBehavior.Restrict);
         }
