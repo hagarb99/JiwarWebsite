@@ -10,8 +10,8 @@ namespace GEWAR.Models
          public partial class RequestRating : BaseModel
     {
         public int RequestID { get; set; }           // FK → Request.RequestID
-        public int UserID { get; set; }              // FK → User.UserID (who rated)
-        public int DesignerID { get; set; }          // FK → InteriorDesigner.DesignerID
+        public string UserID { get; set; }              // FK → User.UserID (who rated)
+        public string DesignerID { get; set; }          // FK → InteriorDesigner.DesignerID
         public int Rating { get; set; }              // Numeric score (1–5)
         public string Comment { get; set; }         // Optional feedback
         public DateTime CreatedDate { get; set; }    // When the rating was added

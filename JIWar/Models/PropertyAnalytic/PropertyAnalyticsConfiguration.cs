@@ -1,7 +1,6 @@
 using GEWAR.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-
 namespace Jiwar.Models
 {
     public class PropertyAnalyticsConfiguration : IEntityTypeConfiguration<PropertyAnalytics>
@@ -15,22 +14,22 @@ namespace Jiwar.Models
             builder.HasKey(p => p.Id);
 
             // Columns
-            builder.Property(p => p.FairValue_Estimate)
+            builder.Propertie(p => p.FairValue_Estimate)
                    .HasColumnType("decimal(18,2)")
                    .IsRequired(false);
 
-            builder.Property(p => p.Price_Influence_Factors)
+            builder.Propertie(p => p.Price_Influence_Factors)
                    .HasColumnType("nvarchar(max)")
                    .IsRequired(false);
 
-            builder.Property(p => p.AnalysisDate)
+            builder.Propertie(p => p.AnalysisDate)
                    .HasColumnType("datetime")
                    .HasDefaultValueSql("GETUTCDATE()");
 
             // Relationships
-            builder.HasOne(p => p.Property)
-                   .WithMany(prop => prop.PropertyAnalytics) // ⬅ لازم تضيفي الـ ICollection في كلاس Propertie
-                   .HasForeignKey(p => p.PropertyID)
+            builder.HasOne(p => p.Propertie)
+                   .WithMany(prop => prop.PropertieAnalytics) // ⬅ لازم تضيفي الـ ICollection في كلاس Propertie
+                   .HasForeignKey(p => p.PropertieID)
                    .OnDelete(DeleteBehavior.Cascade);
         }
     }

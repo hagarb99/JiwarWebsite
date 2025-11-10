@@ -10,7 +10,7 @@ namespace GEWAR.Models
     public class Offer : BaseModel
     {
         public int OfferID { get; set; }
-        public int BuyerID { get; set; }
+        public string BuyerID { get; set; }
         public int PropertyID { get; set; }
         public decimal OfferAmount { get; set; }
         public string OfferStatus { get; set; } = "Pending";
@@ -18,7 +18,7 @@ namespace GEWAR.Models
         public User Buyer { get; set; }
         public Propertie Propertie { get; set; }
 
-        public int UserID { get; set; }   // FK → User.Id
+        public string UserID { get; set; }   // FK → User.Id
 
         // other offer fields (e.g., Title, Price, etc.)
 

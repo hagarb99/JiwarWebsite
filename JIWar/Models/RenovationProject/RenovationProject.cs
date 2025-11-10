@@ -11,7 +11,7 @@ namespace GEWAR.Models
         public partial class RenovationProject : BaseModel
     {
 
-            public int UserID { get; set; }
+            public string UserID { get; set; }
             public int PropertyID { get; set; }
             public decimal? EstimatedCost { get; set; }
             public decimal? EstimatedProfit { get; set; }

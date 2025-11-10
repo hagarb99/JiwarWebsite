@@ -47,10 +47,10 @@ namespace GEWAR.Configurations
                    .HasForeignKey(ip => ip.UserID)
                    .OnDelete(DeleteBehavior.Cascade);
 
-            builder.HasMany(u => u.Offers)
-                   .WithOne(o => o.User)
-                   .HasForeignKey(o => o.UserID)
-                   .OnDelete(DeleteBehavior.Cascade);
+            //builder.HasMany(u => u.Offers)
+            //       .WithOne(o => o.User)
+            //       .HasForeignKey(o => o.UserID)
+            //       .OnDelete(DeleteBehavior.Cascade);
 
             builder.HasMany(u => u.Notifications)
                    .WithOne(n => n.User)

@@ -12,7 +12,7 @@ namespace GEWAR.Models
     {
 
         public int RequestID { get; set; }
-        public int DesignerID { get; set; }
+        public string DesignerID { get; set; }
         public string OfferDetails { get; set; }
         public decimal? PriceEstimate { get; set; }
         public string Status { get; set; }

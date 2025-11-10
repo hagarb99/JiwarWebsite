@@ -9,7 +9,7 @@ namespace GEWAR.Models
     public class InvestmentPortfolio : BaseModel
     {
         public int PortfolioID { get; set; }
-        public int UserID { get; set; }
+        public string UserID { get; set; }
         public string Name { get; set; }
         public DateTime CreationDate { get; set; }
 

@@ -9,7 +9,7 @@ namespace GEWAR.Models
     public partial class Request : BaseModel
     {
 
-        public int CustomerID { get; set; }
+        public string CustomerID { get; set; }
         public int PropertyID { get; set; }
         public string Description { get; set; }
         public string Status { get; set; }
@@ -24,6 +24,8 @@ namespace GEWAR.Models
                 // علاقات أخرى لو عندك
         public virtual User User { get; set; }
         public virtual InteriorDesigner Designer { get; set; }
+        public virtual ICollection<Design> Designs { get; set; } = new List<Design>();
+
 
 
         //public static bool IsValidStatus(string status)

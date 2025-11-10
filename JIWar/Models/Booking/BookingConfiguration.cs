@@ -1,5 +1,5 @@
 ﻿using GEWAR.Models;
-using GEWAR.Models.BookingRating;
+using JIWAR.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System;
@@ -43,14 +43,20 @@ namespace Jiwar.Models
                    .IsRequired(false);
 
             builder.Property(b => b.PaymentStatus)
-                   .HasMaxLength(50)
-                   .IsRequired(false);
+        .HasConversion<string>()
+        .HasMaxLength(50)
+        .IsRequired(false);
+
 
             builder.HasOne(b => b.BookingRating)
        .WithOne(br => br.Booking)
        .HasForeignKey<BookingRating>(br => br.BookingID)
        .OnDelete(DeleteBehavior.Cascade);
+
+
+
         }
+
 
     }
 }

@@ -24,8 +24,10 @@ namespace GEWAR.Models
                    .HasMaxLength(1000);
 
             builder.Property(c => c.Status)
-                   .HasMaxLength(50)
-                   .IsRequired();
+       .HasConversion<string>()
+       .HasMaxLength(50)
+       .IsRequired();
+
 
             builder.Property(c => c.CreatedDate)
                    .HasDefaultValueSql("GETUTCDATE()");

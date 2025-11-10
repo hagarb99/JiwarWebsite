@@ -35,14 +35,16 @@ namespace Jiwar.Models
 
 
             builder.HasOne(br => br.Booking)
-                   .WithOne()  
-                   .HasForeignKey<BookingRating>(br => br.BookingID)
-                   .OnDelete(DeleteBehavior.Cascade);
+        .WithOne(b => b.BookingRating)
+        .HasForeignKey<BookingRating>(br => br.BookingID)
+        .OnDelete(DeleteBehavior.Cascade);
+
 
             builder.HasOne(br => br.User)
-                   .WithMany() 
-                   .HasForeignKey(br => br.UserID)
-                   .OnDelete(DeleteBehavior.Restrict);
+        .WithMany(u => u.BookingRatings)
+        .HasForeignKey(br => br.UserID)
+        .OnDelete(DeleteBehavior.Restrict);
+
         }
     }
 }

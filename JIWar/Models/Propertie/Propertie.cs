@@ -9,7 +9,7 @@ namespace GEWAR.Models
     public class Propertie : BaseModel
     {
         public int PropertyID { get; set; }
-        public int OwnerID { get; set; }
+        public string OwnerID { get; set; }
         public string Address { get; set; }
         public string City { get; set; }
         public decimal? Area_sqm { get; set; }

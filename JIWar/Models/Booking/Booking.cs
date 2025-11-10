@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata.Internal;
+﻿using JIWAR.Models;
+//using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,12 +13,13 @@ namespace GEWAR.Models
 
       
         public int PropertyID { get; set; }
-        public int CustomerID { get; set; }
+        public string CustomerID { get; set; }
         public int? OfferID { get; set; }
         public string Status { get; set; }
         public DateTime? StartDate { get; set; }
         public DateTime? EndDate { get; set; }
-        public string PaymentStatus { get; set; }
+        //public string PaymentStatus { get; set; }
+        public PaymentStatusEnum PaymentStatus { get; set; }
 
 
         public virtual User Customer { get; set; }           // العميل اللي عمل الحجز
@@ -26,20 +28,6 @@ namespace GEWAR.Models
         public virtual BookingRating BookingRating { get; set; } // تقييم الحجز (1:1)
 
 
-
-
-
-        //public static bool IsValidStatus(string status)
-        //{
-        //    return Enum.TryParse<StatusEnum>(status, true, out var result) &&
-        //           Enum.IsDefined(typeof(StatusEnum), result);
-        //}
-
-        //public static bool IsValidPaymentStatus(string paymentStatus)
-        //{
-        //    return Enum.TryParse<PaymentStatusEnum>(paymentStatus, true, out var result) &&
-        //           Enum.IsDefined(typeof(PaymentStatusEnum), result);
-        //}
     }
 
 

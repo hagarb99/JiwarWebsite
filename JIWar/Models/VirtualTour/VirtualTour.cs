@@ -8,7 +8,7 @@ namespace GEWAR.Models
     {
         // 🔑 Foreign Keys
         public int PropertyID { get; set; }   // FK → Property.PropertyID
-        public int UserID { get; set; }       // FK → User.UserID
+        public string UserID { get; set; }       // FK → User.UserID
 
         // 🧩 Attributes
         public string TourURL { get; set; }          // Link to video or 3D model

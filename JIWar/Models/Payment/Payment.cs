@@ -9,7 +9,7 @@ namespace GEWAR.Models
     public class Payment : BaseModel
     {
         public int PaymentID { get; set; }
-        public int UserID { get; set; }
+        public string UserID { get; set; }
         public string RelatedType { get; set; }
         public int RelatedID { get; set; }
         public decimal Amount { get; set; }

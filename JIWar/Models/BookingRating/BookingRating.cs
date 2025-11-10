@@ -16,7 +16,7 @@ namespace JIWAR.Models
         public int BookingID { get; set; } // FK → Booking.BookingID
 
     
-        public int UserID { get; set; } // FK → User.UserID
+        public string UserID { get; set; } // FK → User.UserID
 
       
         public int Rating { get; set; } // Rating score (1–5)
@@ -24,7 +24,7 @@ namespace JIWAR.Models
         
 public string Comment { get; set; } // Optional comment
 
-        public DateTime CreatedDate { get; set; } = DateTime.UtcNow; // When rating was created
+        public DateTime CreatedDate { get; set; }// When rating was created
 
         //  Navigation properties
         public virtual Booking Booking { get; set; }

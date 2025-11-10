@@ -4,7 +4,7 @@ namespace GEWAR.Models
 {
     public class Report : BaseModel
 {
-    public int UserID { get; set; }
+    public string UserID { get; set; }
     public int? BookingID { get; set; }
 
     public string ReportType { get; set; }

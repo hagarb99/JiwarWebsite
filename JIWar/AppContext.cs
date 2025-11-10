@@ -5,7 +5,9 @@ using GEWAR.Models.Configurations;
 using Jiwar.Models;
 using Jiwar.Models.Offers;
 using JIWAR.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,7 +21,7 @@ namespace GEWAR
     /// SOMEEE SQL Server connection string
     /// /user id=hagarb_SQLLogin_1;pwd=zlvwboiwro
     /// </summary>
-    public class AppContext : DbContext
+    public class AppContext : IdentityDbContext<ApplicationUser>
     {
         //tables
         public DbSet<Booking> Booking { get; set; }
@@ -33,9 +35,9 @@ namespace GEWAR
         public DbSet<Notification> Notifications { get; set; }
         public DbSet<Offer> Offers { get; set; }
         public DbSet<Payment> Payments { get; set; }
-        public DbSet<PortfolioPropertie> PortfolioProperties { get; set; }
+        public DbSet<PortfolioProperty> PortfolioProperties { get; set; }
         public DbSet<Propertie> Properties { get; set; }
-        public DbSet<PropertyAnalytic> PropertyAnalytics { get; set; }
+        public DbSet<PropertyAnalytics> PropertyAnalytics { get; set; }
         public DbSet<PropertyMedia> propertyMedias { get; set; }
         public DbSet<Proposal> Proposals { get; set; }
         public DbSet<RenovationCost> RenovationCosts { get; set; }
@@ -67,11 +69,11 @@ namespace GEWAR
             modelBuilder.ApplyConfiguration(new NotificationConfiguration());
             modelBuilder.ApplyConfiguration(new OfferConfiguration());
             modelBuilder.ApplyConfiguration( new PaymentConfiguration());
-            //modelBuilder.ApplyConfiguration();
-            //modelBuilder.ApplyConfiguration();
-            //modelBuilder.ApplyConfiguration();
-            //modelBuilder.ApplyConfiguration();
-            //modelBuilder.ApplyConfiguration();
+            modelBuilder.ApplyConfiguration(new PortfolioPropertyConfiguration());
+            modelBuilder.ApplyConfiguration(new PropertieConfiguration());
+            modelBuilder.ApplyConfiguration(new PropertyAnalyticsConfiguration());
+            modelBuilder.ApplyConfiguration(new PropertyMediaConfiguration());
+            modelBuilder.ApplyConfiguration(new ProposalConfiguration());
             modelBuilder.ApplyConfiguration(new RenovationCostConfiguration());
             modelBuilder.ApplyConfiguration(new RenovationProjectConfiguration());
             modelBuilder.ApplyConfiguration(new ReportConfiguration());
@@ -83,6 +85,9 @@ namespace GEWAR
             modelBuilder.ApplyConfiguration(new WishListConfiguration());
 
             base.OnModelCreating(modelBuilder);
+            modelBuilder.Ignore<ForeignKey>();
+           
+
         }
     }
 }
