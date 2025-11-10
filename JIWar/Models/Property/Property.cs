@@ -27,6 +27,8 @@ namespace GEWAR.Models
         public virtual ICollection<PropertyAnalytics> PropertyAnalytics { get; set; } = new List<PropertyAnalytics>();
 
         public virtual ICollection<PropertyMedia> PropertyMedia { get; set; } = new List<PropertyMedia>();
+        public virtual ICollection<WishList> WishLists { get; set; } = new List<WishList>();
+
 
 
 

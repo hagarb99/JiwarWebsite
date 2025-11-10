@@ -15,7 +15,7 @@ namespace GEWAR.Models
 
     // Navigation Properties
     public virtual User User { get; set; }
-    public virtual Booking Booking { get; set; }
+    public virtual Booking? Booking { get; set; }
 }
 }
 

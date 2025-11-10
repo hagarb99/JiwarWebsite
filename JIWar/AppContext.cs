@@ -1,18 +1,12 @@
 ﻿using GEWAR.Configurations;
 using GEWAR.Models;
-using GEWAR.Models;
 using GEWAR.Models.Configurations;
 using Jiwar.Models;
 using Jiwar.Models.Offers;
 using JIWAR.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace GEWAR
 {
@@ -36,7 +30,7 @@ namespace GEWAR
         public DbSet<Offer> Offers { get; set; }
         public DbSet<Payment> Payments { get; set; }
         public DbSet<PortfolioProperty> PortfolioProperties { get; set; }
-        public DbSet<Propertie> Properties { get; set; }
+        public DbSet<Property> Properties { get; set; }
         public DbSet<PropertyAnalytics> PropertyAnalytics { get; set; }
         public DbSet<PropertyMedia> propertyMedias { get; set; }
         public DbSet<Proposal> Proposals { get; set; }
@@ -47,7 +41,6 @@ namespace GEWAR
 
         public DbSet<RequestRating> RequestRatings { get; set; }
         public DbSet<Subscription> Subscriptions { get; set; }
-        public DbSet<User> Users { get; set; }
         public DbSet<VirtualTour> VirtualTours { get; set; }
         public DbSet<WishList> WishLists { get; set; }
 
@@ -70,7 +63,7 @@ namespace GEWAR
             modelBuilder.ApplyConfiguration(new OfferConfiguration());
             modelBuilder.ApplyConfiguration( new PaymentConfiguration());
             modelBuilder.ApplyConfiguration(new PortfolioPropertyConfiguration());
-            modelBuilder.ApplyConfiguration(new Models.Configurations.PropertyConfiguration());
+            modelBuilder.ApplyConfiguration(new PropertyConfiguration());
             modelBuilder.ApplyConfiguration(new PropertyAnalyticsConfiguration());
             modelBuilder.ApplyConfiguration(new PropertyMediaConfiguration());
             modelBuilder.ApplyConfiguration(new ProposalConfiguration());
@@ -85,8 +78,10 @@ namespace GEWAR
             modelBuilder.ApplyConfiguration(new WishListConfiguration());
 
             base.OnModelCreating(modelBuilder);
-            modelBuilder.Ignore<ForeignKey>();
-           
+            modelBuilder.Entity<ApplicationUser>().ToTable("Users");
+
+            //modelBuilder.Ignore<ForeignKey>();
+
 
         }
     }

@@ -17,12 +17,18 @@ namespace GEWAR.Models.Configurations
             builder.Property(x => x.EstimatedProfit)
                    .HasColumnType("decimal(18,2)");
 
-            builder.Property(x => x.RenovationCosts)
-                   .HasColumnType("decimal(18,2)");
+            builder.HasMany(rp => rp.RenovationCosts)
+       .WithOne(rc => rc.RenovationProject)
+       .HasForeignKey(rc => rc.RenovationProjectID)
+       .OnDelete(DeleteBehavior.Cascade);
 
-            builder.Property(x => x.ProjectStatus)
-                   .HasMaxLength(50)
-                   .IsRequired(false);
+
+            builder.Property(rp => rp.ProjectStatusEnum)
+       .HasConversion<string>()
+       .HasMaxLength(50)
+       .IsRequired(false);
+
+                   
 
             builder.Property(x => x.StartDate)
                    .IsRequired(false);

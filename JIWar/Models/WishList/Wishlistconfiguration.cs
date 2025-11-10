@@ -25,12 +25,12 @@ namespace Jiwar.Models
 
             // Relationships
             builder.HasOne(w => w.User)
-                   .WithMany() // or .WithMany(u => u.WishLists) if added in User
+                   .WithMany(u => u.WishLists) // or .WithMany(u => u.WishLists) if added in User
                    .HasForeignKey(w => w.UserID)
                    .OnDelete(DeleteBehavior.Cascade);
 
             builder.HasOne(w => w.Property)
-                   .WithMany() // or .WithMany(p => p.WishLists)
+                   .WithMany(p => p.WishLists) // or .WithMany(p => p.WishLists)
                    .HasForeignKey(w => w.PropertyID)
                    .OnDelete(DeleteBehavior.Cascade);
         }

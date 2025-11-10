@@ -17,7 +17,7 @@ namespace GEWAR.Models
         public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
 
         // 🔗 Navigation Properties
-        public virtual Property Property { get; set; }
-        public virtual User User { get; set; }
+        public virtual Property? Property { get; set; }
+        public virtual User? User { get; set; }
     }
 }

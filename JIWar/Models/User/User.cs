@@ -32,7 +32,11 @@ namespace GEWAR.Models
         public virtual ICollection<Notification> Notifications { get; set; } = new List<Notification>();
         public virtual ICollection<Payment> Payments { get; set; } = new List<Payment>();
         public virtual InteriorDesigner? InteriorDesigner { get; set; }
-        public virtual ICollection<BookingRating> BookingRatings { get; set; }
+        public virtual ICollection<BookingRating> BookingRatings { get; set; } = new List<BookingRating>();
+        public virtual ICollection<Subscription> Subscriptions { get; set; } = new List<Subscription>();
+        public virtual ICollection<WishList> WishLists { get; set; } = new List<WishList>();
+
+
 
 
 

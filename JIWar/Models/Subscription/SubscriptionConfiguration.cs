@@ -14,9 +14,10 @@ namespace GEWAR.Configurations
             builder.HasKey(s => s.Id);
 
             // 🧱 Properties
-            builder.Property(s => s.PlanType)
-                   .IsRequired()
-                   .HasMaxLength(50);
+            builder.Property(s => s.planTypeEnum)
+       .HasConversion<string>()
+       .HasMaxLength(50)
+       .IsRequired();
 
             builder.Property(s => s.StartDate)
                    .IsRequired()
@@ -26,15 +27,17 @@ namespace GEWAR.Configurations
                    .IsRequired()
                    .HasColumnType("datetime");
 
-            builder.Property(s => s.Status)
-                   .IsRequired()
-                   .HasMaxLength(30);
+            builder.Property(s => s.statusEnum2)
+                   .HasConversion<string>()
+                   .HasMaxLength(30)
+                   .IsRequired();
 
             // 👤 Relationship with User
-            builder.HasOne<User>()
-                   .WithMany() // or .WithMany(u => u.Subscriptions) if you add that navigation
-                   .HasForeignKey(s => s.UserID)
-                   .OnDelete(DeleteBehavior.Cascade);
+            builder.HasOne(s => s.User)
+        .WithMany(u => u.Subscriptions)
+        .HasForeignKey(s => s.UserID)
+        .OnDelete(DeleteBehavior.Cascade);
+
         }
     }
 }

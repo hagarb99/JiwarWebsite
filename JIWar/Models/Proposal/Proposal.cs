@@ -19,6 +19,9 @@ namespace GEWAR.Models
         public DateTime CreatedDate { get; set; }
 
         public StatusEnumReqPro StatusEnumReq { get; set; }
-       
+        public virtual Request Request { get; set; }
+        public virtual InteriorDesigner Designer { get; set; }
+
+
     }
 }

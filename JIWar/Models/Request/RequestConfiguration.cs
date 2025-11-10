@@ -35,12 +35,12 @@ namespace GEWAR.Configurations
                    .IsRequired();
 
             // ✅ Future navigation properties (if added later)
-            builder.HasOne(r => r.user)
+            builder.HasOne(r => r.User)
                    .WithMany()
                    .HasForeignKey(r => r.CustomerID)
                    .OnDelete(DeleteBehavior.Restrict);
 
-            builder.HasOne(r => r.propertie)
+            builder.HasOne(r => r.property)
                    .WithMany()
                    .HasForeignKey(r => r.PropertyID)
                    .OnDelete(DeleteBehavior.Restrict);

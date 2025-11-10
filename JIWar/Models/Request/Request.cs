@@ -15,23 +15,15 @@ namespace GEWAR.Models
         public string Status { get; set; }
         public DateTime CreatedDate { get; set; }
         public StatusEnumReqPro StatusEnumRequest { get; set; }
-        public User user { get; set; }
-        public Propertie propertie { get; set; }
+        public virtual Property property { get; set; }
 
+        public virtual ICollection<RequestRating> Ratings { get; set; } = new List<RequestRating>();
+        public virtual ICollection<Proposal> Proposals { get; set; } = new List<Proposal>();  // one to many proposals
 
-        public virtual ICollection<Proposal> Proposals { get; set; }  // one to many proposals
-
-                // علاقات أخرى لو عندك
+        // علاقات أخرى لو عندك
         public virtual User User { get; set; }
         public virtual InteriorDesigner Designer { get; set; }
         public virtual ICollection<Design> Designs { get; set; } = new List<Design>();
 
-
-
-        //public static bool IsValidStatus(string status)
-        //{
-        //    return Enum.TryParse<StatusEnum>(status, true, out var result) &&
-        //           Enum.IsDefined(typeof(StatusEnum), result);
-        //}
     }
 }

@@ -8,13 +8,13 @@ namespace GEWAR.Models
 {
     public class RenovationCost : BaseModel
     {
-        public int RenovationProjectID { get; set; } // FK → RenovationProject
+        public int RenovationProjectID { get; set; }  // FK → RenovationProject
 
         public string CostType { get; set; }
         public decimal? EstimatedValue { get; set; }
 
         // Navigation
-        public virtual RenovationProject RenovationProject { get; set; }
+        public virtual RenovationProject RenovationProject { get; set; } = null!;
     }
 
 }

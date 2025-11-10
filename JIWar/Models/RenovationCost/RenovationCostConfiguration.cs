@@ -22,9 +22,9 @@ namespace Jiwar.Models
 
             // ✅ Relationship with RenovationProject
             builder.HasOne(rc => rc.RenovationProject)
-                   .WithMany()
-                   .HasForeignKey(rc => rc.RenovationProjectID)
-                   .OnDelete(DeleteBehavior.Cascade);
+        .WithMany(rp => rp.RenovationCosts) // ← اربطي بـ collection property
+        .HasForeignKey(rc => rc.RenovationProjectID)
+        .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

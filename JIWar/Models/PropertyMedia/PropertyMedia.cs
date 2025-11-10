@@ -15,18 +15,7 @@ namespace GEWAR.Models
         public string MediaURL { get; set; }
         public string MediaType { get; set; }
         public DateTime UploadedDate { get; set; }
-
-
-
+        public virtual Property Property { get; set; } = null!;
         public MediaTypeEnum mediaTypeEnum { get; set; }
-
-        //public static bool IsValidMediaType(string mediaType)
-        //{
-        //    if (mediaType == "360Tour")
-        //        return true;
-
-        //    return Enum.TryParse<MediaTypeEnum>(mediaType, out var result) &&
-        //           Enum.IsDefined(typeof(MediaTypeEnum), result);
-        //}
     }
 }

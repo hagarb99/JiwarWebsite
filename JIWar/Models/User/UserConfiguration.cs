@@ -34,9 +34,11 @@ namespace GEWAR.Configurations
             builder.Property(u => u.ProfilePicName)
                    .HasMaxLength(150);
 
-            builder.Property(u => u.UserType)
-                   .IsRequired()
-                   .HasMaxLength(50);
+            builder.Property(u => u.userTypeEnum)
+       .HasConversion<string>()
+       .HasMaxLength(50)
+       .IsRequired();
+
 
             builder.Property(u => u.RegistrationDate)
                    .IsRequired();
@@ -63,9 +65,10 @@ namespace GEWAR.Configurations
                    .OnDelete(DeleteBehavior.Cascade);
 
             builder.HasOne(u => u.InteriorDesigner)
-                   .WithOne(id => id.User)
-                   .HasForeignKey<InteriorDesigner>(id => id.UserID)
-                   .OnDelete(DeleteBehavior.Cascade);
+         .WithOne(d => d.User)   // يشير للـ navigation property داخل InteriorDesigner
+         .HasForeignKey<InteriorDesigner>(d => d.UserID) // يشير للـ FK داخل InteriorDesigner
+         .OnDelete(DeleteBehavior.Cascade);
+
         }
     }
 }

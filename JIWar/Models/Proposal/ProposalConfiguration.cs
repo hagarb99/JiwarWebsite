@@ -37,15 +37,16 @@ namespace Jiwar.Models
                    .IsRequired();
 
             // Relationships
-            builder.HasOne<Request>() // العلاقة مع الـ Request
-                   .WithMany()
-                   .HasForeignKey(p => p.RequestID)
-                   .OnDelete(DeleteBehavior.Cascade);
+            builder.HasOne(p => p.Request)
+       .WithMany(r => r.Proposals)
+       .HasForeignKey(p => p.RequestID)
+       .OnDelete(DeleteBehavior.Cascade);
 
-            builder.HasOne<InteriorDesigner>() // العلاقة مع الـ Designer
-                   .WithMany()
+            builder.HasOne(p => p.Designer)
+                   .WithMany(d => d.Proposals)
                    .HasForeignKey(p => p.DesignerID)
                    .OnDelete(DeleteBehavior.Restrict);
+
         }
     }
 }

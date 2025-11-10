@@ -30,9 +30,10 @@ namespace GEWAR.Configurations
             // ✅ Relationships
 
             builder.HasOne(rr => rr.Request)
-                   .WithMany()
-                   .HasForeignKey(rr => rr.RequestID)
-                   .OnDelete(DeleteBehavior.Cascade);
+       .WithMany(r => r.Ratings)
+       .HasForeignKey(rr => rr.RequestID)
+       .OnDelete(DeleteBehavior.Cascade);
+
 
             builder.HasOne(rr => rr.User)
                    .WithMany()
