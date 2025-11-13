@@ -15,14 +15,15 @@ namespace GEWAR
     /// SOMEEE SQL Server connection string
     /// /user id=hagarb_SQLLogin_1;pwd=zlvwboiwro
     /// </summary>
-    public class GiwarContext : IdentityDbContext<ApplicationUser>
+    public class GiwarContext : IdentityDbContext<User>
     {
         public GiwarContext(DbContextOptions<GiwarContext> options) : base(options)
         {
 
         }
-    
+
         //tables
+        public DbSet<User> Users { get; set; }
         public DbSet<Booking> Booking { get; set; }
         public DbSet<BookingRating> BookingRating { get; set; }
         public DbSet<Chat> Chats { get; set; }
@@ -83,7 +84,7 @@ namespace GEWAR
             modelBuilder.ApplyConfiguration(new WishListConfiguration());
 
             base.OnModelCreating(modelBuilder);
-            modelBuilder.Entity<ApplicationUser>().ToTable("Users");
+            modelBuilder.Entity<User>().ToTable("Users");
         }
     }
 }

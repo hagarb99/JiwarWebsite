@@ -19,7 +19,7 @@ namespace GEWAR.Models
         public DateTime? StartDate { get; set; }
         public DateTime? EndDate { get; set; }
         //public string PaymentStatus { get; set; }
-        public PaymentStatusEnum PaymentStatus { get; set; }
+        public PaymentStatusEnum? PaymentStatus { get; set; }
 
 
         public virtual User Customer { get; set; }           // العميل اللي عمل الحجز

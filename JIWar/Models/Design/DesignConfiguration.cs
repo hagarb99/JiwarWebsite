@@ -37,9 +37,8 @@ namespace Jiwar.Models
 
             // Each Design belongs to one Request
             builder.HasOne(d => d.Request)
-                   .WithMany()
-                   .HasForeignKey(d => d.RequestID)
-                   .OnDelete(DeleteBehavior.Restrict);
+       .WithMany(r => r.Designs) 
+       .OnDelete(DeleteBehavior.Restrict);
 
             // Each Design belongs to one Interior Designer
             builder.HasOne(d => d.InteriorDesigner)

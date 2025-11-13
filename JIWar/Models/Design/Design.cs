@@ -8,7 +8,6 @@ namespace GEWAR.Models
 {
     public class Design : BaseModel
     {
-        public int RequestID { get; set; }        // FK → Requests.RequestID
         public string DesignerID { get; set; }       // FK → InteriorDesigner.DesignerID
         public string DesignURL { get; set; }     // رابط التصميم (قد يكون صورة أو ملف)
         public bool AI_Generated { get; set; }    // هل التصميم تم إنشاؤه بالذكاء الاصطناعي؟

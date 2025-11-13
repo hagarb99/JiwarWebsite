@@ -1,7 +1,9 @@
-﻿using JIWAR.Models;
+﻿using Jiwar.Models;
+using JIWAR.Models;
 using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,13 +13,11 @@ namespace GEWAR.Models
     public partial class User : IdentityUser
     {
         public string Name { get; set; }
-        public string Username { get; set; }
-        public string PasswordHash { get; set; }
-        public string Email { get; set; }
         public string ProfilePicURL { get; set; }
         public string ProfilePicName { get; set; }
         public string UserType { get; set; }
         public DateTime RegistrationDate { get; set; }
+        [NotMapped]
         public object SentMessages { get; internal set; }
 
         //public static bool IsValidUserType(string userType)

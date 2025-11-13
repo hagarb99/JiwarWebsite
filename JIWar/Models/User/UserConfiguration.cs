@@ -1,6 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using GEWAR.Models;
+using Jiwar.Models;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using GEWAR.Models;
+using System.Reflection.Emit;
 
 namespace GEWAR.Configurations
 {
@@ -16,9 +18,6 @@ namespace GEWAR.Configurations
                    .IsRequired()
                    .HasMaxLength(100);
 
-            builder.Property(u => u.Username)
-                   .IsRequired()
-                   .HasMaxLength(50);
 
             builder.Property(u => u.PasswordHash)
                    .IsRequired()

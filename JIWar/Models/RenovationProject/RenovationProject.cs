@@ -20,7 +20,7 @@ namespace GEWAR.Models
             public DateTime? EndDate { get; set; }
         public virtual ICollection<RenovationCost> RenovationCosts { get; set; } = new List<RenovationCost>();
 
-        public ProjectStatusEnum ProjectStatusEnum { get; set; }
+        public ProjectStatusEnum? ProjectStatusEnum { get; set; }
             //public static bool IsValidProjectStatus(string status)
             //{
             //    return Enum.TryParse<ProjectStatusEnum>(status, true, out var result) &&

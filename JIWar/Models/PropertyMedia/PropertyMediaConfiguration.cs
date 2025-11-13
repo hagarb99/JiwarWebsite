@@ -35,10 +35,10 @@ namespace GEWAR.Models
                    .IsRequired();
 
             //  Relationship (Property 1 → * PropertyMedia)
-            builder.HasOne<Property>()
-                   .WithMany(p => p.PropertyMedia) // تأكدي إنك ضفتي ICollection<PropertyMedia> في كلاس Property
-                   .HasForeignKey(pm => pm.PropertyID)
-                   .OnDelete(DeleteBehavior.Cascade);
+            builder.HasOne(pm => pm.Property) 
+        .WithMany(p => p.PropertyMedia)
+        .HasForeignKey(pm => pm.PropertyID)
+        .OnDelete(DeleteBehavior.NoAction);
         }
     }
 }
