@@ -15,8 +15,13 @@ namespace GEWAR
     /// SOMEEE SQL Server connection string
     /// /user id=hagarb_SQLLogin_1;pwd=zlvwboiwro
     /// </summary>
-    public class AppContext : IdentityDbContext<ApplicationUser>
+    public class GiwarContext : IdentityDbContext<ApplicationUser>
     {
+        public GiwarContext(DbContextOptions<GiwarContext> options) : base(options)
+        {
+
+        }
+    
         //tables
         public DbSet<Booking> Booking { get; set; }
         public DbSet<BookingRating> BookingRating { get; set; }
@@ -45,10 +50,10 @@ namespace GEWAR
         public DbSet<WishList> WishLists { get; set; }
 
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            optionsBuilder.UseSqlServer("workstation id=JIWARDB.mssql.somee.com;packet size=4096;user id=hagarb_SQLLogin_1;pwd=zlvwboiwro;data source=JIWARDB.mssql.somee.com;persist security info=False;initial catalog=JIWARDB;TrustServerCertificate=True");
-        }
+        //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        //{
+        //    optionsBuilder.UseSqlServer("workstation id=JIWARDB.mssql.somee.com;packet size=4096;user id=hagarb_SQLLogin_1;pwd=zlvwboiwro;data source=JIWARDB.mssql.somee.com;persist security info=False;initial catalog=JIWARDB;TrustServerCertificate=True");
+        //}
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -79,10 +84,6 @@ namespace GEWAR
 
             base.OnModelCreating(modelBuilder);
             modelBuilder.Entity<ApplicationUser>().ToTable("Users");
-
-            //modelBuilder.Ignore<ForeignKey>();
-
-
         }
     }
 }

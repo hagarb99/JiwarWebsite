@@ -15,6 +15,6 @@ namespace GEWAR.Models
         public string Notes { get; set; }
 
         public virtual User User { get; set; }
-        public virtual Propertie Property { get; set; }
+        public virtual Property Property { get; set; }
     }
 }
