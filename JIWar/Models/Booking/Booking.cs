@@ -11,17 +11,15 @@ namespace GEWAR.Models
     public partial class Booking : BaseModel
     {
 
-      
         public int PropertyID { get; set; }
         public string CustomerID { get; set; }
         public int? OfferID { get; set; }
-        public string Status { get; set; }
+        public StatusEnum status { get; set; }
         public DateTime? StartDate { get; set; }
         public DateTime? EndDate { get; set; }
-        //public string PaymentStatus { get; set; }
         public PaymentStatusEnum? PaymentStatus { get; set; }
 
-
+        public decimal Cost { get; set; }
         public virtual User Customer { get; set; }           // العميل اللي عمل الحجز
         public virtual Property Property { get; set; }       // العقار المحجوز
         public virtual Offer Offer { get; set; }             // العرض المرتبط (اختياري)

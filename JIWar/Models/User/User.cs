@@ -15,17 +15,12 @@ namespace GEWAR.Models
         public string Name { get; set; }
         public string ProfilePicURL { get; set; }
         public string ProfilePicName { get; set; }
-        public string UserType { get; set; }
         public DateTime RegistrationDate { get; set; }
         [NotMapped]
-        public object SentMessages { get; internal set; }
-
-        //public static bool IsValidUserType(string userType)
-        //{
-        //    return Enum.TryParse<UserTypeEnum>(userType, true, out var result) &&
-        //           Enum.IsDefined(typeof(UserTypeEnum), result);
-        //}
-        public UserTypeEnum userTypeEnum { get; set; }
+        public string SentMessages { get; internal set; }
+        public UserTypeEnum UserTypeEnum { get; set; }
+        public virtual PropertyOwner propertyOwner { get; set; }
+        
 
         public virtual ICollection<InvestmentPortfolio> InvestmentPortfolios { get; set; } = new List<InvestmentPortfolio>();
         public virtual ICollection<Offer> Offers { get; set; } = new List<Offer>();
@@ -35,11 +30,6 @@ namespace GEWAR.Models
         public virtual ICollection<BookingRating> BookingRatings { get; set; } = new List<BookingRating>();
         public virtual ICollection<Subscription> Subscriptions { get; set; } = new List<Subscription>();
         public virtual ICollection<WishList> WishLists { get; set; } = new List<WishList>();
-
-
-
-
-
 
     }
 }

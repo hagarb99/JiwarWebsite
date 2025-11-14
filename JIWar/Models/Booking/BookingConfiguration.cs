@@ -30,10 +30,6 @@ namespace Jiwar.Models
             builder.Property(b => b.OfferID)
                    .IsRequired(false);
 
-            builder.Property(b => b.Status)
-                   .HasMaxLength(50)
-                   .IsRequired();
-
             builder.Property(b => b.StartDate)
                    .HasColumnType("datetime")
                    .IsRequired(false);
@@ -53,7 +49,12 @@ namespace Jiwar.Models
        .HasForeignKey<BookingRating>(br => br.BookingID)
        .OnDelete(DeleteBehavior.Cascade);
 
+            builder.Property(b => b.status)
+       .HasConversion<string>();
 
+            builder.Property(b => b.Cost)
+       .HasColumnType("decimal(18,2)")
+       .IsRequired();
 
         }
 

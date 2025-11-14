@@ -13,14 +13,14 @@ namespace GEWAR.Models
         public int? ExperienceYears { get; set; }
         public string? PortfolioURL { get; set; }
 
-        // other offer fields (e.g., Title, Price, etc.)
-
         // Navigation property
         public virtual User User { get; set; }
         public string UserID { get; set; }
         public virtual ICollection<Design> Designs { get; set; } = new List<Design>();
         public virtual ICollection<Proposal> Proposals { get; set; } = new List<Proposal>();
 
+        ///property owner table-is a user
+        //like his-subscription-
 
 
     }

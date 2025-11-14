@@ -35,21 +35,13 @@ namespace GEWAR.Models.Configurations
             builder.Property(p => p.NumBathrooms)
                    .IsRequired(false);
 
-            builder.Property(p => p.FinishingStatus)
-                   .HasMaxLength(50)
-                   .IsRequired(false);
 
-            builder.Property(p => p.PropertyType)
-                   .HasMaxLength(100)
-                   .IsRequired(false);
 
             builder.Property(p => p.CreatedDate)
                    .IsRequired()
                    .HasDefaultValueSql("GETUTCDATE()");
 
-            builder.Property(p => p.Status)
-                   .HasMaxLength(50)
-                   .IsRequired();
+
 
             //  Relationships
 
@@ -64,6 +56,28 @@ namespace GEWAR.Models.Configurations
                    .WithOne(pp => pp.Property)
                    .HasForeignKey(pp => pp.PropertyID)
                    .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasOne(p => p.PropertyOwner)
+        .WithMany(po => po.Properties)
+        .HasForeignKey(p => p.OwnerID)
+        .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Property(p => p.statusEnum)
+       .HasConversion<string>()
+       .HasMaxLength(50)
+       .IsRequired();
+
+          
+
+            builder.Property(p => p.LocationLat)
+                   .HasColumnType("decimal(10,6)");
+
+            builder.Property(p => p.LocationLang)
+                   .HasColumnType("decimal(10,6)");
+
+
+
+
         }
     }
 }

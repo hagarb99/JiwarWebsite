@@ -21,17 +21,7 @@ namespace GEWAR.Models
 
         public StatusEnum2 statusEnum2 { get; set; }
 
-        //public static bool IsValidPlanType(string planType)
-        //{
-        //    return Enum.TryParse<PlanTypeEnum>(planType, true, out var result) &&
-        //           Enum.IsDefined(typeof(PlanTypeEnum), result);
-        //}
-
-        //public static bool IsValidStatus(string status)
-        //{
-        //    return Enum.TryParse<StatusEnum2>(status, true, out var result) &&
-        //           Enum.IsDefined(typeof(StatusEnum2), result);
-        //}
+       
     }
     }
 

@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Jiwar.Enum;
+using Jiwar.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,17 +11,21 @@ namespace GEWAR.Models
     public class Property : BaseModel
     {
         public int PropertyID { get; set; }
-        public string OwnerID { get; set; }
+        public int OwnerID { get; set; } // FK → PropertyOwner
+
         public string Address { get; set; }
+        
+        public decimal LocationLat { get; set; }
+        public decimal LocationLang { get; set; } //for google map
         public string City { get; set; }
         public decimal? Area_sqm { get; set; }
         public int? NumBedrooms { get; set; }
         public int? NumBathrooms { get; set; }
-        public string FinishingStatus { get; set; } = string.Empty;
-        public string PropertyType { get; set; } = string.Empty;
         public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
-        public string Status { get; set; } = "Available";
+        public bool IsAvaliable { get; set; }//booking or not
 
+        //enum for status
+        public PropEnum statusEnum { get; set; }
         public virtual ICollection<Offer> Offers { get; set; } = new List<Offer>();
 
         public virtual ICollection<PortfolioProperty> PortfolioProperties { get; set; } = new List<PortfolioProperty>();
@@ -29,8 +35,10 @@ namespace GEWAR.Models
         public virtual ICollection<PropertyMedia> PropertyMedia { get; set; } = new List<PropertyMedia>();
         public virtual ICollection<WishList> WishLists { get; set; } = new List<WishList>();
 
-
-
+        public User user { get; set; }
+        //make relation-many prop-prop one prop owner
+        //
+        public virtual PropertyOwner PropertyOwner { get; set; }
 
     }
 }

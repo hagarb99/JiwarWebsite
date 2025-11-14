@@ -49,6 +49,7 @@ namespace GEWAR
         public DbSet<Subscription> Subscriptions { get; set; }
         public DbSet<VirtualTour> VirtualTours { get; set; }
         public DbSet<WishList> WishLists { get; set; }
+        public DbSet<PropertyOwner> PropertyOwners { get; set; }
 
 
         //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -82,6 +83,7 @@ namespace GEWAR
             modelBuilder.ApplyConfiguration(new UserConfiguration());
             modelBuilder.ApplyConfiguration(new VirtualTourConfiguration());
             modelBuilder.ApplyConfiguration(new WishListConfiguration());
+            modelBuilder.ApplyConfiguration(new PropertyOwnerConfiguration());
 
             base.OnModelCreating(modelBuilder);
             modelBuilder.Entity<User>().ToTable("Users");
