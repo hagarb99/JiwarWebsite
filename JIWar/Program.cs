@@ -2,9 +2,12 @@
 using GEWAR.Configurations;
 using GEWAR.Models;
 using GEWAR.Models.Configurations;
+using Jiwar.Account;
+using Jiwar.Account.Services;
 using Jiwar.Models;
 using Jiwar.Models.Offers;
 using JIWAR.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 
@@ -24,6 +27,12 @@ namespace Jiwar
 
             builder.Services.AddDbContext<GiwarContext>(options =>
             options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+            builder.Services.AddIdentity<User, IdentityRole>()
+            .AddEntityFrameworkStores<GiwarContext>()
+             .AddDefaultTokenProviders();
+           builder.Services.AddScoped<IAccountService, AccountService>();
+
 
             var app = builder.Build();
 

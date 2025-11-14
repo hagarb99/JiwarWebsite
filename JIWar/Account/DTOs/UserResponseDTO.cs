@@ -1,0 +1,13 @@
+﻿using GEWAR.Models;
+
+namespace Jiwar.Account
+{
+    public class UserResponseDTO
+    {
+        public string Id { get; set; }
+        public string Name { get; set; }
+        public string Email { get; set; }
+        //public UserTypeEnum UserType { get; set; }
+        public string ProfilePicURL { get; set; }
+    }
+}

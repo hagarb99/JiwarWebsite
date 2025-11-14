@@ -24,10 +24,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Folder Include="Account\Controllers\" />
-	  <Folder Include="Account\DTOs\" />
-	  <Folder Include="Account\Interfaces\" />
-	  <Folder Include="Account\Services\" />
 	  <Folder Include="Controllers\" />
 	</ItemGroup>
 
