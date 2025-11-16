@@ -3,6 +3,7 @@ using GEWAR.Configurations;
 using GEWAR.Models;
 using GEWAR.Models.Configurations;
 using Jiwar.Account;
+using Jiwar.Account.DTOs;
 using Jiwar.Account.Services;
 using Jiwar.Models;
 using Jiwar.Models.Offers;
@@ -26,7 +27,10 @@ namespace Jiwar
             builder.Services.AddOpenApi();
 
             builder.Services.AddDbContext<GiwarContext>(options =>
-            options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseSqlServer(
+        builder.Configuration.GetConnectionString("DefaultConnection"),
+        sqlOptions => sqlOptions.EnableRetryOnFailure()
+    ));
 
             builder.Services.AddIdentity<User, IdentityRole>()
             .AddEntityFrameworkStores<GiwarContext>()
