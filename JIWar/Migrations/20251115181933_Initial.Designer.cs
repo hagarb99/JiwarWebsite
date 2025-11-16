@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Jiwar.Migrations
 {
     [DbContext(typeof(GiwarContext))]
-    [Migration("20251114165256_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20251115181933_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
