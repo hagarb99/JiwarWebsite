@@ -69,6 +69,20 @@ namespace Jiwar.Account
 
             return Ok(new { message = result.Message });
         }
+        [HttpPost("forget-password")]
+        public async Task<IActionResult> ForgetPassword([FromBody] ForgetPasswordDto dto)
+        {
+            var result = await accountService.ForgetPasswordAsync(dto);
+            return Ok(result);
+        }
+        [HttpPost("reset-password")]
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto dto)
+        {
+            var result = await accountService.ResetPasswordAsync(dto);
+            return Ok(result);
+        }
+
+
 
 
     }

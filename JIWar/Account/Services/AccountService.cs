@@ -69,6 +69,32 @@ namespace Jiwar.Account.Services
             if (!result.Succeeded)
                 throw new Exception("Password change failed");
         }
+        public async Task<ServiceResult> ForgetPasswordAsync(ForgetPasswordDto dto)
+        {
+            var user = await userManager.FindByEmailAsync(dto.Email);
+
+            if (user == null)
+                return ServiceResult.Failed("Email not found.");
+
+            var token = await userManager.GeneratePasswordResetTokenAsync(user);
+
+            return ServiceResult.Succeeded("Reset token generated.", token);
+        }
+        public async Task<ServiceResult> ResetPasswordAsync(ResetPasswordDto dto)
+        {
+            var user = await userManager.FindByEmailAsync(dto.Email);
+
+            if (user == null)
+                return ServiceResult.Failed("Invalid email.");
+
+            var result = await userManager.ResetPasswordAsync(user, dto.Token, dto.NewPassword);
+
+            if (!result.Succeeded)
+                return ServiceResult.Failed("Failed to reset password.", result.Errors);
+
+            return ServiceResult.Succeeded("Password reset successfully.");
+        }
+
 
 
 
