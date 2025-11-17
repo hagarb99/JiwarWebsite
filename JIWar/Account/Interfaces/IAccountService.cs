@@ -11,7 +11,7 @@ namespace Jiwar.Account.DTOs
         Task<ServiceResult> ChangePasswordAsync(ChangePasswordDto dto);
         Task<ServiceResult> ForgetPasswordAsync(ForgetPasswordDto dto);
         Task<ServiceResult> ResetPasswordAsync(ResetPasswordDto dto);
-
+        Task<ServiceResult> EditProfileAsync(EditProfileDto dto);
 
     }
 }

@@ -82,6 +82,22 @@ namespace Jiwar.Account
             return Ok(result);
         }
 
+        [HttpPut("edit-profile")]
+        public async Task<IActionResult> EditProfile([FromBody] EditProfileDto dto)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            try
+            {
+                var updatedUser = await accountService.EditProfileAsync(dto);
+                return Ok(updatedUser);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
 
 
 

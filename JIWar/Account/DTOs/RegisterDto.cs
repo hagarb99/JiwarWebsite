@@ -14,7 +14,6 @@ namespace Jiwar.Account.DTOs
         [Required, MinLength(6)]
         public string Password { get; set; }
         public string PhoneNumber { get; set; }
-        //[Required]
-        //public UserTypeEnum UserType { get; set; }
+        public UserTypeEnum Role { get; set; }
     }
 }

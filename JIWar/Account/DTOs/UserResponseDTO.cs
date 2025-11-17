@@ -9,5 +9,7 @@ namespace Jiwar.Account
         public string Email { get; set; }
         //public UserTypeEnum UserType { get; set; }
         public string ProfilePicURL { get; set; }
+        public string Role { get; set; }
+        
     }
 }

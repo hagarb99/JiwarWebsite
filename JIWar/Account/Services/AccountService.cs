@@ -3,6 +3,7 @@ using GEWAR.Models;
 using Jiwar.Account.DTOs;
 using Jiwar.Helpers;
 using Microsoft.AspNetCore.Identity;
+using System.Data;
 
 namespace Jiwar.Account.Services
 {
@@ -27,15 +28,19 @@ namespace Jiwar.Account.Services
                 RegistrationDate = DateTime.UtcNow
             };
             var result = await userManager.CreateAsync(user, dto.Password);
-             if (!result.Succeeded) 
+            if (!result.Succeeded)
                 throw new Exception(string.Join("; ", result.Errors.Select(e => e.Description)));
 
+            // Assign role to the user
+            await userManager.AddToRoleAsync(user, dto.Role.ToString());
+            // Get the role from Identity
+            var roles = await userManager.GetRolesAsync(user);
             return new UserResponseDTO
             {
                 Id = user.Id,
                 Name = user.Name,
                 Email = user.Email,
-                //UserType = user.UserTypeEnum
+                Role = roles.FirstOrDefault()
             };
 
         }
@@ -49,13 +54,16 @@ namespace Jiwar.Account.Services
             var result = await signInManager.CheckPasswordSignInAsync(user, dto.Password, false);
             if (!result.Succeeded)
                 throw new Exception("Invalid email or password.");
-
+            //roles
+            var roles = await userManager.GetRolesAsync(user);
             return new UserResponseDTO
             {
                 Id = user.Id,
                 Name = user.Name,
                 Email = user.Email,
-                ProfilePicURL = user.ProfilePicURL
+                ProfilePicURL = user.ProfilePicURL,
+                Role = roles.FirstOrDefault()
+
             };
         }
 
@@ -95,8 +103,36 @@ namespace Jiwar.Account.Services
             return ServiceResult.Succeeded("Password reset successfully.");
         }
 
+        public async Task<UserResponseDTO> EditProfileAsync(EditProfileDto dto)
+        {
+            var user = await userManager.FindByIdAsync(dto.UserId);
+            if (user == null)
+                throw new Exception("User not found");
 
+            if (!string.IsNullOrEmpty(dto.Name))
+                user.Name = dto.Name;
+            if (!string.IsNullOrEmpty(dto.Email))
+                user.Email = dto.Email;
+            if (!string.IsNullOrEmpty(dto.PhoneNumber))
+                user.PhoneNumber = dto.PhoneNumber;
+            if (!string.IsNullOrEmpty(dto.ProfilePicURL))
+                user.ProfilePicURL = dto.ProfilePicURL;
 
+            var result = await userManager.UpdateAsync(user);
+            if (!result.Succeeded)
+                throw new Exception(string.Join("; ", result.Errors.Select(e => e.Description)));
+
+            var roles = await userManager.GetRolesAsync(user);
+
+            return new UserResponseDTO
+            {
+                Id = user.Id,
+                Name = user.Name,
+                Email = user.Email,
+                ProfilePicURL = user.ProfilePicURL,
+                Role = roles.FirstOrDefault()
+            };
+        }
 
     }
 }
