@@ -1,7 +1,7 @@
 ﻿using GEWAR.Models;
 using System.ComponentModel.DataAnnotations;
 
-namespace Jiwar.Account
+namespace Jiwar.Account.DTOs
 {
     public class RegisterDto
     {
