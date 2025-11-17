@@ -7,6 +7,7 @@ using Jiwar.Account.DTOs;
 using Jiwar.Account.Services;
 using Jiwar.Models;
 using Jiwar.Models.Offers;
+using Jiwar.Repositories;
 using JIWAR.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -37,7 +38,9 @@ namespace Jiwar
             .AddEntityFrameworkStores<GiwarContext>()
              .AddDefaultTokenProviders();
            builder.Services.AddScoped<IAccountService, AccountService>();
-
+            builder.Services.AddScoped<IWishlistRepository, WishlistRepository>();
+            builder.Services.AddScoped<IBookingService, BookingService>();
+            builder.Services.AddScoped<IBookingRepository, BookingRepository>();
 
             var app = builder.Build();
 
