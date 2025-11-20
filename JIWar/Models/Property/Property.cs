@@ -35,6 +35,9 @@ namespace GEWAR.Models
         public virtual ICollection<PropertyMedia> PropertyMedia { get; set; } = new List<PropertyMedia>();
         public virtual ICollection<WishList> WishLists { get; set; } = new List<WishList>();
 
+        public virtual ICollection<PropertyFeature> PropertyFeatures { get; set; }
+
+
         public User user { get; set; }
         //make relation-many prop-prop one prop owner
         //
