@@ -1,4 +1,4 @@
-﻿using Jiwar.DTOs;
+﻿using Jiwar.DTOs.WishlistDTOs;
 
 namespace Jiwar.Repositories
 {
