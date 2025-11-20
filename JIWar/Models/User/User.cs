@@ -14,7 +14,6 @@ namespace GEWAR.Models
     {
         public string Name { get; set; }
         public string ProfilePicURL { get; set; }
-        public string ProfilePicName { get; set; }
         public DateTime RegistrationDate { get; set; }
         [NotMapped]
         public string SentMessages { get; internal set; }

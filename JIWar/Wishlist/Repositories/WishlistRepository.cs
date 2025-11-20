@@ -46,12 +46,12 @@ namespace Jiwar.Repositories
 
         public async Task<bool> RemoveAsync(int id)
         {
-            var item = await _context.WishList.FindAsync(id);
+            var item = await _context.WishLists.FindAsync(id);
 
             if (item == null)
                 return false;
 
-            _context.WishList.Remove(item);
+            _context.WishLists.Remove(item);
             await _context.SaveChangesAsync();
             return true;
         }

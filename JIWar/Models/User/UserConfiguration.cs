@@ -28,10 +28,8 @@ namespace GEWAR.Configurations
                    .HasMaxLength(150);
 
             builder.Property(u => u.ProfilePicURL)
-                   .HasMaxLength(250);
+                   .HasMaxLength(250).IsRequired(false);
 
-            builder.Property(u => u.ProfilePicName)
-                   .HasMaxLength(150);
 
             builder.Property(u => u.UserTypeEnum)
        .HasConversion<string>()
