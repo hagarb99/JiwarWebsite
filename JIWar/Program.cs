@@ -47,7 +47,6 @@ namespace Jiwar
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
-                app.UseOpenApi();
                 app.MapOpenApi();
                 app.UseSwaggerUI();
             }
