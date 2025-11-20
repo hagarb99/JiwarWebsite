@@ -1,7 +1,7 @@
 ﻿using System;
 using GEWAR;
 using GEWAR.Models;
-using Jiwar.DTOs;
+using Jiwar.DTOs.WishlistDTOs;
 using Microsoft.EntityFrameworkCore;
 
 namespace Jiwar.Repositories

@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Jiwar.DTOs;
 using Jiwar.Repositories;
 using Microsoft.AspNetCore.Mvc;
+using Jiwar.DTOs.BookingDTOs;
 namespace Jiwar.Controllers
 {
    

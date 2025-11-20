@@ -1,4 +1,4 @@
-﻿using Jiwar.DTOs;
+﻿using Jiwar.DTOs.WishlistDTOs;
 using Jiwar.Repositories;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

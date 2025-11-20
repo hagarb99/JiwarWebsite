@@ -1,4 +1,4 @@
-﻿using Jiwar.DTOs;
+﻿using Jiwar.DTOs.BookingDTOs;
 
 namespace Jiwar.Repositories
 {

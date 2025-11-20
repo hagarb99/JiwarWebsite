@@ -1,4 +1,4 @@
-﻿namespace Jiwar.DTOs
+﻿namespace Jiwar.DTOs.WishlistDTOs
 {
     public class AddWishlistDto
     {
