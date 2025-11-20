@@ -23,7 +23,6 @@ namespace Jiwar.Account.Services
                 UserName = dto.Username,
                 Name = dto.Name,
                 Email = dto.Email,
-                //UserTypeEnum = dto.UserType,
                 Role = dto.Role,
                 PhoneNumber = dto.PhoneNumber,
                 RegistrationDate = DateTime.UtcNow
@@ -38,16 +37,16 @@ namespace Jiwar.Account.Services
     );
 
             // Assign role to the user
-            await userManager.AddToRoleAsync(user, dto.Role);
+            //await userManager.AddToRoleAsync(user, dto.Role);
             // Get the role from Identity
-            var roles = await userManager.GetRolesAsync(user);
+            //var roles = await userManager.GetRolesAsync(user);
             return ResultViewModel<UserResponseDTO>.Ok("User registered successfully.", 
                 new UserResponseDTO
             {
                 Id = user.Id,
                 Name = user.Name,
                 Email = user.Email,
-                Role = roles.FirstOrDefault()
+                Role = user.Role,
             });
 
         }
@@ -64,7 +63,7 @@ namespace Jiwar.Account.Services
 
             ////////////////////////////////////////////////////////////
             //roles
-            var roles = await userManager.GetRolesAsync(user);
+            //var roles = await userManager.GetRolesAsync(user);
             return ResultViewModel<UserResponseDTO>.Ok("Login successful.",
                 new UserResponseDTO
                 {
@@ -72,7 +71,7 @@ namespace Jiwar.Account.Services
                 Name = user.Name,
                 Email = user.Email,
                 ProfilePicURL = user.ProfilePicURL,
-                Role = roles.FirstOrDefault()
+                Role = user.Role
 
             });
         }
