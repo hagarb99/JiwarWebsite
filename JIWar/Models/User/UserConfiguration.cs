@@ -31,10 +31,14 @@ namespace GEWAR.Configurations
                    .HasMaxLength(250).IsRequired(false);
 
 
-            builder.Property(u => u.UserTypeEnum)
-       .HasConversion<string>()
-       .HasMaxLength(50)
-       .IsRequired();
+            builder.Property(u => u.Role)
+                 .HasMaxLength(50)
+                .IsRequired();
+
+            builder.Property(u => u.Role)
+                .HasColumnType("nvarchar(50)")
+                   .IsRequired();
+
 
 
             builder.Property(u => u.RegistrationDate)

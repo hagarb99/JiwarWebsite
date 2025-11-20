@@ -17,7 +17,7 @@ namespace GEWAR.Models
         public DateTime RegistrationDate { get; set; }
         [NotMapped]
         public string SentMessages { get; internal set; }
-        public UserTypeEnum UserTypeEnum { get; set; }
+        public string Role { get; set; }
         public virtual PropertyOwner propertyOwner { get; set; }
         
 

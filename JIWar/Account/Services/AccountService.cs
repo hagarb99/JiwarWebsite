@@ -24,15 +24,21 @@ namespace Jiwar.Account.Services
                 Name = dto.Name,
                 Email = dto.Email,
                 //UserTypeEnum = dto.UserType,
+                Role = dto.Role,
                 PhoneNumber = dto.PhoneNumber,
                 RegistrationDate = DateTime.UtcNow
             };
             var result = await userManager.CreateAsync(user, dto.Password);
             if (!result.Succeeded)
-                ResultViewModel<string>.Fail(string.Join("; ", result.Errors.Select(e => e.Description)));
+                //return ResultViewModel<string>
+                //      .Fail(string.Join("; ", result.Errors.Select(e => e.Description)));
+
+          return  ResultViewModel<UserResponseDTO>.Fail(
+        string.Join("; ", result.Errors.Select(e => e.Description))
+    );
 
             // Assign role to the user
-            await userManager.AddToRoleAsync(user, dto.Role.ToString());
+            await userManager.AddToRoleAsync(user, dto.Role);
             // Get the role from Identity
             var roles = await userManager.GetRolesAsync(user);
             return ResultViewModel<UserResponseDTO>.Ok("User registered successfully.", 
@@ -54,12 +60,12 @@ namespace Jiwar.Account.Services
 
             var result = await signInManager.CheckPasswordSignInAsync(user, dto.Password, false);
             if (!result.Succeeded)
-                ResultViewModel<UserResponseDTO>.Fail("Your Account under reviewing");
+              return  ResultViewModel<UserResponseDTO>.Fail("Your Account under reviewing");
 
             ////////////////////////////////////////////////////////////
             //roles
             var roles = await userManager.GetRolesAsync(user);
-            return ResultViewModel<UserResponseDTO>.Ok("User registered successfully.",
+            return ResultViewModel<UserResponseDTO>.Ok("Login successful.",
                 new UserResponseDTO
                 {
                 Id = user.Id,
