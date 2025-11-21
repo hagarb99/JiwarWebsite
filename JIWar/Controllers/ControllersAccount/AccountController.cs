@@ -11,9 +11,9 @@ namespace Jiwar.Account
     [ApiController]
     public class AccountController : ControllerBase
     {
-        private readonly IAccountService accountService;
+        private readonly AccountService accountService;
 
-        public AccountController(IAccountService accountService)
+        public AccountController(AccountService accountService)
         {
             this.accountService = accountService;
         }

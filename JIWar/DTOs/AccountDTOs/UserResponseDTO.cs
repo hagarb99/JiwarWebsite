@@ -10,6 +10,7 @@ namespace Jiwar.Account
         //public UserTypeEnum UserType { get; set; }
         public string ProfilePicURL { get; set; }
         public string Role { get; set; }
-        
+        public string Token { get; set; }
+
     }
 }
