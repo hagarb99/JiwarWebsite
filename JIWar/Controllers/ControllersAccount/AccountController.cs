@@ -1,8 +1,12 @@
-﻿using Jiwar.Account.Services;
-using Jiwar.Account.DTOs;
+﻿using Jiwar.Account.DTOs;
+using Jiwar.Account.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 using System;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 
 
 namespace Jiwar.Account
@@ -12,10 +16,12 @@ namespace Jiwar.Account
     public class AccountController : ControllerBase
     {
         private readonly AccountService accountService;
+        private readonly IConfiguration _config;
 
-        public AccountController(AccountService accountService)
+        public AccountController(AccountService accountService, IConfiguration config)
         {
             this.accountService = accountService;
+            _config = config;
         }
 
         [HttpPost("register")]
@@ -46,11 +52,13 @@ namespace Jiwar.Account
 
             try
             {
-                if (dto == null)
-                    return BadRequest("Request body is empty");
-
                 var userResponse = await accountService.LoginAsync(dto);
-                return Ok(userResponse);
+                if (!userResponse.Success)
+                    return Unauthorized(userResponse);
+                return Ok(new
+                {
+                    user = userResponse.Data
+                });
             }
             catch (Exception ex)
             {

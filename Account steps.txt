@@ -6,3 +6,7 @@ Register:
 4-accountservice
 4-accountcontroller
 5-add service in program
+
+Token:
+1- install : -Microsoft.AspNetCore.Authentication.JwtBearer
+- System.IdentityModel.Tokens.Jwt.

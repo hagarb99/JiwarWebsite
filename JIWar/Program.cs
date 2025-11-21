@@ -5,12 +5,16 @@ using GEWAR.Models.Configurations;
 using Jiwar.Account;
 using Jiwar.Account.DTOs;
 using Jiwar.Account.Services;
+using Jiwar.Controllers;
 using Jiwar.Models;
 using Jiwar.Models.Offers;
 using Jiwar.Repositories;
 using JIWAR.Models;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 
 
@@ -38,6 +42,32 @@ namespace Jiwar
         sqlOptions => sqlOptions.EnableRetryOnFailure()
     ));
 
+
+            var key = builder.Configuration["Jwt:Key"];
+            var issuer = builder.Configuration["Jwt:Issuer"];
+            var audience = builder.Configuration["Jwt:Audience"];
+
+            builder.Services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(options =>
+            {
+                var secKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key));
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = secKey,
+                    ValidateIssuer = false, // أو true واستخدمي issuer
+                    ValidateAudience = false, // أو true واستخدمي audience
+                    ClockSkew = TimeSpan.Zero
+                };
+            });
+
+
+
+
             builder.Services.AddIdentity<User, IdentityRole>()
             .AddEntityFrameworkStores<GiwarContext>()
              .AddDefaultTokenProviders();
@@ -46,6 +76,8 @@ namespace Jiwar
             builder.Services.AddScoped<IBookingService, BookingService>();
             builder.Services.AddScoped<IBookingRepository, BookingRepository>();
 
+
+            builder.Services.AddScoped<TokenService>();
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -62,6 +94,8 @@ namespace Jiwar
 
             app.UseAuthentication();
             app.UseAuthorization();
+            //Authorization: Bearer <token>
+
 
 
             app.MapControllers();

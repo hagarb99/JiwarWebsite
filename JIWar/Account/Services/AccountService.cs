@@ -1,6 +1,7 @@
 ﻿
 using GEWAR.Models;
 using Jiwar.Account.DTOs;
+using Jiwar.Controllers;
 using Jiwar.Helpers;
 using Microsoft.AspNetCore.Identity;
 using System.Data;
@@ -11,10 +12,12 @@ namespace Jiwar.Account.Services
     {
         private readonly UserManager<User> userManager;
         private readonly SignInManager<User> signInManager;
-        public AccountService(UserManager<User> userManager, SignInManager<User> signInManager)
+        private readonly TokenService _tokenService;
+        public AccountService(UserManager<User> userManager, SignInManager<User> signInManager, TokenService tokenService)
         {
             this.userManager = userManager;
             this.signInManager = signInManager;
+            _tokenService = tokenService;
         }
         public async Task<ResultViewModel<UserResponseDTO>> RegisterAsync(RegisterDto dto)
         {
@@ -29,17 +32,13 @@ namespace Jiwar.Account.Services
             };
             var result = await userManager.CreateAsync(user, dto.Password);
             if (!result.Succeeded)
-                //return ResultViewModel<string>
-                //      .Fail(string.Join("; ", result.Errors.Select(e => e.Description)));
+            {
+                return ResultViewModel<UserResponseDTO>.Fail(
+         string.Join("; ", result.Errors.Select(e => e.Description))
+     );
 
-          return  ResultViewModel<UserResponseDTO>.Fail(
-        string.Join("; ", result.Errors.Select(e => e.Description))
-    );
-
-            // Assign role to the user
-            //await userManager.AddToRoleAsync(user, dto.Role);
-            // Get the role from Identity
-            //var roles = await userManager.GetRolesAsync(user);
+            }
+       
             return ResultViewModel<UserResponseDTO>.Ok("User registered successfully.", 
                 new UserResponseDTO
             {
@@ -64,6 +63,8 @@ namespace Jiwar.Account.Services
             ////////////////////////////////////////////////////////////
             //roles
             //var roles = await userManager.GetRolesAsync(user);
+            var token = _tokenService.CreateToken(user);
+
             return ResultViewModel<UserResponseDTO>.Ok("Login successful.",
                 new UserResponseDTO
                 {
@@ -71,9 +72,9 @@ namespace Jiwar.Account.Services
                 Name = user.Name,
                 Email = user.Email,
                 ProfilePicURL = user.ProfilePicURL,
-                Role = user.Role
-
-            });
+                Role = user.Role,
+                Token = token
+                });
         }
 
         public async Task<ResultViewModel<string>> ChangePasswordAsync(ChangePasswordDto dto)
@@ -131,9 +132,7 @@ namespace Jiwar.Account.Services
 
             var result = await userManager.UpdateAsync(user);
             if (!result.Succeeded)
-                ResultViewModel<string>.Fail(string.Join("; ", result.Errors.Select(e => e.Description)));
-
-
+                return null;
             var roles = await userManager.GetRolesAsync(user);
 
             return new UserResponseDTO
@@ -142,7 +141,7 @@ namespace Jiwar.Account.Services
                 Name = user.Name,
                 Email = user.Email,
                 ProfilePicURL = user.ProfilePicURL,
-                Role = roles.FirstOrDefault()
+                Role = user.Role
             };
         }
 
