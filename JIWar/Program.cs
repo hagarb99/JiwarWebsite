@@ -33,6 +33,8 @@ namespace Jiwar
         builder.Configuration.GetConnectionString("DefaultConnection"),
         sqlOptions => sqlOptions.EnableRetryOnFailure()
     ));
+            builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));//aya
+            builder.Services.AddScoped<IBookingRepository, BookingRepository>();//aya
 
             builder.Services.AddIdentity<User, IdentityRole>()
             .AddEntityFrameworkStores<GiwarContext>()
@@ -40,9 +42,10 @@ namespace Jiwar
            builder.Services.AddScoped<IAccountService, AccountService>();
             builder.Services.AddScoped<IWishlistRepository, WishlistRepository>();
             builder.Services.AddScoped<IBookingService, BookingService>();
-            builder.Services.AddScoped<IBookingRepository, BookingRepository>();
+         //   builder.Services.AddScoped<IBookingRepository, BookingRepository>();
 
             var app = builder.Build();
+ 
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())

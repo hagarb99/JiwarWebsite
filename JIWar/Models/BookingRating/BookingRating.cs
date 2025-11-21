@@ -1,4 +1,5 @@
 ﻿using GEWAR.Models;
+using Jiwar.Models.Booking;
 using System;
 using System.Collections.Generic;
 using System.Linq;

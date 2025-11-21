@@ -1,5 +1,4 @@
-﻿using GEWAR.Models;
-using JIWAR.Models;
+﻿using JIWAR.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System;
@@ -7,6 +6,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using GEWAR.Models;
+
 
 namespace Jiwar.Models
 {
