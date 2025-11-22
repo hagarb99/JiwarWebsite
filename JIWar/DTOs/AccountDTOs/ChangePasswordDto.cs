@@ -1,9 +1,11 @@
 ﻿namespace Jiwar.Account.DTOs
 {
-    public class ChangePasswordDto
-    {
-        public string UserId { get; set; }
+   
+        public class ChangePasswordDto
+        {
+        internal object UserId;
         public string CurrentPassword { get; set; }
-        public string NewPassword { get; set; }
+         public string NewPassword { get; set; }
+        }
+
     }
-}

@@ -1,5 +1,6 @@
 ﻿using Jiwar.Account.DTOs;
 using Jiwar.Account.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
@@ -67,8 +68,23 @@ namespace Jiwar.Account
         }
 
 
+        [HttpPost("forget-password")]
+        public async Task<IActionResult> ForgetPassword([FromBody] ForgetPasswordDto dto)
+        {
+            var result = await accountService.ForgetPasswordAsync(dto);
+            return Ok(result);
+        }
+
+        [HttpPost("reset-password")]
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto dto)
+        {
+            var result = await accountService.ResetPasswordAsync(dto);
+            return Ok(result);
+        }
+
+        [Authorize] // because user must be logged in
         [HttpPost("change-password")]
-        public async Task<IActionResult> ChangePassword(ChangePasswordDto dto)
+        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDto dto)
         {
             var result = await accountService.ChangePasswordAsync(dto);
 
@@ -77,18 +93,7 @@ namespace Jiwar.Account
 
             return Ok(new { message = result.Message });
         }
-        [HttpPost("forget-password")]
-        public async Task<IActionResult> ForgetPassword([FromBody] ForgetPasswordDto dto)
-        {
-            var result = await accountService.ForgetPasswordAsync(dto);
-            return Ok(result);
-        }
-        [HttpPost("reset-password")]
-        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto dto)
-        {
-            var result = await accountService.ResetPasswordAsync(dto);
-            return Ok(result);
-        }
+
 
         [HttpPut("edit-profile")]
         public async Task<IActionResult> EditProfile([FromBody] EditProfileDto dto)
