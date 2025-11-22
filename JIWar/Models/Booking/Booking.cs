@@ -1,4 +1,5 @@
-﻿using JIWAR.Models;
+﻿using GEWAR.Models;
+using JIWAR.Models;
 //using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System;
 using System.Collections.Generic;
@@ -6,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace GEWAR.Models
+namespace Jiwar.Models.Booking
 {
     public partial class Booking : BaseModel
     {

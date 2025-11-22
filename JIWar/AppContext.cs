@@ -2,6 +2,7 @@
 using GEWAR.Models;
 using GEWAR.Models.Configurations;
 using Jiwar.Models;
+using Jiwar.Models.Booking;
 using Jiwar.Models.Offers;
 using JIWAR.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;

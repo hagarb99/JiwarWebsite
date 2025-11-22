@@ -1,4 +1,4 @@
-﻿using GEWAR.Models;
+﻿using Jiwar.Models.Booking;
 
 namespace GEWAR.Models
 {
