@@ -1,14 +1,15 @@
-﻿using GEWAR.Models;
+﻿//using GEWAR.Models;
+//using Jiwar.Models;
 
-namespace Jiwar.Repositories
-{
-    public interface IBookingRepository
-    {
-        Task<Booking> GetByIdAsync(int id);
-        Task<List<Booking>> GetAllAsync();
-        Task<Booking> AddAsync(Booking booking);
-        Task<bool> UpdateAsync(Booking booking);
-        Task<bool> DeleteAsync(int id);
-    }
+//namespace Jiwar.Repositories
+//{
+//    public interface IBookingRepository
+//    {
+//        Task<BookingService> GetByIdAsync(int id);
+//        Task<List<BookingService>> GetAllAsync();
+//        Task<BookingService> AddAsync(BookingService booking);
+//        Task<bool> UpdateAsync(BookingService booking);
+//        Task<bool> DeleteAsync(int id);
+//    }
 
-}
+//}

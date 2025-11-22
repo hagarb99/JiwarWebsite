@@ -1,5 +1,4 @@
-﻿using Jiwar.Models.Booking;
-
+﻿using Jiwar.Models;
 namespace GEWAR.Models
 {
     public class Report : BaseModel

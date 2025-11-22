@@ -42,7 +42,7 @@ namespace Jiwar
         sqlOptions => sqlOptions.EnableRetryOnFailure()
     ));
             builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));//aya
-            builder.Services.AddScoped<IBookingRepository, BookingRepository>();//aya
+            //builder.Services.AddScoped<IBookingRepository, BookingRepository>();//aya
 
 
             var key = builder.Configuration["Jwt:Key"];
@@ -72,7 +72,7 @@ namespace Jiwar
              .AddDefaultTokenProviders();
            builder.Services.AddScoped<AccountService>();
             builder.Services.AddScoped<IWishlistRepository, WishlistRepository>();
-            builder.Services.AddScoped<IBookingService, BookingService>();
+            //builder.Services.AddScoped<IBookingService, BookingService>();
          //   builder.Services.AddScoped<IBookingRepository, BookingRepository>();
 
 

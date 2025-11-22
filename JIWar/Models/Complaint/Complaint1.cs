@@ -1,5 +1,5 @@
 ﻿using Jiwar.Enum;
-using Jiwar.Models.Booking;
+using Jiwar.Models;
 
 namespace GEWAR.Models
 {

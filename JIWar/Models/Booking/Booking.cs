@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Jiwar.Models.Booking
+namespace Jiwar.Models
 {
     public partial class Booking : BaseModel
     {
