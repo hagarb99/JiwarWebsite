@@ -72,8 +72,6 @@ namespace Jiwar
              .AddDefaultTokenProviders();
            builder.Services.AddScoped<AccountService>();
             builder.Services.AddScoped<IWishlistRepository, WishlistRepository>();
-            //builder.Services.AddScoped<IBookingService, BookingService>();
-         //   builder.Services.AddScoped<IBookingRepository, BookingRepository>();
 
 
             builder.Services.AddScoped<TokenService>();
@@ -99,21 +97,6 @@ namespace Jiwar
 
 
             app.MapControllers();
-
-            // Create roles once at startup
-            //using (var scope = app.Services.CreateScope())
-            //{
-            //    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-            //    foreach (var role in System.Enum.GetNames(typeof(UserTypeEnum)))
-            //    {
-            //        if (!await roleManager.RoleExistsAsync(role))
-            //        {
-            //            await roleManager.CreateAsync(new IdentityRole(role));
-            //        }
-            //    }
-            //}
-            //await CreateRoles();
-
             app.Run();
         }
     }

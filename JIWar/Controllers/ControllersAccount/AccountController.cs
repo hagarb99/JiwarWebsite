@@ -1,7 +1,9 @@
-﻿using Jiwar.Account.DTOs;
+﻿using GEWAR.Models;
+using Jiwar.Account.DTOs;
 using Jiwar.Account.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System;
@@ -18,11 +20,13 @@ namespace Jiwar.Account
     {
         private readonly AccountService accountService;
         private readonly IConfiguration _config;
+        private readonly UserManager<User> userManager;
 
-        public AccountController(AccountService accountService, IConfiguration config)
+        public AccountController(AccountService accountService, IConfiguration config,UserManager<User> userManager)
         {
             this.accountService = accountService;
-            _config = config;
+            this._config = config;
+            this.userManager = userManager;
         }
 
         [HttpPost("register")]
@@ -78,6 +82,7 @@ namespace Jiwar.Account
         [HttpPost("reset-password")]
         public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto dto)
         {
+            dto.Token = dto.Token.Replace(" ", "+");
             var result = await accountService.ResetPasswordAsync(dto);
             return Ok(result);
         }
@@ -86,7 +91,13 @@ namespace Jiwar.Account
         [HttpPost("change-password")]
         public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDto dto)
         {
-            var result = await accountService.ChangePasswordAsync(dto);
+            //var result = await accountService.ChangePasswordAsync(dto);
+            var user = await userManager.GetUserAsync(User);
+
+            if (user == null)
+                return Unauthorized();
+
+            var result = await accountService.ChangePasswordAsync(user, dto);
 
             if (!result.Success)
                 return BadRequest(new { message = result.Message });
