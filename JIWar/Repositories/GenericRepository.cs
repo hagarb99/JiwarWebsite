@@ -8,11 +8,17 @@ namespace Jiwar.Repositories
     {
         protected readonly DbContext _context;
         protected readonly DbSet<T> _dbSet;
+        private AppContext context;
 
         public GenericRepository(DbContext context)
         {
             _context = context;
             _dbSet = _context.Set<T>();
+        }
+
+        public GenericRepository(AppContext context)
+        {
+            this.context = context;
         }
 
         public async Task<IEnumerable<T>> GetAllAsync()

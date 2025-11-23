@@ -75,6 +75,10 @@ namespace Jiwar
             //builder.Services.AddScoped<IBookingService, BookingService>();
          //   builder.Services.AddScoped<IBookingRepository, BookingRepository>();
 
+         //i ADD IT ZEINAB SHAHAT (TO TRY TO RESOLVE IPropertyService)
+         builder.Services.AddScoped<IPropertyService, IPropertyService>();
+
+
 
             builder.Services.AddScoped<TokenService>();
             var app = builder.Build();
