@@ -1,4 +1,5 @@
 ﻿using Jiwar.Enum;
+using Jiwar.Models;
 
 namespace GEWAR.Models
 {

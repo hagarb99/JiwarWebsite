@@ -1,4 +1,5 @@
 ﻿using GEWAR.Models;
+using Jiwar.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,9 +11,9 @@ namespace JIWAR.Models
 
     public class BookingRating : BaseModel
     {
-        
 
-        
+
+
         public int BookingID { get; set; } // FK → Booking.BookingID
 
     

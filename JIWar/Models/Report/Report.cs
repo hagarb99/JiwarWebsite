@@ -1,5 +1,4 @@
-﻿using GEWAR.Models;
-
+﻿using Jiwar.Models;
 namespace GEWAR.Models
 {
     public class Report : BaseModel

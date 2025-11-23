@@ -14,11 +14,10 @@ namespace GEWAR.Models
     {
         public string Name { get; set; }
         public string ProfilePicURL { get; set; }
-        public string ProfilePicName { get; set; }
         public DateTime RegistrationDate { get; set; }
         [NotMapped]
         public string SentMessages { get; internal set; }
-        public UserTypeEnum UserTypeEnum { get; set; }
+        public string Role { get; set; }
         public virtual PropertyOwner propertyOwner { get; set; }
         
 
