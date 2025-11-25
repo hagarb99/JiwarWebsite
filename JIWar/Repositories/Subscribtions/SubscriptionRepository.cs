@@ -24,5 +24,11 @@ namespace Jiwar.Repositories
         {
             return await _dbSet.FirstOrDefaultAsync(s => s.Id == id);
         }
+
+        public Task SaveAsync()
+        {
+            throw new NotImplementedException();
+        }
     }
 }
+

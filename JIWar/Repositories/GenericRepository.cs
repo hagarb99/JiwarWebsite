@@ -8,7 +8,7 @@ namespace Jiwar.Repositories
     public class GenericRepository<T> : IGenericRepository<T> where T : class
     {
         private readonly GiwarContext giwarContext;
-        private readonly DbSet<T> _dbSet;
+        protected readonly DbSet<T> _dbSet;
 
         public GenericRepository(GiwarContext giwarContext)
         {
