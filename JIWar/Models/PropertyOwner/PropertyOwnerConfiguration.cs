@@ -13,7 +13,7 @@ public class PropertyOwnerConfiguration : IEntityTypeConfiguration<PropertyOwner
         builder.HasKey(po => po.Id);
 
         // 🔗 علاقة مع User (One-to-One)
-        builder.HasOne(po => po.user)
+        builder.HasOne(po => po.Owneruser)
                .WithOne(u => u.propertyOwner)
                .HasForeignKey<PropertyOwner>(po => po.UserID)
                .OnDelete(DeleteBehavior.Restrict);

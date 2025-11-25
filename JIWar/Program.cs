@@ -44,14 +44,11 @@ namespace Jiwar
         builder.Configuration.GetConnectionString("DefaultConnection"),
         sqlOptions => sqlOptions.EnableRetryOnFailure()
     ));
-            builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));//aya
-            builder.Services.AddScoped<IBookingRepository, BookingRepository>();//aya
-
-
+            builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+            builder.Services.AddScoped<IBookingRepository, BookingRepository>();
             var key = builder.Configuration["Jwt:Key"];
             var issuer = builder.Configuration["Jwt:Issuer"];
             var audience = builder.Configuration["Jwt:Audience"];
-
             builder.Services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -69,26 +66,17 @@ namespace Jiwar
                     ClockSkew = TimeSpan.Zero
                 };
             });
-
             builder.Services.AddIdentity<User, IdentityRole>()
             .AddEntityFrameworkStores<GiwarContext>()
              .AddDefaultTokenProviders();
            builder.Services.AddScoped<AccountService>();
             builder.Services.AddScoped<IWishlistRepository, WishlistRepository>();
-
-         //i ADD IT ZEINAB SHAHAT (TO TRY TO RESOLVE IPropertyService)
-         builder.Services.AddScoped<IPropertyService, IPropertyService>();
-
+            builder.Services.AddScoped<IPropertyRepository, PropertyRepository>();
+            builder.Services.AddScoped<IPropertyService, PropertyService>();
          builder.Services.AddScoped<ISubscriptionRepository, SubscriptionRepository>();
-         builder.Services.AddScoped<ISubscriptionService, SubscriptionService>(); // commented to try to resolve IPropertyService
-
-
-
-
+         builder.Services.AddScoped<ISubscriptionService, SubscriptionService>(); 
             builder.Services.AddScoped<TokenService>();
             var app = builder.Build();
- 
-
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
@@ -104,9 +92,6 @@ namespace Jiwar
             app.UseAuthentication();
             app.UseAuthorization();
             //Authorization: Bearer <token>
-
-
-
             app.MapControllers();
             app.Run();
         }

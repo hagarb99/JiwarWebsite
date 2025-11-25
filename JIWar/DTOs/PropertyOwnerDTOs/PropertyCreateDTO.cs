@@ -11,8 +11,8 @@ public class PropertyCreateDTO
     public int Rooms { get; set; }
     public int Bathrooms { get; set; }
     public double Area { get; set; }
-        public object OwnerId { get; internal set; }
-        public object CategoryId { get; internal set; }
+        public int OwnerId { get; set; }
+        public int CategoryId { get; set; }
     }
 
 }
