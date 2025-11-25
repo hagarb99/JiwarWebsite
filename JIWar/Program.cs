@@ -35,7 +35,15 @@ namespace Jiwar
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
             builder.Services.AddOpenApi();
-
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAll", policy =>
+                {
+                    policy.AllowAnyOrigin()
+                          .AllowAnyMethod()
+                          .AllowAnyHeader();
+                });
+            });
 
 
             // Database
@@ -99,6 +107,7 @@ namespace Jiwar
 
             app.UseHttpsRedirection();
             app.UseAuthentication();
+            app.UseCors("AllowAll");
             app.UseAuthorization();
             //Authorization: Bearer <token>
             app.MapControllers();
