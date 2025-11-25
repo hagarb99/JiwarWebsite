@@ -1,0 +1,76 @@
+Wishlist Flow (Add / Remove)
+1️⃣ Add to Wishlist
+
+Step-by-step:
+
+المستخدم مسجل دخول ويضغط "Add to Wishlist" على property معين.
+
+الكونترولر بياخد userId من الـ token.
+
+Service يستدعي Repository:
+
+أولاً يتحقق إذا الـ property موجودة في جدول Properties.
+
+بعدين يتحقق إذا الـ property موجودة بالفعل في Wishlist لنفس المستخدم.
+
+إذا كله تمام → يضيف العنصر ويعطي Added to wishlist.
+
+لو فيه مشكلة (Property مش موجودة أو Duplicate) → بيرجع BadRequest مع رسالة واضحة.
+
+[User Clicks Add] 
+        |
+        v
+[Controller: Get UserId from Token]
+        |
+        v
+[Service: AddToWishlist(userId, propertyId)]
+        |
+        v
+[Repository Check: Property exists?] ----No----> [Return Error: Property does not exist]
+        |
+       Yes
+        |
+[Repository Check: Already in Wishlist?] --Yes--> [Return Error: Already in wishlist]
+        |
+       No
+        |
+[Repository Add Item to DB]
+        |
+        v
+[Return Success: "Added to wishlist"]
+
+
+
+2️⃣ Remove from Wishlist
+
+Step-by-step:
+
+المستخدم يضغط "Remove" على property.
+
+الكونترولر بياخد userId من الـ token.
+
+Service يستدعي Repository:
+
+يتحقق إذا العنصر موجود ومرتبط بنفس المستخدم.
+
+إذا موجود → يشيل العنصر ويرجع Item removed from wishlist.
+
+لو مش موجود أو مش تابع للمستخدم → يرجع NotFound مع رسالة "Item not found or not for this user".
+
+[User Clicks Remove] 
+        |
+        v
+[Controller: Get UserId from Token]
+        |
+        v
+[Service: RemoveFromWishlist(userId, propertyId)]
+        |
+        v
+[Repository Check: Item exists & belongs to user?] --No--> [Return NotFound: "Item not found or not for this user"]
+        |
+       Yes
+        |
+[Repository Remove Item from DB]
+        |
+        v
+[Return Success: "Item removed from wishlist"]

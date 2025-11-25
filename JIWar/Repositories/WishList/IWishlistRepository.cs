@@ -4,9 +4,9 @@ namespace Jiwar.Repositories
 {
     public interface IWishlistRepository
     {
-        Task AddAsync(AddWishlistDto dto);
+        Task AddAsync(string userId, int propertyId, string? notes = null);
         Task<List<WishlistDto>> GetUserWishlist(string userId);
-        Task<bool> RemoveAsync(int id);
+        Task<bool> RemoveAsync(string userId, int propertyId);
     }
-
 }
+

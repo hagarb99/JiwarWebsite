@@ -1,8 +1,7 @@
-﻿using System;
-using GEWAR;
+﻿using Jiwar.DTOs.WishlistDTOs;
 using GEWAR.Models;
-using Jiwar.DTOs.WishlistDTOs;
 using Microsoft.EntityFrameworkCore;
+using GEWAR;
 
 namespace Jiwar.Repositories
 {
@@ -15,13 +14,24 @@ namespace Jiwar.Repositories
             _context = context;
         }
 
-        public async Task AddAsync(AddWishlistDto dto)
+        public async Task AddAsync(string userId, int propertyId, string? notes = null)
         {
+            // Check if property exists in Properties table
+            var propertyExists = await _context.Properties.AnyAsync(p => p.Id == propertyId);
+            if (!propertyExists)
+                throw new Exception("Property does not exist.");
+
+            // Check if already in wishlist
+            var alreadyAdded = await _context.WishLists
+                .AnyAsync(w => w.UserID == userId && w.PropertyID == propertyId);
+            if (alreadyAdded)
+                throw new Exception("Property is already in wishlist.");
+
             var item = new WishList
             {
-                UserID = dto.UserID,
-                PropertyID = dto.PropertyID,
-                Notes = dto.Notes,
+                UserID = userId,
+                PropertyID = propertyId,
+                Notes = notes,
                 AddedDate = DateTime.UtcNow
             };
 
@@ -38,23 +48,22 @@ namespace Jiwar.Repositories
                     Id = w.Id,
                     UserID = w.UserID,
                     PropertyID = w.PropertyID,
-                    AddedDate = w.AddedDate,
-                    Notes = w.Notes
+                    Notes = w.Notes,
+                    AddedDate = w.AddedDate
                 })
                 .ToListAsync();
         }
 
-        public async Task<bool> RemoveAsync(int id)
+        public async Task<bool> RemoveAsync(string userId, int propertyId)
         {
-            var item = await _context.WishLists.FindAsync(id);
+            var item = await _context.WishLists
+                .FirstOrDefaultAsync(w => w.UserID == userId && w.PropertyID == propertyId);
 
-            if (item == null)
-                return false;
+            if (item == null) return false;
 
             _context.WishLists.Remove(item);
             await _context.SaveChangesAsync();
             return true;
         }
     }
-
 }
