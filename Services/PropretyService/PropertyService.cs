@@ -1,6 +1,11 @@
+using Jiwar.Models;
+using Jiwar.Repositories.Interfaces;
+using Jiwar.Services.Interfaces;
+namespace Jiwar.Service
+{
 public class PropertyService : IPropertyService
 {
-    private readonly IPropertyRepository _propertyRepo;
+   private readonly IPropertyRepository _propertyRepo;
 
     public PropertyService(IPropertyRepository propertyRepo)
     {
@@ -47,4 +52,5 @@ public class PropertyService : IPropertyService
     {
         return _propertyRepo.GetPropertyDetailsAsync(id);
     }
+}
 }

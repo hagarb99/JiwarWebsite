@@ -1,7 +1,7 @@
 using Jiwar.Models;
 using Jiwar.Enum;
 
-namespace Jiwar.Services
+namespace Jiwar.Service
 {
     public interface IPropertyService
     {
@@ -28,5 +28,6 @@ namespace Jiwar.Services
 
         // Update property status (Active / Inactive / Pending)
         Task UpdatePropertyStatusAsync(int id, PropEnum status);
+
     }
 }

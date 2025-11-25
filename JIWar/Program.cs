@@ -9,6 +9,7 @@ using Jiwar.Controllers;
 using Jiwar.Models;
 using Jiwar.Models.Offers;
 using Jiwar.Repositories;
+using Jiwar.Repositories.Interfaces;
 using JIWAR.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -78,6 +79,10 @@ namespace Jiwar
          //i ADD IT ZEINAB SHAHAT (TO TRY TO RESOLVE IPropertyService)
          builder.Services.AddScoped<IPropertyService, IPropertyService>();
 
+         builder.Services.AddScoped<ISubscriptionRepository, SubscriptionRepository>();
+        // builder.Services.AddScoped<ISubscriptionService, SubscriptionService>(); // commented to try to resolve IPropertyService
+
+
 
 
             builder.Services.AddScoped<TokenService>();
@@ -121,4 +126,5 @@ namespace Jiwar
             app.Run();
         }
     }
+
 }

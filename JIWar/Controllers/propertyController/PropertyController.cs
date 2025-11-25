@@ -2,12 +2,13 @@ using GEWAR.Models;
 using Microsoft.AspNetCore.Mvc;
 using JIWar.PropertyOwner;
 using Jiwar.Models;
+using Jiwar.Service;
 
 [ApiController]
 [Route("api/[controller]")]
 public class PropertyController : ControllerBase
 {
-    private readonly IPropertyService _propertyService;
+    private readonly IPropertyService propertyServices;
 
     public PropertyController(IPropertyService propertyService)
     {
@@ -68,9 +69,5 @@ public class PropertyController : ControllerBase
 }
 
 
-internal interface IPropertyService
-{
-    Task AddPropertyAsync(Property property);
-    Task<bool> DeletePropertyAsync(int id);
-    Task<bool> UpdatePropertyAsync(Property property);
-}
+
+
