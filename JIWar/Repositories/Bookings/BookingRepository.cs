@@ -9,22 +9,23 @@ using GEWAR.Models.Configurations;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using GEWAR.Models;
+using GEWAR;
 
 
 namespace Jiwar.Repositories
 {
     public class BookingRepository : IBookingRepository
     {
-        private readonly DbContext _context;
+        private readonly GiwarContext giwarContext;
 
-        public BookingRepository(DbContext context)
+        public BookingRepository(GiwarContext giwarContext)
         {
-            _context = context;
+            this.giwarContext = giwarContext;
         }
 
         public async Task<List<Booking>> GetAllAsync()
         {
-            return await _context.Set<Booking>()
+            return await giwarContext.Set<Booking>()
                 .Include(b => b.Customer)
                 .Include(b => b.Property)
                 .Include(b => b.Offer)
@@ -34,7 +35,7 @@ namespace Jiwar.Repositories
 
         public async Task<Booking> GetByIdAsync(int id)
         {
-            return await _context.Set<Booking>()
+            return await giwarContext.Set<Booking>()
                 .Include(b => b.Customer)
                 .Include(b => b.Property)
                 .Include(b => b.Offer)
@@ -44,24 +45,24 @@ namespace Jiwar.Repositories
 
         public async Task<Booking> AddAsync(Booking booking)
         {
-            await _context.Set<Booking>().AddAsync(booking);
-            await _context.SaveChangesAsync();
+            await giwarContext.Set<Booking>().AddAsync(booking);
+            await giwarContext.SaveChangesAsync();
             return booking;
         }
 
         public async Task<bool> UpdateAsync(Booking booking)
         {
-            _context.Set<Booking>().Update(booking);
-            return await _context.SaveChangesAsync() > 0;
+            giwarContext.Set<Booking>().Update(booking);
+            return await giwarContext.SaveChangesAsync() > 0;
         }
 
         public async Task<bool> DeleteAsync(int id)
         {
-            var booking = await _context.Set<Booking>().FindAsync(id);
+            var booking = await giwarContext.Set<Booking>().FindAsync(id);
             if (booking != null)
             {
-                _context.Set<Booking>().Remove(booking);
-                await _context.SaveChangesAsync();
+                giwarContext.Set<Booking>().Remove(booking);
+                 await giwarContext.SaveChangesAsync();
                 return true;
             }
             return false;
@@ -69,7 +70,7 @@ namespace Jiwar.Repositories
 
         public async Task<IEnumerable<Booking>> GetBookingsByCustomer(string customerId)
         {
-            return await _context.Set<Booking>()
+            return await giwarContext.Set<Booking>()
                 .Where(b => b.CustomerID == customerId)
                 .Include(b => b.Property)
                 .Include(b => b.Offer)
@@ -78,7 +79,7 @@ namespace Jiwar.Repositories
 
         public async Task<Booking> GetBookingWithRating(int id)
         {
-            return await _context.Set<Booking>()
+            return await giwarContext.Set<Booking>()
                 .Include(b => b.BookingRating)
                 .FirstOrDefaultAsync(b => b.Id == id);
         }
