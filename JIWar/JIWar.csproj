@@ -38,10 +38,7 @@
 	  <Folder Include="Repositories\BookingRating\" />
 	  <Folder Include="Repositories\Property\" />
 	  <Folder Include="Repositories\User\" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <Folder Include="Controllers\" />
+	  <Folder Include="Services\WishlistService\" />
 	</ItemGroup>
 
 </Project>
