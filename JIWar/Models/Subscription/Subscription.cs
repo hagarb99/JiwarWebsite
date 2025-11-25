@@ -20,8 +20,9 @@ namespace GEWAR.Models
         public PlanTypeEnum planTypeEnum { get; set; }
 
         public StatusEnum2 statusEnum2 { get; set; }
-
-       
+        public string Name { get; internal set; }
+        public decimal Price { get; internal set; }
+        public int DurationInMonths { get; internal set; }
     }
     }
 

@@ -12,7 +12,7 @@ namespace GEWAR.Models
     {
         public int PropertyID { get; set; }
         public int OwnerID { get; set; } // FK → PropertyOwner
-
+        public object OwnerId { get; internal set; }
         public string Address { get; set; }
         
         public decimal LocationLat { get; set; }
@@ -42,6 +42,11 @@ namespace GEWAR.Models
         //make relation-many prop-prop one prop owner
         //
         public virtual PropertyOwner PropertyOwner { get; set; }
-
+        public object Images { get; internal set; }
+        public object Category { get; internal set; }
+        public string Title { get; internal set; }
+        public object CategoryId { get; internal set; }
+        public string Description { get; internal set; }
+        public decimal Price { get; internal set; }
     }
 }
