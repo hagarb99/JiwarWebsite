@@ -10,10 +10,10 @@ namespace GEWAR.Configurations
         {
             builder.ToTable("Subscriptions");
 
-            // 🔑 Primary Key
+           
             builder.HasKey(s => s.Id);
 
-            // 🧱 Properties
+           
             builder.Property(s => s.planTypeEnum)
        .HasConversion<string>()
        .HasMaxLength(50)
