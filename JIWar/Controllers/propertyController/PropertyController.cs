@@ -67,7 +67,3 @@ public class PropertyController : ControllerBase
         return property != null ? Ok(property) : NotFound();
     }
 }
-
-
-
-
