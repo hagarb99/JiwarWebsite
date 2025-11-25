@@ -1,8 +1,9 @@
-using Jiwar.Services.Interfaces;
+using Jiwar.Services;
 using Jiwar.Repositories.Interfaces;
 using Jiwar.Models;
 using JIWar.PropertyOwner;
 using Microsoft.EntityFrameworkCore;
+using GEWAR.Models;
 
 namespace Jiwar.Services
 {
@@ -24,7 +25,7 @@ namespace Jiwar.Services
                 Id = s.Id,
                 Name = s.Name,
                 Price = s.Price,
-                DurationInMonths = s.
+                DurationInMonths = s.DurationInMonths
             });
         }
 
@@ -37,8 +38,8 @@ namespace Jiwar.Services
             {
                 Id = s.Id,
                 Name = s.Name,
-                Price = s.Price
-                DurationInMonths = s.D
+                Price = s.Price,
+                DurationInMonths = s.DurationInMonths
             };
         }
 

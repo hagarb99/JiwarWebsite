@@ -9,5 +9,6 @@ namespace Jiwar.Repositories.Interfaces
     {
         Task<IEnumerable<Subscription>> GetAllSubscriptionsAsync();
         Task<Subscription> GetSubscriptionByIdAsync(int id);
+        Task SaveAsync();
     }
 }
