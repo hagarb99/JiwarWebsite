@@ -1,4 +1,9 @@
-﻿using GEWAR;
+﻿using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using GEWAR;
 using GEWAR.Configurations;
 using GEWAR.Models;
 using GEWAR.Models.Configurations;
@@ -13,11 +18,6 @@ using Jiwar.Repositories.Interfaces;
 using Jiwar.Service;
 using Jiwar.Services;
 using JIWAR.Models;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
 
 
 
@@ -32,20 +32,19 @@ namespace Jiwar
             // Add services to the container.
 
             builder.Services.AddControllers();
-            // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-            builder.Services.AddOpenApi();
-
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+            builder.Services.AddOpenApi();
 
 
+
+            // Database
             builder.Services.AddDbContext<GiwarContext>(options =>
-    options.UseSqlServer(
-        builder.Configuration.GetConnectionString("DefaultConnection"),
-        sqlOptions => sqlOptions.EnableRetryOnFailure()
-    ));
-            builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
-            builder.Services.AddScoped<IBookingRepository, BookingRepository>();
+                 options.UseSqlServer(
+                builder.Configuration.GetConnectionString("DefaultConnection"),
+                sqlOptions => sqlOptions.EnableRetryOnFailure()
+                   ));
+            // Authentication & Identity
             var key = builder.Configuration["Jwt:Key"];
             var issuer = builder.Configuration["Jwt:Issuer"];
             var audience = builder.Configuration["Jwt:Audience"];
@@ -61,34 +60,44 @@ namespace Jiwar
                 {
                     ValidateIssuerSigningKey = true,
                     IssuerSigningKey = secKey,
-                    ValidateIssuer = false, 
-                    ValidateAudience = false, 
+                    ValidateIssuer = false,
+                    ValidateAudience = false,
                     ClockSkew = TimeSpan.Zero
                 };
             });
             builder.Services.AddIdentity<User, IdentityRole>()
-            .AddEntityFrameworkStores<GiwarContext>()
-             .AddDefaultTokenProviders();
-           builder.Services.AddScoped<AccountService>();
+           .AddEntityFrameworkStores<GiwarContext>()
+            .AddDefaultTokenProviders();
+
+            //Dependency Injection for Repositories and Services
+            // Generic
+            builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+            // Repositories
+            builder.Services.AddScoped<IBookingRepository, BookingRepository>();
             builder.Services.AddScoped<IWishlistRepository, WishlistRepository>();
             builder.Services.AddScoped<IPropertyRepository, PropertyRepository>();
+            builder.Services.AddScoped<ISubscriptionRepository, SubscriptionRepository>();
+            builder.Services.AddScoped<IReportRepository, ReportRepository>();
+
+            // Services
             builder.Services.AddScoped<IPropertyService, PropertyService>();
-         builder.Services.AddScoped<ISubscriptionRepository, SubscriptionRepository>();
-         builder.Services.AddScoped<ISubscriptionService, SubscriptionService>(); 
+            builder.Services.AddScoped<ISubscriptionService, SubscriptionService>();
+            builder.Services.AddScoped<IReportService, ReportService>();
+            builder.Services.AddScoped<AccountService>();
             builder.Services.AddScoped<TokenService>();
+
+            // Build App
             var app = builder.Build();
+            // Middleware Pipeline
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
-            {
-                app.MapOpenApi();
+            {              
                 app.UseSwagger();
                 app.UseSwaggerUI();
-                   
-
+                app.MapOpenApi();
             }
 
             app.UseHttpsRedirection();
-
             app.UseAuthentication();
             app.UseAuthorization();
             //Authorization: Bearer <token>
