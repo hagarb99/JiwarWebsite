@@ -1,8 +1,10 @@
 using GEWAR.Models;
-using Microsoft.AspNetCore.Mvc;
-using JIWar.PropertyOwner;
+using Jiwar.DTOs;
+using Jiwar.DTOs.PropertyDTOs;
 using Jiwar.Models;
 using Jiwar.Service;
+using JIWar.PropertyOwner;
+using Microsoft.AspNetCore.Mvc;
 
 [ApiController]
 [Route("api/[controller]")]
@@ -66,6 +68,32 @@ public class PropertyController : ControllerBase
         var property = await _propertyService.GetPropertyDetailsAsync(id); 
         return property != null ? Ok(property) : NotFound();
     }
+
+    [HttpGet("{id}/share")]
+    public async Task<IActionResult> Share(int id)
+    {
+        var property = await _propertyService.GetPropertyDetailsAsync(id);
+        if (property == null || property.IsDeleted) return NotFound();
+
+        var dto = new SharePreviewDTO
+        {
+            Url = $"https://yourdomain.com/properties/{id}",
+            Title = property.Title,
+            Description = property.Description,
+            ImageUrl = property.PropertyMedia?.FirstOrDefault()?.MediaURL,
+            Price = property.Price
+        };
+
+        return Ok(dto);
+    }
+
+    [HttpGet("browse")]
+    public async Task<IActionResult> Browse([FromQuery] PropertyFilterDTO filter)
+    {
+        var properties = await _propertyService.GetFilteredPropertiesAsync(filter);
+        return Ok(properties);
+    }
+
 }
 
 

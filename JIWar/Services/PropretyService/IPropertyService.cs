@@ -1,6 +1,7 @@
-using Jiwar.Models;
-using Jiwar.Enum;
 using GEWAR.Models;
+using Jiwar.DTOs.PropertyDTOs;
+using Jiwar.Enum;
+using Jiwar.Models;
 
 namespace Jiwar.Service
 {
@@ -31,5 +32,7 @@ namespace Jiwar.Service
        public Task UpdatePropertyStatusAsync(int id, PropEnum status);
        public Task SendMessageAsync(Chat chat);
         public Task<IEnumerable<Chat>> GetChatHistoryAsync(string senderId, string receiverId, int propertyId);
+
+        Task<IEnumerable<Property>> GetFilteredPropertiesAsync(PropertyFilterDTO filter);
     }
 }

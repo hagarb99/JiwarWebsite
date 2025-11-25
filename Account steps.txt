@@ -1,4 +1,4 @@
-
+﻿
 Register:
 1-registerdto
 2-UserResponseDto
@@ -12,5 +12,14 @@ Token:
 - System.IdentityModel.Tokens.Jwt.
 
 
-Taske:
-1-Wishlist:
+Task3:
+3-Next steps for frontend
+- اربطي الـ carousel بوسائط PropertyMedia
+- اعرض الخريطة لو فيه lat/lng
+- ارسم price history (Chart.js) من مصفوفة الأسعار
+- زر “Contact seller” يرسل لـ POST الشات ويعرض نجاح/فشل
+لو تحبي، أطلع لك نموذج استجابة JSON نهائي لواجهة التفاصيل بحيث تربطيه مباشرة في الفرونت.
+
+4-- Pagination
+- Mapping للـ DTO بدل ما ترجعي الكيان كامل
+- Validation 

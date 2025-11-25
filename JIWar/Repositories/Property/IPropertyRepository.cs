@@ -1,4 +1,5 @@
 using GEWAR.Models;
+using Jiwar.DTOs.PropertyDTOs;
 using Jiwar.Enum;
 using Jiwar.Models;
 using Jiwar.Repositories;
@@ -14,4 +15,6 @@ public interface IPropertyRepository : IGenericRepository<Property>
     Task UpdatePropertyStatusAsync(int id,  PropEnum statusEnum);
     Task SendMessageAsync(Chat chat);
     Task<IEnumerable<Chat>> GetChatHistoryAsync(string senderId, string receiverId, int propertyId);
+
+    Task<IEnumerable<Property>> GetFilteredPropertiesAsync(PropertyFilterDTO filter);
 }

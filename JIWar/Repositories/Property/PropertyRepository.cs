@@ -1,8 +1,9 @@
-using Microsoft.EntityFrameworkCore;
-using Jiwar.Models;
-using GEWAR.Models;
-using Jiwar.Enum;
 using GEWAR;
+using GEWAR.Models;
+using Jiwar.DTOs.PropertyDTOs;
+using Jiwar.Enum;
+using Jiwar.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace Jiwar.Repositories
 {
@@ -83,5 +84,39 @@ namespace Jiwar.Repositories
                 .OrderBy(c => c.SentDate)
                 .ToListAsync();
         }
+
+        public async Task<IEnumerable<Property>> GetFilteredPropertiesAsync(PropertyFilterDTO filter)
+        {
+            var query = _context.Properties
+                .Include(p => p.PropertyMedia)
+                .Where(p => !p.IsDeleted);
+
+            if (!string.IsNullOrEmpty(filter.District))
+                query = query.Where(p => p.City == filter.District);
+
+            if (filter.MinPrice.HasValue)
+                query = query.Where(p => p.Price >= filter.MinPrice.Value);
+
+            if (filter.MaxPrice.HasValue)
+                query = query.Where(p => p.Price <= filter.MaxPrice.Value);
+
+            if (filter.MinArea.HasValue)
+                query = query.Where(p => p.Area_sqm >= filter.MinArea.Value);
+
+            if (filter.MaxArea.HasValue)
+                query = query.Where(p => p.Area_sqm <= filter.MaxArea.Value);
+
+            if (filter.NumBedrooms.HasValue)
+                query = query.Where(p => p.NumBedrooms == filter.NumBedrooms.Value);
+
+            if (filter.NumBathrooms.HasValue)
+                query = query.Where(p => p.NumBathrooms == filter.NumBathrooms.Value);
+
+            if (filter.PropertyType.HasValue)
+                query = query.Where(p => p.PropertyType == filter.PropertyType.Value);
+
+            return await query.ToListAsync();
+        }
+
     }
 }
