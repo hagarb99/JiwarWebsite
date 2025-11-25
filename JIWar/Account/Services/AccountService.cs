@@ -77,12 +77,12 @@ namespace Jiwar.Account.Services
                 });
         }
 
-      public async Task<ResultViewModel<string>> ChangePasswordAsync(ChangePasswordDto dto)
+      public async Task<ResultViewModel<string>> ChangePasswordAsync(User user,ChangePasswordDto dto)
 {
-            var user = await userManager.FindByIdAsync(dto.UserId.ToString());
+        //    var user = await userManager.FindByIdAsync(dto.UserId.ToString());
 
-            if (user == null)
-        return ResultViewModel<string>.Fail("User not found.");
+        //    if (user == null)
+        //return ResultViewModel<string>.Fail("User not found.");
 
     var result = await userManager.ChangePasswordAsync(
         user,

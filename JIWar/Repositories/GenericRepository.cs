@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using GEWAR;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Linq.Expressions;
 
@@ -6,13 +7,13 @@ namespace Jiwar.Repositories
 {
     public class GenericRepository<T> : IGenericRepository<T> where T : class
     {
-        protected readonly DbContext _context;
-        protected readonly DbSet<T> _dbSet;
+        private readonly GiwarContext giwarContext;
+        private readonly DbSet<T> _dbSet;
 
-        public GenericRepository(DbContext context)
+        public GenericRepository(GiwarContext giwarContext)
         {
-            _context = context;
-            _dbSet = _context.Set<T>();
+            giwarContext = giwarContext;
+            _dbSet = giwarContext.Set<T>();
         }
 
         public async Task<IEnumerable<T>> GetAllAsync()
