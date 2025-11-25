@@ -8,7 +8,7 @@ using Jiwar.Service;
 [Route("api/[controller]")]
 public class PropertyController : ControllerBase
 {
-    private readonly IPropertyService propertyServices;
+    private readonly IPropertyService _propertyService;
 
     public PropertyController(IPropertyService propertyService)
     {

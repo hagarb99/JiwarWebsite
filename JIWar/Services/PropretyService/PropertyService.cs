@@ -1,6 +1,7 @@
+using GEWAR.Models;
+using Jiwar.Enum;
 using Jiwar.Models;
 using Jiwar.Repositories.Interfaces;
-using Jiwar.Services.Interfaces;
 namespace Jiwar.Service
 {
 public class PropertyService : IPropertyService
@@ -52,5 +53,21 @@ public class PropertyService : IPropertyService
     {
         return _propertyRepo.GetPropertyDetailsAsync(id);
     }
-}
+
+      
+        public Task AddPropertyMediaAsync(PropertyMedia media)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task RemovePropertyMediaAsync(int mediaId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task UpdatePropertyStatusAsync(int id, PropEnum status)
+        {
+            throw new NotImplementedException();
+        }
+    }
 }

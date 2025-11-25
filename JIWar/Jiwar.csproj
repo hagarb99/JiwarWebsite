@@ -40,8 +40,4 @@
 	  <Folder Include="Repositories\User\" />
 	</ItemGroup>
 
-	<ItemGroup>
-	  <Folder Include="Controllers\" />
-	</ItemGroup>
-
 </Project>

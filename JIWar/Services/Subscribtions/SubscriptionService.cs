@@ -24,7 +24,7 @@ namespace Jiwar.Services
                 Id = s.Id,
                 Name = s.Name,
                 Price = s.Price,
-                DurationInMonths = s.DurationInMonths
+                DurationInMonths = s.
             });
         }
 
@@ -37,8 +37,8 @@ namespace Jiwar.Services
             {
                 Id = s.Id,
                 Name = s.Name,
-                Price = s.Price,
-                DurationInMonths = s.DurationInMonths
+                Price = s.Price
+                DurationInMonths = s.D
             };
         }
 
