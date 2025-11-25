@@ -19,5 +19,7 @@ namespace GEWAR.Models
         // 🔗 Navigation Properties
         public virtual User Sender { get; set; } = null!;
         public virtual User Receiver { get; set; } = null!;
+        public int PropertyID { get; set; }
+        public virtual Property Property { get; set; } = null!;
     }
 }

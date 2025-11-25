@@ -23,7 +23,7 @@ public class PropertyController : ControllerBase
             Title = dto.Title,
             Description = dto.Description,
             Price = dto.Price,
-            OwnerId = dto.OwnerId,
+            OwnerID = dto.OwnerId,
             CategoryId = dto.CategoryId
         };
 
@@ -36,7 +36,7 @@ public class PropertyController : ControllerBase
     {
         var property = new Property
         {
-            Id = dto.Id,
+            PropertyID = dto.Id,
             Title = dto.Title,
             Description = dto.Description,
             Price = dto.Price
@@ -53,8 +53,8 @@ public class PropertyController : ControllerBase
         return result ? Ok("Deleted Successfully") : NotFound("Property Not Found");
     }
 
-    [HttpGet("my/{ownerId}")]
-    public async Task<IActionResult> MyProperties(string ownerId)
+    [HttpGet("my/{ownerId:int}")]
+    public async Task<IActionResult> MyProperties(int ownerId)
     {
         var list = await _propertyService.GetMyPropertiesAsync(ownerId);
         return Ok(list);

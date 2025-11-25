@@ -12,7 +12,6 @@ namespace GEWAR.Models
     {
         public int PropertyID { get; set; }
         public int OwnerID { get; set; } // FK → PropertyOwner
-        public object OwnerId { get; internal set; }
         public string Address { get; set; }
         
         public decimal LocationLat { get; set; }
@@ -36,16 +35,16 @@ namespace GEWAR.Models
         public virtual ICollection<WishList> WishLists { get; set; } = new List<WishList>();
 
         public virtual ICollection<PropertyFeature> PropertyFeatures { get; set; }
+        public virtual ICollection<PropertyPriceHistory> PriceHistory { get; set; } = new List<PropertyPriceHistory>();
 
 
-        public User user { get; set; }
+        public User OwnerUser { get; set; }
         //make relation-many prop-prop one prop owner
         //
         public virtual PropertyOwner PropertyOwner { get; set; }
-        public object Images { get; internal set; }
-        public object Category { get; internal set; }
+        public PropertyType PropertyType { get; set; }
         public string Title { get; internal set; }
-        public object CategoryId { get; internal set; }
+        public int CategoryId { get; set; }
         public string Description { get; internal set; }
         public decimal Price { get; internal set; }
     }

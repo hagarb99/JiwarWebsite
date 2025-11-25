@@ -16,7 +16,7 @@ namespace Jiwar.Service
        public Task<bool> DeletePropertyAsync(int id);
 
         // Get all properties of an owner
-       public Task<IEnumerable<Property>> GetMyPropertiesAsync(string ownerId);
+       public Task<IEnumerable<Property>> GetMyPropertiesAsync(int ownerId);
 
         // Get details of a specific property
        public Task<Property> GetPropertyDetailsAsync(int id);
@@ -29,6 +29,7 @@ namespace Jiwar.Service
 
         // Update property status (Active / Inactive / Pending)
        public Task UpdatePropertyStatusAsync(int id, PropEnum status);
-
+       public Task SendMessageAsync(Chat chat);
+        public Task<IEnumerable<Chat>> GetChatHistoryAsync(string senderId, string receiverId, int propertyId);
     }
 }

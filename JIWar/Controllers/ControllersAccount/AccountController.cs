@@ -1,6 +1,8 @@
 ﻿using GEWAR.Models;
 using Jiwar.Account.DTOs;
 using Jiwar.Account.Services;
+using Jiwar.DTOs.ChatDTOs;
+using Jiwar.Service;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -21,12 +23,14 @@ namespace Jiwar.Account
         private readonly AccountService accountService;
         private readonly IConfiguration _config;
         private readonly UserManager<User> userManager;
+        private readonly IPropertyService _propertyService;
 
-        public AccountController(AccountService accountService, IConfiguration config,UserManager<User> userManager)
+        public AccountController(AccountService accountService, IConfiguration config,UserManager<User> userManager, IPropertyService _propertyService)
         {
             this.accountService = accountService;
             this._config = config;
             this.userManager = userManager;
+            this._propertyService = _propertyService;
         }
 
         [HttpPost("register")]
@@ -123,6 +127,29 @@ namespace Jiwar.Account
             }
         }
 
+        [HttpPost("{propertyId}/chat/send")]
+        public async Task<IActionResult> SendMessage(int propertyId, ChatMessageDTO dto)
+        {
+            var chat = new Chat
+            {
+                PropertyID = propertyId,
+                SenderID = dto.SenderID,
+                ReceiverID = dto.ReceiverID,
+                MessageText = dto.MessageText,
+                MessageType = dto.MessageType,
+                SentDate = DateTime.UtcNow
+            };
+
+            await _propertyService.SendMessageAsync(chat);
+            return Ok("Message sent successfully");
+        }
+
+        [HttpGet("{propertyId}/chat/{senderId}/{receiverId}")]
+        public async Task<IActionResult> GetChatHistory(int propertyId, string senderId, string receiverId)
+        {
+            var history = await _propertyService.GetChatHistoryAsync(senderId, receiverId, propertyId);
+            return Ok(history);
+        }
 
 
     }

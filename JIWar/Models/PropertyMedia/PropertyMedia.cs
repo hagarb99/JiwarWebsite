@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 
 namespace GEWAR.Models
 {
-    public partial class PropertyMedia : BaseModel
+    public class PropertyMedia : BaseModel
     {
-
+        public int Order { get; set; }
         public int PropertyID { get; set; }
         public string MediaURL { get; set; }
         public string MediaType { get; set; }

@@ -4,7 +4,7 @@ namespace Jiwar.Models
 {
     public class PropertyOwner
     {
-        public User user { get; set; }
+        public User Owneruser { get; set; }
         public int Id { get; set; }              // Primary Key مهم لازم يكون موجود
 
         public string UserID { get; set; }       // FK للـ Identity User
