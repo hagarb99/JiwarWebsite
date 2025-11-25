@@ -118,5 +118,14 @@ namespace Jiwar.Repositories
             return await query.ToListAsync();
         }
 
+        public async Task<IEnumerable<Property>> GetPropertiesByIdsAsync(List<int> ids)
+        {
+            return await _context.Properties
+                .Include(p => p.PropertyMedia)
+               .Include(p => p.PropertyFeatures)
+               .ThenInclude(pf => pf.Feature)
+                .Where(p => ids.Contains(p.PropertyID) && !p.IsDeleted)
+                .ToListAsync();
+        }
     }
 }

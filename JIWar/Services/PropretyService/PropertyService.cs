@@ -88,5 +88,29 @@ namespace Jiwar.Service
             return await _propertyRepo.GetFilteredPropertiesAsync(filter);
         }
 
+        public async Task<IEnumerable<PropertyComparisonDTO>> GetPropertiesForComparisonAsync(List<int> propertyIds)
+        {
+            var properties = await _propertyRepo.GetPropertiesByIdsAsync(propertyIds);
+
+            return properties.Select(p => new PropertyComparisonDTO
+            {
+                PropertyID = p.PropertyID,
+                Title = p.Title,
+                City = p.City,
+                Address = p.Address,
+                Price = p.Price,
+                Area_sqm = p.Area_sqm,
+                NumBedrooms = p.NumBedrooms,
+                NumBathrooms = p.NumBathrooms,
+                PropertyType = p.PropertyType.ToString(),
+                Status = p.statusEnum.ToString(),
+                ThumbnailUrl = p.PropertyMedia.FirstOrDefault()?.MediaURL,
+                Features = p.PropertyFeatures?
+            .Where(pf => pf.Feature != null)
+            .Select(pf => pf.Feature.Name)
+            .ToList() ?? new List<string>()
+
+            });
+        }
     }
 }

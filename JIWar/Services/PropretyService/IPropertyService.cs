@@ -34,5 +34,7 @@ namespace Jiwar.Service
         public Task<IEnumerable<Chat>> GetChatHistoryAsync(string senderId, string receiverId, int propertyId);
 
         Task<IEnumerable<Property>> GetFilteredPropertiesAsync(PropertyFilterDTO filter);
+
+        Task<IEnumerable<PropertyComparisonDTO>> GetPropertiesForComparisonAsync(List<int> propertyIds);
     }
 }

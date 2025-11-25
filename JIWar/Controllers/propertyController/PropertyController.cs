@@ -94,4 +94,14 @@ public class PropertyController : ControllerBase
         return Ok(properties);
     }
 
+    [HttpPost("compare")]
+    public async Task<IActionResult> Compare([FromBody] List<int> propertyIds)
+    {
+        if (propertyIds == null || propertyIds.Count == 0 || propertyIds.Count > 5)
+            return BadRequest("You must provide between 1 and 5 property IDs.");
+
+        var result = await _propertyService.GetPropertiesForComparisonAsync(propertyIds);
+        return Ok(result);
+    }
+
 }

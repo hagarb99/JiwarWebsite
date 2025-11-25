@@ -17,4 +17,5 @@ public interface IPropertyRepository : IGenericRepository<Property>
     Task<IEnumerable<Chat>> GetChatHistoryAsync(string senderId, string receiverId, int propertyId);
 
     Task<IEnumerable<Property>> GetFilteredPropertiesAsync(PropertyFilterDTO filter);
+    Task<IEnumerable<Property>> GetPropertiesByIdsAsync(List<int> ids);
 }
