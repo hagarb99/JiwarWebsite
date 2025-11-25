@@ -1,6 +1,8 @@
 using GEWAR.Models;
+using Jiwar.DTOs.PropertyDTOs;
 using Jiwar.Enum;
 using Jiwar.Models;
+using Jiwar.Repositories;
 using Jiwar.Repositories.Interfaces;
 namespace Jiwar.Service
 {
@@ -81,6 +83,10 @@ namespace Jiwar.Service
             return await _propertyRepo.GetChatHistoryAsync(senderId, receiverId, propertyId);
         }
 
-       
+        public async Task<IEnumerable<Property>> GetFilteredPropertiesAsync(PropertyFilterDTO filter)
+        {
+            return await _propertyRepo.GetFilteredPropertiesAsync(filter);
+        }
+
     }
 }
