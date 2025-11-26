@@ -87,12 +87,14 @@ namespace Jiwar
             builder.Services.AddScoped<IPropertyRepository, PropertyRepository>();
             builder.Services.AddScoped<ISubscriptionRepository, SubscriptionRepository>();
             builder.Services.AddScoped<IReportRepository, ReportRepository>();
+            builder.Services.AddScoped<IReportOrderRepository, ReportOrderRepository>();
 
             // Services
             builder.Services.AddScoped<IPropertyService, PropertyService>();
             builder.Services.AddScoped<ISubscriptionService, SubscriptionService>();
             builder.Services.AddScoped<IReportService, ReportService>();
             builder.Services.AddScoped<IAccountService, AccountService>();
+            builder.Services.AddScoped<IPaymentService, PaymentService>();
             builder.Services.AddScoped<TokenService>();
 
             // Build App

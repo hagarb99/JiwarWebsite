@@ -52,9 +52,11 @@ namespace GEWAR
         public DbSet<WishList> WishLists { get; set; }
         public DbSet<PropertyOwner> PropertyOwners { get; set; }
 
-        public DbSet<PropertyFeature> propertyFeatures{get;set;}
+        public DbSet<PropertyFeature> PropertyFeatures{get;set;}
 
         public DbSet<Feature> Features{get ; set ;}
+        public DbSet<ReportOrder> ReportOrders { get; set; }
+        public DbSet<PropertyPriceHistory> PropertyPriceHistories { get; set; }
 
 
 
@@ -92,7 +94,10 @@ namespace GEWAR
             modelBuilder.ApplyConfiguration(new PropertyOwnerConfiguration());
             modelBuilder.ApplyConfiguration(new FeatureConfiguration());
             modelBuilder.ApplyConfiguration(new PropertyFeatureConfiguration());
-        
+            modelBuilder.ApplyConfiguration(new ReportOrderConfiguration());
+            modelBuilder.ApplyConfiguration(new PropertyPriceHistoryConfiguration());
+
+
 
             base.OnModelCreating(modelBuilder);
             modelBuilder.Entity<User>().ToTable("Users");
