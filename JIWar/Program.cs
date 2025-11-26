@@ -81,6 +81,7 @@ namespace Jiwar
             // Generic
             builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
             // Repositories
+            builder.Services.AddScoped<IAccountRepository, AccountRepository>();
             builder.Services.AddScoped<IBookingRepository, BookingRepository>();
             builder.Services.AddScoped<IWishlistRepository, WishlistRepository>();
             builder.Services.AddScoped<IPropertyRepository, PropertyRepository>();
@@ -91,7 +92,7 @@ namespace Jiwar
             builder.Services.AddScoped<IPropertyService, PropertyService>();
             builder.Services.AddScoped<ISubscriptionService, SubscriptionService>();
             builder.Services.AddScoped<IReportService, ReportService>();
-            builder.Services.AddScoped<AccountService>();
+            builder.Services.AddScoped<IAccountService, AccountService>();
             builder.Services.AddScoped<TokenService>();
 
             // Build App
@@ -106,8 +107,8 @@ namespace Jiwar
             }
 
             app.UseHttpsRedirection();
-            app.UseAuthentication();
             app.UseCors("AllowAll");
+            app.UseAuthentication();
             app.UseAuthorization();
             //Authorization: Bearer <token>
             app.MapControllers();

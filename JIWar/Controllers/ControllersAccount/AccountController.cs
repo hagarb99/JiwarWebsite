@@ -20,12 +20,12 @@ namespace Jiwar.Account
     [ApiController]
     public class AccountController : ControllerBase
     {
-        private readonly AccountService accountService;
+        private readonly IAccountService accountService;
         private readonly IConfiguration _config;
         private readonly UserManager<User> userManager;
         private readonly IPropertyService _propertyService;
 
-        public AccountController(AccountService accountService, IConfiguration config,UserManager<User> userManager, IPropertyService _propertyService)
+        public AccountController(IAccountService accountService, IConfiguration config,UserManager<User> userManager, IPropertyService _propertyService)
         {
             this.accountService = accountService;
             this._config = config;
@@ -91,17 +91,30 @@ namespace Jiwar.Account
             return Ok(result);
         }
 
-        [Authorize] // because user must be logged in
+     
+        //public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDto dto)
+        //{
+        //    //var result = await accountService.ChangePasswordAsync(dto);
+        //    var user = await userManager.GetUserAsync(User);
+
+        //    if (user == null)
+        //        return Unauthorized();
+
+        //    var result = await accountService.ChangePasswordAsync(user, dto);
+
+        //    if (!result.Success)
+        //        return BadRequest(new { message = result.Message });
+
+        //    return Ok(new { message = result.Message });
+        //}
+        [Authorize]
         [HttpPost("change-password")]
         public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDto dto)
         {
-            //var result = await accountService.ChangePasswordAsync(dto);
-            var user = await userManager.GetUserAsync(User);
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
-            if (user == null)
-                return Unauthorized();
-
-            var result = await accountService.ChangePasswordAsync(user, dto);
+            var result = await accountService.ChangePasswordAsync(User, dto);
 
             if (!result.Success)
                 return BadRequest(new { message = result.Message });

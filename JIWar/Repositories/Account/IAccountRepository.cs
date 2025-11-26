@@ -1,0 +1,20 @@
+﻿using GEWAR.Models;
+using Microsoft.AspNetCore.Identity;
+using System.Security.Claims;
+
+namespace Jiwar.Repositories
+{
+    public interface IAccountRepository
+    {
+        Task<IdentityResult> CreateUserAsync(User user, string password);
+        Task<User?> FindByEmailAsync(string email);
+        Task<User?> FindByIdAsync(string id);
+        Task<bool> CheckPasswordAsync(User user, string password);
+        Task<string> GenerateResetTokenAsync(User user);
+        Task<IdentityResult> ResetPasswordAsync(User user, string token, string newPassword);
+        Task<IdentityResult> ChangePasswordAsync(User user, string currentPassword, string newPassword);
+        Task<IdentityResult> UpdateUserAsync(User user);
+        Task<User?> GetUserFromClaimsAsync(ClaimsPrincipal userClaims);
+
+    }
+}

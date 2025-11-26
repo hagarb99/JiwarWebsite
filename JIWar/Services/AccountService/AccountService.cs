@@ -3,20 +3,22 @@ using GEWAR.Models;
 using Jiwar.Account.DTOs;
 using Jiwar.Controllers;
 using Jiwar.Helpers;
+using Jiwar.Repositories;
 using Microsoft.AspNetCore.Identity;
 using System.Data;
+using System.Security.Claims;
 
 namespace Jiwar.Account.Services
 {
-    public class AccountService 
+    public class AccountService : IAccountService
     {
-        private readonly UserManager<User> userManager;
-        private readonly SignInManager<User> signInManager;
+        //private readonly UserManager<User> userManager;
+        //private readonly SignInManager<User> signInManager;
+        private readonly IAccountRepository repo;
         private readonly TokenService _tokenService;
-        public AccountService(UserManager<User> userManager, SignInManager<User> signInManager, TokenService tokenService)
+        public AccountService(IAccountRepository repo, TokenService tokenService)
         {
-            this.userManager = userManager;
-            this.signInManager = signInManager;
+            this.repo = repo;
             _tokenService = tokenService;
         }
         public async Task<ResultViewModel<UserResponseDTO>> RegisterAsync(RegisterDto dto)
@@ -30,7 +32,7 @@ namespace Jiwar.Account.Services
                 PhoneNumber = dto.PhoneNumber,
                 RegistrationDate = DateTime.UtcNow
             };
-            var result = await userManager.CreateAsync(user, dto.Password);
+            var result = await repo.CreateUserAsync(user, dto.Password);
             if (!result.Succeeded)
             {
                 return ResultViewModel<UserResponseDTO>.Fail(
@@ -52,13 +54,13 @@ namespace Jiwar.Account.Services
 
         public async Task<ResultViewModel<UserResponseDTO>> LoginAsync(LoginDto dto)
         {
-            var user = await userManager.FindByEmailAsync(dto.Email);
+            var user = await repo.FindByEmailAsync(dto.Email);
             if (user == null)
                 return ResultViewModel<UserResponseDTO>.Fail("Invalid email or password.");
 
-            var result = await signInManager.CheckPasswordSignInAsync(user, dto.Password, false);
-            if (!result.Succeeded)
-              return  ResultViewModel<UserResponseDTO>.Fail("Your Account under reviewing");
+            //var result = await signInManager.CheckPasswordSignInAsync(user, dto.Password, false);
+            //if (!result.Succeeded)
+            //  return  ResultViewModel<UserResponseDTO>.Fail("Your Account under reviewing");
 
             ////////////////////////////////////////////////////////////
             //roles
@@ -77,46 +79,59 @@ namespace Jiwar.Account.Services
                 });
         }
 
-      public async Task<ResultViewModel<string>> ChangePasswordAsync(User user,ChangePasswordDto dto)
-{
-        //    var user = await userManager.FindByIdAsync(dto.UserId.ToString());
+        //      public async Task<ResultViewModel<string>> ChangePasswordAsync(User user,ChangePasswordDto dto)
+        //{
+        //        //    var user = await userManager.FindByIdAsync(dto.UserId.ToString());
 
-        //    if (user == null)
-        //return ResultViewModel<string>.Fail("User not found.");
+        //        //    if (user == null)
+        //        //return ResultViewModel<string>.Fail("User not found.");
 
-    var result = await userManager.ChangePasswordAsync(
-        user,
-        dto.CurrentPassword,
-        dto.NewPassword
-    );
+        //    var result = await repo.ChangePasswordAsync(
+        //        user,
+        //        dto.CurrentPassword,
+        //        dto.NewPassword
+        //    );
 
-    if (!result.Succeeded)
-        return ResultViewModel<string>.Fail(
-            string.Join("; ", result.Errors.Select(e => e.Description)));
+        //    if (!result.Succeeded)
+        //        return ResultViewModel<string>.Fail(
+        //            string.Join("; ", result.Errors.Select(e => e.Description)));
 
-    return ResultViewModel<string>.Ok("Password changed successfully.", "");
-}
+        //    return ResultViewModel<string>.Ok("Password changed successfully.", "");
+        //}
+        public async Task<ResultViewModel<string>> ChangePasswordAsync(ClaimsPrincipal userClaims, ChangePasswordDto dto)
+        {
+            var user = await repo.GetUserFromClaimsAsync(userClaims);
+            if (user == null)
+                return ResultViewModel<string>.Fail("User not found.");
+
+            var result = await repo.ChangePasswordAsync(user, dto.CurrentPassword, dto.NewPassword);
+
+            if (!result.Succeeded)
+                return ResultViewModel<string>.Fail(string.Join("; ", result.Errors.Select(e => e.Description)));
+
+            return ResultViewModel<string>.Ok("Password changed successfully.", "");
+        }
 
 
         public async Task<ResultViewModel<string>> ForgetPasswordAsync(ForgetPasswordDto dto)
         {
-            var user = await userManager.FindByEmailAsync(dto.Email);
+            var user = await repo.FindByEmailAsync(dto.Email);
 
             if (user == null)
                 return ResultViewModel<string>.Fail("Email not found.");
 
-            var token = await userManager.GeneratePasswordResetTokenAsync(user);
+            var token = await repo.GenerateResetTokenAsync(user);
 
             return ResultViewModel<string>.Ok("Reset token generated.", token);
         }
         public async Task<ResultViewModel<string>> ResetPasswordAsync(ResetPasswordDto dto)
         {
-            var user = await userManager.FindByEmailAsync(dto.Email);
+            var user = await repo.FindByEmailAsync(dto.Email);
 
             if (user == null)
                 return ResultViewModel<string>.Fail("Invalid email.");
 
-            var result = await userManager.ResetPasswordAsync(user, dto.Token, dto.NewPassword);
+            var result = await repo.ResetPasswordAsync(user, dto.Token, dto.NewPassword);
 
             if (!result.Succeeded)
                 return ResultViewModel<string>.Fail("Failed to reset password.");
@@ -124,11 +139,11 @@ namespace Jiwar.Account.Services
             return ResultViewModel<string>.Ok("Password reset successfully.", "");
         }
 
-        public async Task<UserResponseDTO> EditProfileAsync(EditProfileDto dto)
+        public async Task<ResultViewModel<UserResponseDTO>> EditProfileAsync(EditProfileDto dto)
         {
-            var user = await userManager.FindByIdAsync(dto.UserId);
+            var user = await repo.FindByIdAsync(dto.UserId);
             if (user == null)
-                throw new Exception("User not found");
+                return ResultViewModel<UserResponseDTO>.Fail("User not found.");
 
             if (!string.IsNullOrEmpty(dto.Name))
                 user.Name = dto.Name;
@@ -139,19 +154,18 @@ namespace Jiwar.Account.Services
             if (!string.IsNullOrEmpty(dto.ProfilePicURL))
                 user.ProfilePicURL = dto.ProfilePicURL;
 
-            var result = await userManager.UpdateAsync(user);
+            var result = await repo.UpdateUserAsync(user);
             if (!result.Succeeded)
-                return null;
-            var roles = await userManager.GetRolesAsync(user);
-
-            return new UserResponseDTO
+                return ResultViewModel<UserResponseDTO>.Fail("Failed to update profile.");
+            return ResultViewModel<UserResponseDTO>.Ok("Profile updated successfully.", new UserResponseDTO
             {
                 Id = user.Id,
                 Name = user.Name,
                 Email = user.Email,
-                ProfilePicURL = user.ProfilePicURL,
-                Role = user.Role
-            };
+                Role = user.Role,
+                ProfilePicURL = user.ProfilePicURL
+            });
+
         }
 
     }
