@@ -1,8 +1,4 @@
 ﻿using System.Text;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 using GEWAR;
 using GEWAR.Configurations;
 using GEWAR.Models;
@@ -14,10 +10,15 @@ using Jiwar.Controllers;
 using Jiwar.Models;
 using Jiwar.Models.Offers;
 using Jiwar.Repositories;
+using Jiwar.Repositories.DistrictAnalyticService;
 using Jiwar.Repositories.Interfaces;
 using Jiwar.Service;
 using Jiwar.Services;
 using JIWAR.Models;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
 
 
@@ -97,6 +98,11 @@ namespace Jiwar
             builder.Services.AddScoped<IAccountService, AccountService>();
             builder.Services.AddScoped<IPaymentService, PaymentService>();
             builder.Services.AddScoped<TokenService>();
+
+
+            builder.Services.AddScoped<IPropertyAnalyticsService, PropertyAnalyticsService>();
+            builder.Services.AddScoped<IAnalyticsRepository, AnalyticsRepository>();
+
 
             // Build App
             var app = builder.Build();

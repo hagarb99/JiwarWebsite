@@ -1,6 +1,7 @@
 using System.Net.Http.Json;
 using GEWAR;
 using GEWAR.Models;
+using Jiwar.DTOs.DistrictPriceHistoryDTOs;
 using Jiwar.Repositories;
 using Jiwar.Services;
 using Newtonsoft.Json;
@@ -52,5 +53,10 @@ public class PropertyAnalyticsService : IPropertyAnalyticsService
         await _context.SaveChangesAsync();
 
         return analytics;
+    }
+
+    public Task<DistrictPriceHistoryDTO> GetDistrictPriceAnalytics(string district)
+    {
+        throw new NotImplementedException();
     }
 }

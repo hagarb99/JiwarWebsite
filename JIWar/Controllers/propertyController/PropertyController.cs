@@ -125,4 +125,13 @@ public class PropertyController : ControllerBase
         return Ok(result);
     }
 
+
+    [HttpGet("district/{district}/price-history")]
+    public async Task<IActionResult> GetDistrictPriceHistory(string district)
+    {
+        var result = await _analyticsService.GetDistrictPriceAnalytics(district);
+        return Ok(result);
+    }
+
+
 }
