@@ -67,7 +67,7 @@ namespace Jiwar.Repositories
             }
             return false;
         }
-
+        
         public async Task<IEnumerable<Booking>> GetBookingsByCustomer(string customerId)
         {
             return await giwarContext.Set<Booking>()
