@@ -3,6 +3,7 @@ using Jiwar.DTOs;
 using Jiwar.DTOs.PropertyDTOs;
 using Jiwar.Models;
 using Jiwar.Service;
+using Jiwar.Services;
 using JIWar.PropertyOwner;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,10 +12,14 @@ using Microsoft.AspNetCore.Mvc;
 public class PropertyController : ControllerBase
 {
     private readonly IPropertyService _propertyService;
+    private readonly IPropertyAnalyticsService _analyticsService;
 
-    public PropertyController(IPropertyService propertyService)
+
+    public PropertyController(IPropertyService propertyService , IPropertyAnalyticsService analyticsService)
     {
         _propertyService = propertyService;
+        _analyticsService = analyticsService;
+
     }
 
     [HttpPost("add")]
@@ -26,11 +31,27 @@ public class PropertyController : ControllerBase
             Description = dto.Description,
             Price = dto.Price,
             OwnerID = dto.OwnerId,
-            CategoryId = dto.CategoryId
+            CategoryId = dto.CategoryId,
+            Tour360Url = dto.Tour360Url // حفظ الرابط الجديد
         };
 
         await _propertyService.AddPropertyAsync(property);
-        return Ok("Property Created Successfully");
+
+        // حساب السعر المقترح وحفظه في PropertyAnalytics
+        var analytics = await _analyticsService.AnalyzePropertyAsync(property);
+
+    string priceStatus = property.Price > analytics.FairValue_Estimate ? "Overpriced" :
+                         property.Price < analytics.FairValue_Estimate ? "Underpriced" : "Fair";
+
+    return Ok(new
+    {
+        propertyId = property.PropertyID,
+        ownerPrice = property.Price,
+        estimatedPrice = analytics.FairValue_Estimate,
+        priceStatus = priceStatus,
+        tour360Url = property.Tour360Url
+    });
+
     }
 
     [HttpPut("update")]

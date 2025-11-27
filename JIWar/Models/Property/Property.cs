@@ -20,6 +20,9 @@ namespace GEWAR.Models
         public decimal? Area_sqm { get; set; }
         public int? NumBedrooms { get; set; }
         public int? NumBathrooms { get; set; }
+
+        public string? Tour360Url { get; set; }
+
         public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
         public bool IsAvaliable { get; set; }//booking or not
 
@@ -45,7 +48,8 @@ namespace GEWAR.Models
         public PropertyType PropertyType { get; set; }
         public string Title { get; internal set; }
         public int CategoryId { get; set; }
-        public string Description { get; internal set; }
-        public decimal Price { get; internal set; }
+        public string Description { get; set; }
+        public decimal Price { get; set; }
+        public decimal EstimatedPrice { get; set; }
     }
 }

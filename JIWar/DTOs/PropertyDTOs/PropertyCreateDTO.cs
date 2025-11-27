@@ -11,8 +11,10 @@ public class PropertyCreateDTO
     public int Rooms { get; set; }
     public int Bathrooms { get; set; }
     public double Area { get; set; }
-        public int OwnerId { get; set; }
-        public int CategoryId { get; set; }
+    public int OwnerId { get; set; }
+    public int CategoryId { get; set; }
+
+    public string? Tour360Url { get; set; }
     }
 
 }

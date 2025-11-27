@@ -74,3 +74,103 @@ Service يستدعي Repository:
         |
         v
 [Return Success: "Item removed from wishlist"]
+
+
+
+---------------------------------------------------------حساب السعر العادل (flow)-----------------------------------------------------
+
+Flow / Scenario: Property Estimated Price Feature
+هدف الميزة
+
+عند إضافة عقار جديد، يقوم النظام تلقائيًا بتقدير السعر العادل (Estimated Price) ويقارن السعر اللي حددّه المالك بالسعر المقترح. يعرض للمالك حالة السعر:
+
+Overpriced → أغلى من السعر العادل
+
+Underpriced → أقل من السعر العادل
+
+Fair → قريب من السعر العادل
+
+الخطوات الأساسية (Flow)
+1️⃣ إضافة العقار (Add Property)
+
+المالك يرسل request مع بيانات العقار:
+
+Title
+
+Description
+
+Price
+
+OwnerId
+
+CategoryId
+
+PropertyService.AddPropertyAsync يحفظ العقار في قاعدة البيانات.
+
+2️⃣ حساب السعر المقترح (Estimated Price)
+
+بعد حفظ العقار، يتم استدعاء PropertyAnalyticsService.AnalyzePropertyAsync(property)
+
+خطوات التحليل:
+
+البحث عن عقارات مشابهة (Comparable Properties) في نفس المدينة ونفس النوع والمساحة ±15%، والعمر ±10 سنوات.
+
+إذا وُجدت Comparable Properties → السعر المقترح = متوسط أسعارها.
+إذا لم توجد → fallback = متوسط سعر المدينة لكل متر مربع × مساحة العقار.
+
+حفظ النتيجة في جدول PropertyAnalytics:
+
+PropertyID
+
+FairValue_Estimate (السعر المقترح)
+
+Price_Influence_Factors (JSON يحتوي على العوامل المستخدمة في الحساب)
+
+AnalysisDate
+
+(اختياري) تحديث العمود EstimatedPrice في Property لتسهيل العرض في الـ Frontend.
+
+3️⃣ تحديد حالة السعر (Price Status)
+
+المقارنة بين سعر المالك (property.Price) والسعر المقترح (FairValue_Estimate):
+
+إذا المالك أغلى → Overpriced
+
+إذا المالك أقل → Underpriced
+
+إذا قريب → Fair
+
+4️⃣ Response للـ Frontend
+
+الـ API يرجع response يحتوي:
+
+{
+    "propertyId": 123,
+    "ownerPrice": 1200000,
+    "estimatedPrice": 1100000,
+    "priceStatus": "Overpriced"
+}
+
+5️⃣ Optional Endpoint
+
+لو عايزة UX أفضل، ممكن نعمل endpoint مستقل POST /api/property/calculate-valuation:
+
+يحسب السعر المقترح قبل إضافة العقار
+
+يرجع نفس الـ response بدون حفظ العقار
+
+مكتبات / Tools المستخدمة
+
+Newtonsoft.Json → لتحويل عوامل السعر إلى JSON
+
+PropertyAnalytics Table → لحفظ التحليل والسعر المقترح
+
+Property.EstimatedPrice Column → (اختياري) لسهولة العرض
+
+Benefits
+
+المالك يعرف السعر العادل مباشرة
+
+يحسن تجربة المستخدم وشفافية السوق
+
+يمكن استخدام البيانات لاحقًا للتقارير والتحليلات
