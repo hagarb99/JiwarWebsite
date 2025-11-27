@@ -51,5 +51,6 @@ namespace GEWAR.Models
         public string Description { get; set; }
         public decimal Price { get; set; }
         public decimal EstimatedPrice { get; set; }
+        public string District { get; internal set; }
     }
 }

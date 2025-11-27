@@ -18,6 +18,7 @@ namespace Jiwar.Models
         public StatusEnum status { get; set; }
         public DateTime? StartDate { get; set; }
         public DateTime? EndDate { get; set; }
+        public PaymentMethod PaymentMethod { get; set; }
         public PaymentStatusEnum? PaymentStatus { get; set; }
 
         public decimal Cost { get; set; }
