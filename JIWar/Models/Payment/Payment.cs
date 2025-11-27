@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Jiwar;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,9 +14,9 @@ namespace GEWAR.Models
         public string RelatedType { get; set; }
         public int RelatedID { get; set; }
         public decimal Amount { get; set; }
-        public string PaymentMethod { get; set; }
+        public PaymentMethod paymentMethod { get; set; }
         public DateTime PaymentDate { get; set; } = DateTime.Now;
-        public string Status { get; set; } = "Pending";
+        public PaymentStatusEnum Status { get; set; }
 
         public User User { get; set; }
     }

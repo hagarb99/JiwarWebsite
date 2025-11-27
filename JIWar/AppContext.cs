@@ -57,6 +57,7 @@ namespace GEWAR
         public DbSet<Feature> Features{get ; set ;}
         public DbSet<ReportOrder> ReportOrders { get; set; }
         public DbSet<PropertyPriceHistory> PropertyPriceHistories { get; set; }
+        public DbSet<BookingPayment> BookingPayments { get; set; }
 
 //<<<<<<< HEAD
         public DbSet<DistrictPriceHistory> DistrictPriceHistories { get; set; }
