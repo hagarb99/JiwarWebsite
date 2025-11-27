@@ -57,8 +57,12 @@ namespace GEWAR
         public DbSet<Feature> Features{get ; set ;}
         public DbSet<ReportOrder> ReportOrders { get; set; }
         public DbSet<PropertyPriceHistory> PropertyPriceHistories { get; set; }
+//<<<<<<< HEAD
         public DbSet<DistrictPriceHistory> DistrictPriceHistories { get; set; }
         public object DistrictPriceHistory { get; internal set; }
+//=======
+        public DbSet<BookingPayment> BookingPayments { get; set; }
+//>>>>>>> 02b43b58d5d86a20d8f5436f5d65824c7904293d
 
 
 
@@ -98,6 +102,7 @@ namespace GEWAR
             modelBuilder.ApplyConfiguration(new PropertyFeatureConfiguration());
             modelBuilder.ApplyConfiguration(new ReportOrderConfiguration());
             modelBuilder.ApplyConfiguration(new PropertyPriceHistoryConfiguration());
+            modelBuilder.ApplyConfiguration(new BookingPaymentConfiguration());
 
 
 
