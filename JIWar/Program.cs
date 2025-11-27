@@ -102,6 +102,8 @@ namespace Jiwar
 
             builder.Services.AddScoped<IPropertyAnalyticsService, PropertyAnalyticsService>();
             builder.Services.AddScoped<IAnalyticsRepository, AnalyticsRepository>();
+            builder.Services.AddScoped<IAdminAnalyticsService, AdminAnalyticsService>();
+
 
 
             // Build App
