@@ -88,6 +88,7 @@ namespace Jiwar
             builder.Services.AddScoped<ISubscriptionRepository, SubscriptionRepository>();
             builder.Services.AddScoped<IReportRepository, ReportRepository>();
             builder.Services.AddScoped<IReportOrderRepository, ReportOrderRepository>();
+            builder.Services.AddScoped<IBookingPaymentRepository, BookingPaymentRepository>();
 
             // Services
             builder.Services.AddScoped<IPropertyService, PropertyService>();
