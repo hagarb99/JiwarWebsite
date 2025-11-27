@@ -127,5 +127,31 @@ namespace Jiwar.Repositories
                 .Where(p => ids.Contains(p.PropertyID) && !p.IsDeleted)
                 .ToListAsync();
         }
+
+        public Task<decimal> GetCityAveragePricePerSqmAsync(string city)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<List<Property>> GetComparablePropertiesAsync(
+     string city,
+     decimal price,
+     string district,
+     int areaTolerancePercentage,
+     int ageToleranceYears,
+     int minComps)
+        {
+            return await _context.Properties
+                .Where(p => p.City == city &&
+                            p.District == district &&
+                            !p.IsDeleted)
+                .Take(minComps)
+                .ToListAsync();
+        }
+
+        Task IPropertyRepository.GetComparablePropertiesAsync(string city, decimal v1, string v2, int areaTolerancePercentage, int ageToleranceYears, int minComps)
+        {
+            return GetComparablePropertiesAsync(city, v1, v2, areaTolerancePercentage, ageToleranceYears, minComps);
+        }
     }
 }
