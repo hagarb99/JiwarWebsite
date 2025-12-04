@@ -1,6 +1,5 @@
 ﻿namespace GEWAR.Models
 {
-  
         public enum UserTypeEnum
         {
             Customer,
