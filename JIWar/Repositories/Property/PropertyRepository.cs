@@ -16,7 +16,7 @@ namespace Jiwar.Repositories
             _context = context;
         }
 
-        public async Task<IEnumerable<Property>> GetMyPropertiesAsync(int ownerId)
+        public async Task<IEnumerable<Property>> GetMyPropertiesAsync(string ownerId)
 {
           
             return await _dbSet
@@ -128,9 +128,19 @@ namespace Jiwar.Repositories
                 .ToListAsync();
         }
 
-        public Task<decimal> GetCityAveragePricePerSqmAsync(string city)
+        public async Task<decimal> GetCityAveragePricePerSqmAsync(string city)
         {
-            throw new NotImplementedException();
+            var properties = _context.Properties
+        .Where(p => p.City == city && !p.IsDeleted);
+
+            if (!await properties.AnyAsync())
+                return 0m;
+
+            // ????? ??????? ?? decimal? ??? decimal ???????? GetValueOrDefault()
+            var avgPricePerSqm = await properties
+                .AverageAsync(p => (decimal?)(p.Price / p.Area_sqm));
+
+            return avgPricePerSqm.GetValueOrDefault();
         }
 
         public async Task<List<Property>> GetComparablePropertiesAsync(

@@ -45,7 +45,7 @@ namespace Jiwar.Service
         }
 
         // 4. My Properties
-        public Task<IEnumerable<Property>> GetMyPropertiesAsync(int ownerId)
+        public Task<IEnumerable<Property>> GetMyPropertiesAsync(string ownerId)
         {
             return _propertyRepo.GetMyPropertiesAsync(ownerId);
         }
