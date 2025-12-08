@@ -117,7 +117,7 @@ namespace Jiwar.Account
         //    return Ok(new { message = result.Message });
         //}
 
-        [Authorize]
+        //[Authorize]
         [HttpPost("change-password")]
         public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDto dto)
         {
@@ -133,13 +133,13 @@ namespace Jiwar.Account
         }
 
 
-
+        [Authorize]
         [HttpPut("edit-profile")]
         public async Task<IActionResult> EditProfile([FromBody] EditProfileDto dto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-
+            var user = User;
             try
             {
                 var updatedUser = await accountService.EditProfileAsync(dto);
