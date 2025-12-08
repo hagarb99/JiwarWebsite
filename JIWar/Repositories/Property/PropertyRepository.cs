@@ -149,9 +149,9 @@ namespace Jiwar.Repositories
                 .ToListAsync();
         }
 
-        Task IPropertyRepository.GetComparablePropertiesAsync(string city, decimal v1, string v2, int areaTolerancePercentage, int ageToleranceYears, int minComps)
+        Task<List<Property>> IPropertyRepository.GetComparablePropertiesAsync(string city, decimal price, string district, int areaTolerancePercentage, int ageToleranceYears, int minComps)
         {
-            return GetComparablePropertiesAsync(city, v1, v2, areaTolerancePercentage, ageToleranceYears, minComps);
+            return GetComparablePropertiesAsync(city, price, district, areaTolerancePercentage, ageToleranceYears, minComps);
         }
     }
 }

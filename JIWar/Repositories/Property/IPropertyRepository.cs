@@ -19,5 +19,5 @@ public interface IPropertyRepository : IGenericRepository<Property>
     Task<IEnumerable<Property>> GetFilteredPropertiesAsync(PropertyFilterDTO filter);
     Task<IEnumerable<Property>> GetPropertiesByIdsAsync(List<int> ids);
     Task<decimal> GetCityAveragePricePerSqmAsync(string city);
-    Task GetComparablePropertiesAsync(string city, decimal v1, string v2, int areaTolerancePercentage, int ageToleranceYears, int minComps);
+    Task<List<Property>> GetComparablePropertiesAsync(string city, decimal v1, string v2, int areaTolerancePercentage, int ageToleranceYears, int minComps);
 }
