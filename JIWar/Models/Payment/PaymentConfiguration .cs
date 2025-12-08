@@ -24,7 +24,7 @@ namespace Jiwar.Models
             builder.Property(p => p.PaymentDate)
                 .HasDefaultValueSql("GETDATE()");
 
-            builder.Property(p => p.PaymentMethod)
+            builder.Property(p => p.paymentMethod)
                 .HasMaxLength(50)
                 .IsRequired();
 

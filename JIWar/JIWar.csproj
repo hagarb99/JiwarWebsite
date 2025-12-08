@@ -7,16 +7,17 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-	  <Compile Remove="Repositories\Booking\IBookingRepository.cs" />
+		<Compile Remove="Repositories\Booking\IBookingRepository.cs" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <None Include="Repositories\Booking\IBookingRepository.cs" />
+		<None Include="Repositories\Booking\IBookingRepository.cs" />
 	</ItemGroup>
 
 	<ItemGroup>
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.10" />
 		<PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.0" />
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
 		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
 		<PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="9.0.9" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.9" />

@@ -91,14 +91,23 @@ namespace Jiwar.Account
             return Ok(result);
         }
 
-     
+
+        //[Authorize]
+        //[HttpPost("change-password")]
         //public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDto dto)
         //{
-        //    //var result = await accountService.ChangePasswordAsync(dto);
-        //    var user = await userManager.GetUserAsync(User);
+        //    if (!ModelState.IsValid)
+        //        return BadRequest(ModelState);
+
+        //    var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        //    if (string.IsNullOrEmpty(userId))
+        //        return Unauthorized(new { message = "User ID not found in token." });
+
+        //    var user = await userManager.FindByIdAsync(userId);
 
         //    if (user == null)
-        //        return Unauthorized();
+        //        return Unauthorized(new { message = "User not found." });
 
         //    var result = await accountService.ChangePasswordAsync(user, dto);
 
@@ -107,7 +116,8 @@ namespace Jiwar.Account
 
         //    return Ok(new { message = result.Message });
         //}
-        [Authorize]
+
+        //[Authorize]
         [HttpPost("change-password")]
         public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDto dto)
         {
@@ -123,12 +133,13 @@ namespace Jiwar.Account
         }
 
 
+        [Authorize]
         [HttpPut("edit-profile")]
         public async Task<IActionResult> EditProfile([FromBody] EditProfileDto dto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-
+            var user = User;
             try
             {
                 var updatedUser = await accountService.EditProfileAsync(dto);

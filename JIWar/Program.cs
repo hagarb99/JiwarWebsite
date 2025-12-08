@@ -1,5 +1,4 @@
-﻿using System.Text;
-using GEWAR;
+﻿using GEWAR;
 using GEWAR.Configurations;
 using GEWAR.Models;
 using GEWAR.Models.Configurations;
@@ -12,13 +11,16 @@ using Jiwar.Models.Offers;
 using Jiwar.Repositories;
 using Jiwar.Repositories.DistrictAnalyticService;
 using Jiwar.Repositories.Interfaces;
+using Jiwar.Repositories.Valuation;
 using Jiwar.Service;
 using Jiwar.Services;
+using Jiwar.Services.ValuationService;
 using JIWAR.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 
 
@@ -34,7 +36,36 @@ namespace Jiwar
 
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
+            builder.Services.AddSwaggerGen(c =>
+            {
+                c.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+                {
+                    Name = "Authorization",
+                    Type = Microsoft.OpenApi.Models.SecuritySchemeType.ApiKey,
+                    Scheme = "Bearer",
+                    BearerFormat = "JWT",
+                    In = Microsoft.OpenApi.Models.ParameterLocation.Header,
+                    Description = "Enter 'Bearer' [space] and then your token"
+                });
+
+                c.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
+    {
+        {
+            new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+            {
+                Reference = new Microsoft.OpenApi.Models.OpenApiReference
+                {
+                    Type = Microsoft.OpenApi.Models.ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            new string[] {}
+        }
+    });
+            });
+
+
+
             builder.Services.AddOpenApi();
             builder.Services.AddCors(options =>
             {
@@ -50,34 +81,36 @@ namespace Jiwar
             // Database
             builder.Services.AddDbContext<GiwarContext>(options =>
                  options.UseSqlServer(
-                builder.Configuration.GetConnectionString("DefaultConnection"),
-                sqlOptions => sqlOptions.EnableRetryOnFailure()
+                    builder.Configuration.GetConnectionString("DefaultConnection"),
+                    sqlOptions => sqlOptions.EnableRetryOnFailure()
                    ));
+
+            builder.Services.AddIdentity<User, IdentityRole>()
+            .AddEntityFrameworkStores<GiwarContext>()
+            .AddDefaultTokenProviders();
             // Authentication & Identity
             var key = builder.Configuration["Jwt:Key"];
-            var issuer = builder.Configuration["Jwt:Issuer"];
-            var audience = builder.Configuration["Jwt:Audience"];
             builder.Services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultSignInScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultSignOutScheme = JwtBearerDefaults.AuthenticationScheme;
             })
             .AddJwtBearer(options =>
             {
-                var secKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key));
+                var secKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(key));
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
-                    ValidateIssuerSigningKey = true,
                     IssuerSigningKey = secKey,
                     ValidateIssuer = false,
                     ValidateAudience = false,
-                    ClockSkew = TimeSpan.Zero
                 };
             });
-            builder.Services.AddIdentity<User, IdentityRole>()
-           .AddEntityFrameworkStores<GiwarContext>()
-            .AddDefaultTokenProviders();
+            
 
+
+//            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
             //Dependency Injection for Repositories and Services
             // Generic
             builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
@@ -90,6 +123,7 @@ namespace Jiwar
             builder.Services.AddScoped<IReportRepository, ReportRepository>();
             builder.Services.AddScoped<IReportOrderRepository, ReportOrderRepository>();
             builder.Services.AddScoped<IBookingPaymentRepository, BookingPaymentRepository>();
+            builder.Services.AddScoped<IValuationHistoryRepository, ValuationHistoryRepository>();
 
             // Services
             builder.Services.AddScoped<IPropertyService, PropertyService>();
@@ -97,11 +131,17 @@ namespace Jiwar
             builder.Services.AddScoped<IReportService, ReportService>();
             builder.Services.AddScoped<IAccountService, AccountService>();
             builder.Services.AddScoped<IPaymentService, PaymentService>();
+            builder.Services.AddScoped<IBookingService, BookingService>();  // ← المهم
+
             builder.Services.AddScoped<TokenService>();
 
 
             builder.Services.AddScoped<IPropertyAnalyticsService, PropertyAnalyticsService>();
             builder.Services.AddScoped<IAnalyticsRepository, AnalyticsRepository>();
+            builder.Services.AddScoped<IAdminAnalyticsService, AdminAnalyticsService>();
+            builder.Services.AddScoped<IValuationHistoryService, ValuationHistoryService>();
+
+
 
 
             // Build App
@@ -117,6 +157,7 @@ namespace Jiwar
 
             app.UseHttpsRedirection();
             app.UseCors("AllowAll");
+            app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();
             //Authorization: Bearer <token>

@@ -79,25 +79,6 @@ namespace Jiwar.Account.Services
                 });
         }
 
-        //      public async Task<ResultViewModel<string>> ChangePasswordAsync(User user,ChangePasswordDto dto)
-        //{
-        //        //    var user = await userManager.FindByIdAsync(dto.UserId.ToString());
-
-        //        //    if (user == null)
-        //        //return ResultViewModel<string>.Fail("User not found.");
-
-        //    var result = await repo.ChangePasswordAsync(
-        //        user,
-        //        dto.CurrentPassword,
-        //        dto.NewPassword
-        //    );
-
-        //    if (!result.Succeeded)
-        //        return ResultViewModel<string>.Fail(
-        //            string.Join("; ", result.Errors.Select(e => e.Description)));
-
-        //    return ResultViewModel<string>.Ok("Password changed successfully.", "");
-        //}
         public async Task<ResultViewModel<string>> ChangePasswordAsync(ClaimsPrincipal userClaims, ChangePasswordDto dto)
         {
             var user = await repo.GetUserFromClaimsAsync(userClaims);
