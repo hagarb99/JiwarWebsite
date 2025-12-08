@@ -66,7 +66,7 @@ namespace GEWAR
         public DbSet<BookingPayment> BookingPayments { get; set; }
 //>>>>>>> 02b43b58d5d86a20d8f5436f5d65824c7904293d
 
-        public DbSet<BookingPayment> BookingPayments { get; set; }
+        //public DbSet<BookingPayment> BookingPayments { get; set; }
 //>>>>>>> 02b43b58d5d86a20d8f5436f5d65824c7904293d
 
 
