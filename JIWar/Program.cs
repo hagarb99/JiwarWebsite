@@ -129,6 +129,8 @@ namespace Jiwar
             builder.Services.AddScoped<IReportService, ReportService>();
             builder.Services.AddScoped<IAccountService, AccountService>();
             builder.Services.AddScoped<IPaymentService, PaymentService>();
+            builder.Services.AddScoped<IBookingService, BookingService>();  // ← المهم
+
             builder.Services.AddScoped<TokenService>();
 
 
