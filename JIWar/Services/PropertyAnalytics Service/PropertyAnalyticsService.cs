@@ -20,13 +20,13 @@ public class PropertyAnalyticsService : IPropertyAnalyticsService
     public async Task<PropertyAnalytics> AnalyzePropertyAsync(Property property)
     {
         var comparables = await _propertyRepo.GetComparablePropertiesAsync(
-            property.City,
-            property.Area_sqm ?? 0,
-            property.PropertyType.ToString(),
-            areaTolerancePercentage: 15,
-            ageToleranceYears: 10,
-            minComps: 3
-        );
+    property.City,
+    property.Area_sqm ?? 0,
+    property.PropertyType.ToString(),
+    areaTolerancePercentage: 15,
+    ageToleranceYears: 10,
+    minComps: 3
+);
 
         decimal estimatedPrice = comparables.Any()
             ? comparables.Average(p => p.Price)
@@ -36,7 +36,7 @@ public class PropertyAnalyticsService : IPropertyAnalyticsService
         {
             PropertyID = property.PropertyID,
             FairValue_Estimate = estimatedPrice,
-            Price_Influence_Factors = JsonContent.SerializeObject(new
+            Price_Influence_Factors = JsonConvert.SerializeObject(new
             {
                 comparablesCount = comparables.Count(),
                 usedFallback = !comparables.Any(),
@@ -48,7 +48,7 @@ public class PropertyAnalyticsService : IPropertyAnalyticsService
 
         _context.PropertyAnalytics.Add(analytics);
 
-        property.EstimatedPrice = estimatedPrice; // Optional: لتسهيل العرض
+        property.EstimatedPrice = estimatedPrice; 
 
         await _context.SaveChangesAsync();
 

@@ -4,6 +4,7 @@ using GEWAR.Models.Configurations;
 using Jiwar.Models;
 using Jiwar.Models;
 using Jiwar.Models.Offers;
+using Jiwar.Models.Valuation;
 using JIWAR.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -56,9 +57,21 @@ namespace GEWAR
 
         public DbSet<Feature> Features{get ; set ;}
         public DbSet<ReportOrder> ReportOrders { get; set; }
-public DbSet<PropertyPriceHistory> PropertyPriceHistories { get; set; }
-public DbSet<BookingPayment> BookingPayments { get; set; }
-public DbSet<DistrictPriceHistory> DistrictPriceHistories { get; set; }
+        public DbSet<PropertyPriceHistory> PropertyPriceHistories { get; set; }
+        public DbSet<BookingPayment> BookingPayments { get; set; }
+        public DbSet<ValuationHistory> ValuationHistories { get; set; }
+
+
+        //<<<<<<< HEAD
+        public DbSet<DistrictPriceHistory> DistrictPriceHistories { get; set; }
+        public object DistrictPriceHistory { get; internal set; }
+        //=======
+        //public DbSet<BookingPayment> BookingPayments { get; set; }
+        //>>>>>>> 02b43b58d5d86a20d8f5436f5d65824c7904293d
+
+        //public DbSet<BookingPayment> BookingPayments { get; set; }
+        //>>>>>>> 02b43b58d5d86a20d8f5436f5d65824c7904293d
+
 
 
         //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
