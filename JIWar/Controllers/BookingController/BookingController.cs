@@ -39,12 +39,17 @@ namespace Jiwar.Controllers
             return Ok(await _service.GetAllAsync());
         }
 
+        [Authorize]
         [HttpPost]
-        public async Task<IActionResult> Create(CreateBookingDto dto)
+        public async Task<IActionResult> Create([FromBody] CreateBookingDto dto)
         {
-            var result = await _service.CreateAsync(dto);
+            var customerId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var result = await _service.CreateAsync(dto, customerId);
             return CreatedAtAction(nameof(Get), new { id = result.Id }, result);
         }
+
+
 
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, CreateBookingDto dto)

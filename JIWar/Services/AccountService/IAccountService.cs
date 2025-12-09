@@ -20,6 +20,11 @@ namespace Jiwar.Account.DTOs
         Task<ResultViewModel<string>> ForgetPasswordAsync(ForgetPasswordDto dto);
         Task<ResultViewModel<string>> ResetPasswordAsync(ResetPasswordDto dto);
         Task<ResultViewModel<UserResponseDTO>> EditProfileAsync(ClaimsPrincipal userClaims, EditProfileDto dto);
+        Task<bool> RoleExistsAsync(string roleName);
+        Task AddUserToRoleAsync(User user, string roleName);
+        Task AddPropertyOwnerAsync(PropertyOwner owner);
+        Task AddInteriorDesignerAsync(InteriorDesigner designer);
+
 
 
     }
