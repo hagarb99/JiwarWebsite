@@ -120,34 +120,45 @@ namespace Jiwar.Account.Services
             return ResultViewModel<string>.Ok("Password reset successfully.", "");
         }
 
-        public async Task<ResultViewModel<UserResponseDTO>> EditProfileAsync(EditProfileDto dto)
+        public async Task<ResultViewModel<UserResponseDTO>> EditProfileAsync(ClaimsPrincipal userClaims, EditProfileDto dto)
         {
-            var user = await repo.FindByIdAsync(dto.UserId);
+            // استخراج الـ UserId من التوكن
+            var user = await repo.GetUserFromClaimsAsync(userClaims);
+
             if (user == null)
                 return ResultViewModel<UserResponseDTO>.Fail("User not found.");
 
+            // تحديث البيانات
             if (!string.IsNullOrEmpty(dto.Name))
                 user.Name = dto.Name;
+
             if (!string.IsNullOrEmpty(dto.Email))
                 user.Email = dto.Email;
+
             if (!string.IsNullOrEmpty(dto.PhoneNumber))
                 user.PhoneNumber = dto.PhoneNumber;
+
             if (!string.IsNullOrEmpty(dto.ProfilePicURL))
                 user.ProfilePicURL = dto.ProfilePicURL;
 
             var result = await repo.UpdateUserAsync(user);
+
             if (!result.Succeeded)
                 return ResultViewModel<UserResponseDTO>.Fail("Failed to update profile.");
-            return ResultViewModel<UserResponseDTO>.Ok("Profile updated successfully.", new UserResponseDTO
-            {
-                Id = user.Id,
-                Name = user.Name,
-                Email = user.Email,
-                Role = user.Role,
-                ProfilePicURL = user.ProfilePicURL
-            });
 
+            return ResultViewModel<UserResponseDTO>.Ok(
+                "Profile updated successfully.",
+                new UserResponseDTO
+                {
+                    Id = user.Id,
+                    Name = user.Name,
+                    Email = user.Email,
+                    Role = user.Role,
+                    ProfilePicURL = user.ProfilePicURL
+                }
+            );
         }
+
 
     }
 }

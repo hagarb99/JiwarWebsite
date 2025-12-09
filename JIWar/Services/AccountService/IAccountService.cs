@@ -19,7 +19,7 @@ namespace Jiwar.Account.DTOs
         Task<ResultViewModel<string>> ChangePasswordAsync(ClaimsPrincipal userClaims, ChangePasswordDto dto);
         Task<ResultViewModel<string>> ForgetPasswordAsync(ForgetPasswordDto dto);
         Task<ResultViewModel<string>> ResetPasswordAsync(ResetPasswordDto dto);
-        Task<ResultViewModel<UserResponseDTO>> EditProfileAsync(EditProfileDto dto);
+        Task<ResultViewModel<UserResponseDTO>> EditProfileAsync(ClaimsPrincipal userClaims, EditProfileDto dto);
 
 
     }
