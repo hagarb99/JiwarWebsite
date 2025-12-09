@@ -11,6 +11,7 @@ using Jiwar.Models.Offers;
 using Jiwar.Repositories;
 using Jiwar.Repositories.DistrictAnalyticService;
 using Jiwar.Repositories.Interfaces;
+using Jiwar.Repositories.Valuation;
 using Jiwar.Service;
 using Jiwar.Services;
 using Jiwar.Services.ValuationService;
@@ -91,8 +92,7 @@ namespace Jiwar
             builder.Services.AddScoped<IReportRepository, ReportRepository>();
             builder.Services.AddScoped<IReportOrderRepository, ReportOrderRepository>();
             builder.Services.AddScoped<IBookingPaymentRepository, BookingPaymentRepository>();
-            builder.Services.AddScoped<IValuationHistoryService, ValuationHistoryService>();
-
+            builder.Services.AddScoped<IValuationHistoryRepository, ValuationHistoryRepository>();
 
             // Services
             builder.Services.AddScoped<IPropertyService, PropertyService>();
@@ -106,6 +106,8 @@ namespace Jiwar
             builder.Services.AddScoped<IPropertyAnalyticsService, PropertyAnalyticsService>();
             builder.Services.AddScoped<IAnalyticsRepository, AnalyticsRepository>();
             builder.Services.AddScoped<IAdminAnalyticsService, AdminAnalyticsService>();
+            builder.Services.AddScoped<IValuationHistoryService, ValuationHistoryService>();
+
 
 
 

@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace GEWAR
 {
-
+    
     /// <summary>
     /// SOMEEE SQL Server connection string
     /// /user id=hagarb_SQLLogin_1;pwd=zlvwboiwro
