@@ -139,16 +139,10 @@ namespace Jiwar.Account
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            var user = User;
-            try
-            {
-                var updatedUser = await accountService.EditProfileAsync(dto);
-                return Ok(updatedUser);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new { message = ex.Message });
-            }
+
+            var result = await accountService.EditProfileAsync(User, dto);
+
+            return Ok(result);
         }
 
         [HttpPost("{propertyId}/chat/send")]
