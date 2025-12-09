@@ -10,7 +10,9 @@ public class PropertyOwnerConfiguration : IEntityTypeConfiguration<PropertyOwner
         builder.ToTable("PropertyOwners");
 
         // 🔑 Primary Key
-        builder.HasKey(po => po.Id);
+        builder.HasKey(po => po.UserID);
+        builder.Property(po => po.UserID)
+               .IsRequired(); 
 
         // 🔗 علاقة مع User (One-to-One)
         builder.HasOne(po => po.Owneruser)

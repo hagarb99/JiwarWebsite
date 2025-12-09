@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 public interface IPropertyRepository : IGenericRepository<Property>
 {
-    Task<IEnumerable<Property>> GetMyPropertiesAsync(int ownerId);
+    Task<IEnumerable<Property>> GetMyPropertiesAsync(string ownerId);
     Task<Property> GetPropertyDetailsAsync(int id);
     Task AddPropertyMediaAsync(PropertyMedia media);
     Task RemovePropertyMediaAsync(int mediaId);

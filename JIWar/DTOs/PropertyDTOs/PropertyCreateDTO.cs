@@ -3,18 +3,19 @@ namespace JIWar.PropertyOwner
     
 public class PropertyCreateDTO
 {
-    public string Title { get; set; }
-    public string Description { get; set; }
-    public decimal Price { get; set; }
-    public decimal DownPayment { get; set; }
-    public string Address { get; set; }
-    public int Rooms { get; set; }
-    public int Bathrooms { get; set; }
-    public double Area { get; set; }
-    public int OwnerId { get; set; }
-    public int CategoryId { get; set; }
-
-    public string? Tour360Url { get; set; }
+        public string Title { get; set; }            // required
+        public string Description { get; set; }      // required
+        public decimal Price { get; set; }           // required
+        public string Address { get; set; }          // required
+        public string City { get; set; }             // required
+        public int CategoryId { get; set; }          // required
+        public string? Tour360Url { get; set; }      // optional
+        public int? Rooms { get; set; }              // optional
+        public int? Bathrooms { get; set; }          // optional
+        public decimal? Area { get; set; }           // optional
+        public decimal? LocationLat { get; set; }    // optional
+        public decimal? LocationLang { get; set; }   // optional
+        public string? District { get; set; }        // optional
     }
 
 }
