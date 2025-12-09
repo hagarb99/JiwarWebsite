@@ -14,6 +14,7 @@ using Jiwar.Repositories.Interfaces;
 using Jiwar.Repositories.Valuation;
 using Jiwar.Service;
 using Jiwar.Services;
+using Jiwar.Services.GoogleService;
 using Jiwar.Services.ValuationService;
 using JIWAR.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -148,7 +149,8 @@ namespace Jiwar
             builder.Services.AddScoped<IReportService, ReportService>();
             builder.Services.AddScoped<IAccountService, AccountService>();
             builder.Services.AddScoped<IPaymentService, PaymentService>();
-            builder.Services.AddScoped<IBookingService, BookingService>();  // ← المهم
+            builder.Services.AddScoped<IBookingService, BookingService>();
+            builder.Services.AddScoped<GoogleAuthService>();
 
             builder.Services.AddScoped<TokenService>();
 
