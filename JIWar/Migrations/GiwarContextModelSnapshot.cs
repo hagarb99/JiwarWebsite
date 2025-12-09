@@ -460,16 +460,16 @@ namespace Jiwar.Migrations
                     b.Property<int>("Id")
                         .HasColumnType("int");
 
-                    b.Property<bool>("IsAvaliable")
+                    b.Property<bool?>("IsAvaliable")
                         .HasColumnType("bit");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<decimal>("LocationLang")
+                    b.Property<decimal?>("LocationLang")
                         .HasColumnType("decimal(10,6)");
 
-                    b.Property<decimal>("LocationLat")
+                    b.Property<decimal?>("LocationLat")
                         .HasColumnType("decimal(10,6)");
 
                     b.Property<int?>("NumBathrooms")

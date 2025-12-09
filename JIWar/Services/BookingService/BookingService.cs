@@ -11,10 +11,11 @@ namespace Jiwar.Services
     public class BookingService : IBookingService
     {
         private readonly IBookingRepository _bookingRepo;
-
-        public BookingService(IBookingRepository bookingRepo)
+        private readonly IPropertyRepository _propertyRepo;
+        public BookingService(IBookingRepository bookingRepo , IPropertyRepository _propertyRepo)
         {
             _bookingRepo = bookingRepo;
+            this._propertyRepo = _propertyRepo;
         }
 
         public async Task<BookingDto> GetByIdAsync(int id)
@@ -31,24 +32,48 @@ namespace Jiwar.Services
             return bookings.Select(MapToDto).ToList();
         }
 
-        public async Task<BookingDto> CreateAsync(CreateBookingDto dto)
+        public async Task<BookingDto> CreateAsync(CreateBookingDto dto, string customerId)
         {
+            // 1. Get property details
+            var property = await _propertyRepo.GetPropertyDetailsAsync(dto.PropertyID);
+
+            if (property == null)
+                throw new Exception("Property not found");
+
+            // 2. Validate dates
+            if (dto.StartDate >= dto.EndDate)
+                throw new Exception("End date must be after start date");
+
+            // 3. Check for overlapping bookings
+            var overlapping = (await _bookingRepo.GetBookingsByProperty(dto.PropertyID))
+                .Any(b => b.StartDate < dto.EndDate && dto.StartDate < b.EndDate);
+            if (overlapping)
+                throw new Exception("Property already booked for selected dates");
+
+            // 4. Calculate cost
+            var totalDays = (dto.EndDate - dto.StartDate).Days;
+            var cost = property.Price * totalDays;
+
+            // TODO: Apply offer if dto.OfferID is provided
+            int? offerId = dto.OfferID == 0 ? null : dto.OfferID;
+            // 5. Create booking
             var booking = new Booking
             {
                 PropertyID = dto.PropertyID,
-                CustomerID = dto.CustomerID,
-                OfferID = dto.OfferID,
+                CustomerID = customerId,
+                OfferID = offerId,
                 StartDate = dto.StartDate,
                 EndDate = dto.EndDate,
-                Cost = dto.Cost,
+                Cost = cost,
                 status = StatusEnum.Pending,
                 PaymentStatus = PaymentStatusEnum.Pending,
-                PaymentMethod = dto.PaymentMethod
+                PaymentMethod  = PaymentMethod.Paymob
             };
 
             var created = await _bookingRepo.AddAsync(booking);
             return MapToDto(created);
         }
+
 
         public async Task<bool> UpdateAsync(int id, CreateBookingDto dto)
         {
@@ -56,11 +81,9 @@ namespace Jiwar.Services
             if (booking == null) return false;
 
             booking.PropertyID = dto.PropertyID;
-            booking.CustomerID = dto.CustomerID;
             booking.OfferID = dto.OfferID;
             booking.StartDate = dto.StartDate;
             booking.EndDate = dto.EndDate;
-            booking.Cost = dto.Cost;
             booking.PaymentMethod = dto.PaymentMethod;
 
             return await _bookingRepo.UpdateAsync(booking);

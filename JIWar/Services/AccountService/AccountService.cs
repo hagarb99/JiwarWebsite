@@ -3,6 +3,7 @@ using GEWAR.Models;
 using Jiwar.Account.DTOs;
 using Jiwar.Controllers;
 using Jiwar.Helpers;
+using Jiwar.Models;
 using Jiwar.Repositories;
 using Microsoft.AspNetCore.Identity;
 using System.Data;
@@ -40,15 +41,31 @@ namespace Jiwar.Account.Services
      );
 
             }
-       
-            return ResultViewModel<UserResponseDTO>.Ok("User registered successfully.", 
-                new UserResponseDTO
+
+            await repo.AddUserToRoleAsync(user, dto.Role);
+
+            if (dto.Role == "PropertyOwner")
             {
-                Id = user.Id,
-                Name = user.Name,
-                Email = user.Email,
-                Role = user.Role,
-            });
+                var owner = new PropertyOwner { UserID = user.Id };
+                await repo.AddPropertyOwnerAsync(owner);
+            }
+            else if (dto.Role == "InteriorDesigner")
+            {
+                var designer = new InteriorDesigner { UserID = user.Id };
+                await repo.AddInteriorDesignerAsync(designer);
+            }
+
+            return ResultViewModel<UserResponseDTO>.Ok(
+                "User registered successfully.",
+                new UserResponseDTO
+                {
+                    Id = user.Id,
+                    Name = user.Name,
+                    Email = user.Email,
+                    Role = user.Role
+                }
+            );
+
 
         }
 
@@ -158,6 +175,27 @@ namespace Jiwar.Account.Services
                 }
             );
         }
+
+        public async Task<bool> RoleExistsAsync(string roleName)
+        {
+            return await repo.RoleExistsAsync(roleName);
+        }
+
+        public async Task AddUserToRoleAsync(User user, string roleName)
+        {
+            await repo.AddUserToRoleAsync(user, roleName);
+        }
+
+        public async Task AddPropertyOwnerAsync(PropertyOwner owner)
+        {
+            await repo.AddPropertyOwnerAsync(owner);
+        }
+
+        public async Task AddInteriorDesignerAsync(InteriorDesigner designer)
+        {
+            await repo.AddInteriorDesignerAsync(designer);
+        }
+
 
 
     }

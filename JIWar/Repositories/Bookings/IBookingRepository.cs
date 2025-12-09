@@ -14,6 +14,8 @@ namespace Jiwar.Repositories
         Task<bool> UpdateAsync(Booking booking);
         Task<bool> DeleteAsync(int id);
         Task<IEnumerable<Booking>> GetBookingsByCustomer(string customerId);
+        Task<IEnumerable<Booking>> GetBookingsByProperty(int PropertyID);
+
         Task<Booking> GetBookingWithRating(int id);
     }
 }
