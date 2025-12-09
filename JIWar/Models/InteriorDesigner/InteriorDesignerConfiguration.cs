@@ -15,7 +15,7 @@ namespace Jiwar.Models
         {
             builder.ToTable("InteriorDesigner");
 
-            builder.HasKey(d => d.DesignerID);
+            builder.HasKey(d => d.UserID);
 
             builder.Property(d => d.Specialization)
                 .HasMaxLength(255)
@@ -27,7 +27,7 @@ namespace Jiwar.Models
 
             builder.HasOne(d => d.User)
                 .WithOne()
-                .HasForeignKey<InteriorDesigner>(d => d.DesignerID)
+                .HasForeignKey<InteriorDesigner>(d => d.UserID)
                 .OnDelete(DeleteBehavior.Cascade);
         }
     }

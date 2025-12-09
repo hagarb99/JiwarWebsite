@@ -4,6 +4,7 @@ using GEWAR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Jiwar.Migrations
 {
     [DbContext(typeof(GiwarContext))]
-    partial class GiwarContextModelSnapshot : ModelSnapshot
+    [Migration("20251208130847_editinttostring")]
+    partial class editinttostring
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -143,7 +146,7 @@ namespace Jiwar.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("InteriorDesignerUserID")
+                    b.Property<string>("InteriorDesignerDesignerID")
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<bool>("IsDeleted")
@@ -160,7 +163,7 @@ namespace Jiwar.Migrations
 
                     b.HasIndex("DesignerID");
 
-                    b.HasIndex("InteriorDesignerUserID");
+                    b.HasIndex("InteriorDesignerDesignerID");
 
                     b.HasIndex("RequestId");
 
@@ -187,7 +190,7 @@ namespace Jiwar.Migrations
 
             modelBuilder.Entity("GEWAR.Models.InteriorDesigner", b =>
                 {
-                    b.Property<string>("UserID")
+                    b.Property<string>("DesignerID")
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<int?>("ExperienceYears")
@@ -207,7 +210,14 @@ namespace Jiwar.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
-                    b.HasKey("UserID");
+                    b.Property<string>("UserID")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("DesignerID");
+
+                    b.HasIndex("UserID")
+                        .IsUnique();
 
                     b.ToTable("InteriorDesigner", (string)null);
                 });
@@ -790,7 +800,7 @@ namespace Jiwar.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
-                    b.Property<string>("DesignerUserID")
+                    b.Property<string>("DesignerID")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
@@ -812,7 +822,7 @@ namespace Jiwar.Migrations
 
                     b.HasIndex("CustomerID");
 
-                    b.HasIndex("DesignerUserID");
+                    b.HasIndex("DesignerID");
 
                     b.HasIndex("PropertyID");
 
@@ -1258,7 +1268,11 @@ namespace Jiwar.Migrations
 
             modelBuilder.Entity("Jiwar.Models.PropertyOwner", b =>
                 {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<string>("UserID")
+                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("planTypeEnum")
@@ -1271,7 +1285,10 @@ namespace Jiwar.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.HasKey("UserID");
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserID")
+                        .IsUnique();
 
                     b.ToTable("PropertyOwners", (string)null);
                 });
@@ -1614,7 +1631,7 @@ namespace Jiwar.Migrations
 
                     b.HasOne("GEWAR.Models.InteriorDesigner", null)
                         .WithMany("Designs")
-                        .HasForeignKey("InteriorDesignerUserID");
+                        .HasForeignKey("InteriorDesignerDesignerID");
 
                     b.HasOne("GEWAR.Models.Request", "Request")
                         .WithMany("Designs")
@@ -1824,7 +1841,7 @@ namespace Jiwar.Migrations
 
                     b.HasOne("GEWAR.Models.InteriorDesigner", "Designer")
                         .WithMany()
-                        .HasForeignKey("DesignerUserID")
+                        .HasForeignKey("DesignerID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

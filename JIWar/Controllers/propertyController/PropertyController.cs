@@ -5,8 +5,11 @@ using Jiwar.Models;
 using Jiwar.Service;
 using Jiwar.Services;
 using JIWar.PropertyOwner;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
+[Authorize]
 [ApiController]
 [Route("api/[controller]")]
 public class PropertyController : ControllerBase
@@ -25,14 +28,27 @@ public class PropertyController : ControllerBase
     [HttpPost("add")]
     public async Task<IActionResult> Add(PropertyCreateDTO dto)
     {
+        var ownerId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (ownerId == null)
+            return Unauthorized("Invalid token - missing user id");
+
         var property = new Property
         {
             Title = dto.Title,
             Description = dto.Description,
             Price = dto.Price,
-            OwnerID = dto.OwnerId,
+            Address = dto.Address,
+            City = dto.City,
+            District = dto.District,
+            Area_sqm = dto.Area,
+            NumBedrooms = dto.Rooms,
+            NumBathrooms = dto.Bathrooms,
             CategoryId = dto.CategoryId,
-            Tour360Url = dto.Tour360Url // حفظ الرابط الجديد
+            Tour360Url = dto.Tour360Url,
+            LocationLat = dto.LocationLat,
+            LocationLang = dto.LocationLang,
+            OwnerID = ownerId,
+            IsAvaliable = true
         };
 
         await _propertyService.AddPropertyAsync(property);
@@ -76,8 +92,8 @@ public class PropertyController : ControllerBase
         return result ? Ok("Deleted Successfully") : NotFound("Property Not Found");
     }
 
-    [HttpGet("my/{ownerId:int}")]
-    public async Task<IActionResult> MyProperties(int ownerId)
+    [HttpGet("my/{ownerId}")]
+    public async Task<IActionResult> MyProperties(string ownerId)
     {
         var list = await _propertyService.GetMyPropertiesAsync(ownerId);
         return Ok(list);

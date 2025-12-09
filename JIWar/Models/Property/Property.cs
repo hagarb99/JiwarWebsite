@@ -11,12 +11,12 @@ namespace GEWAR.Models
     public class Property : BaseModel
     {
         public int PropertyID { get; set; }
-        public int OwnerID { get; set; } // FK → PropertyOwner
+        public string OwnerID { get; set; } // FK → PropertyOwner
         public string Address { get; set; }
         
-        public decimal LocationLat { get; set; }
-        public decimal LocationLang { get; set; } //for google map
-        public string City { get; set; }
+        public decimal? LocationLat { get; set; }
+        public decimal? LocationLang { get; set; } //for google map
+        public string? City { get; set; }
         public decimal? Area_sqm { get; set; }
         public int? NumBedrooms { get; set; }
         public int? NumBathrooms { get; set; }
@@ -24,7 +24,7 @@ namespace GEWAR.Models
         public string? Tour360Url { get; set; }
 
         public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
-        public bool IsAvaliable { get; set; }//booking or not
+        public bool? IsAvaliable { get; set; }//booking or not
 
         //enum for status
         public PropEnum statusEnum { get; set; }
