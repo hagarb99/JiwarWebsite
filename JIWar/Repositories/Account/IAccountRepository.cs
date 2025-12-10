@@ -1,4 +1,5 @@
 ﻿using GEWAR.Models;
+using Jiwar.Models;
 using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
 
@@ -15,6 +16,10 @@ namespace Jiwar.Repositories
         Task<IdentityResult> ChangePasswordAsync(User user, string currentPassword, string newPassword);
         Task<IdentityResult> UpdateUserAsync(User user);
         Task<User?> GetUserFromClaimsAsync(ClaimsPrincipal userClaims);
+        Task<bool> RoleExistsAsync(string roleName);
+        Task AddUserToRoleAsync(User user, string roleName);
+        Task AddPropertyOwnerAsync(PropertyOwner owner);
+        Task AddInteriorDesignerAsync(InteriorDesigner designer);
 
     }
 }

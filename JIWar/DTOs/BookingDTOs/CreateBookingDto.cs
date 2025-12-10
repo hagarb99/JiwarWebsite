@@ -5,14 +5,10 @@ namespace Jiwar.DTOs.BookingDTOs
     public class CreateBookingDto
     {
         public int PropertyID { get; set; }
-        public string CustomerID { get; set; }
-        public int? OfferID { get; set; }
-        public StatusEnum Status { get; set; }
+        public DateTime StartDate { get; set; }
+        public DateTime EndDate { get; set; }
+        public int? OfferID { get; set; } // optional
         public PaymentMethod PaymentMethod { get; set; }
-        public PaymentStatusEnum? PaymentStatus { get; set; }
-        public DateTime? StartDate { get; set; }
-        public DateTime? EndDate { get; set; }
-        public decimal Cost { get; set; }
     }
 
 }

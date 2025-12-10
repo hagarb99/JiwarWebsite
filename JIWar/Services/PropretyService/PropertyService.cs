@@ -1,9 +1,11 @@
+using GEWAR;
 using GEWAR.Models;
 using Jiwar.DTOs.PropertyDTOs;
 using Jiwar.Enum;
 using Jiwar.Models;
 using Jiwar.Repositories;
 using Jiwar.Repositories.Interfaces;
+using Microsoft.EntityFrameworkCore;
 namespace Jiwar.Service
 {
     public class PropertyService : IPropertyService
@@ -16,11 +18,27 @@ namespace Jiwar.Service
         }
 
         // 1. Add Property
+        //public async Task<Property> AddPropertyAsync(Property property)
+        //{
+        //    await _propertyRepo.AddAsync(property);
+        //    return property;
+        //}
+
+        private readonly GiwarContext _context;
+
+        public PropertyService(IPropertyRepository propertyRepo, GiwarContext context)
+        {
+            _propertyRepo = propertyRepo;
+            _context = context;
+        }
+
         public async Task<Property> AddPropertyAsync(Property property)
         {
-            await _propertyRepo.AddAsync(property);
+            _context.Properties.Add(property);
+            await _context.SaveChangesAsync();
             return property;
         }
+
 
         // 2. Update Property
         public async Task<bool> UpdatePropertyAsync(Property property)

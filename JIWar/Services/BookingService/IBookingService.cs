@@ -6,7 +6,7 @@ namespace Jiwar.Repositories
     {
         Task<BookingDto> GetByIdAsync(int id);
         Task<List<BookingDto>> GetAllAsync();
-        Task<BookingDto> CreateAsync(CreateBookingDto dto);
+        Task<BookingDto> CreateAsync(CreateBookingDto dto, string customerId);
         Task<bool> UpdateAsync(int id, CreateBookingDto dto);
         Task<bool> DeleteAsync(int id);
     }

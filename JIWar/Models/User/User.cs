@@ -19,7 +19,9 @@ namespace GEWAR.Models
         public string SentMessages { get; internal set; }
         public string Role { get; set; }
         public virtual PropertyOwner propertyOwner { get; set; }
-        
+
+        public string GoogleId { get; set; }
+
 
         public virtual ICollection<InvestmentPortfolio> InvestmentPortfolios { get; set; } = new List<InvestmentPortfolio>();
         public virtual ICollection<Offer> Offers { get; set; } = new List<Offer>();

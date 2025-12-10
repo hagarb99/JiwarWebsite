@@ -1,5 +1,8 @@
-﻿using GEWAR.Models;
+﻿using GEWAR;
+using GEWAR.Models;
+using Jiwar.Models;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
 namespace Jiwar.Repositories
@@ -8,11 +11,15 @@ namespace Jiwar.Repositories
     {
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly GiwarContext _context;
 
-        public AccountRepository(UserManager<User> userManager, SignInManager<User> signInManager)
+        public AccountRepository(UserManager<User> userManager, SignInManager<User> signInManager, RoleManager<IdentityRole> _roleManager, GiwarContext _context)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            this._roleManager = _roleManager;
+            this._context = _context;
         }
 
         public Task<IdentityResult> CreateUserAsync(User user, string password)
@@ -46,6 +53,35 @@ namespace Jiwar.Repositories
         {
             return _userManager.GetUserAsync(userClaims);
         }
+
+        public Task<bool> RoleExistsAsync(string roleName)
+        {
+            return _roleManager.RoleExistsAsync(roleName); 
+        }
+
+        public async Task AddUserToRoleAsync(User user, string roleName)
+        {
+            if (!await _roleManager.RoleExistsAsync(roleName))
+            {
+                await _roleManager.CreateAsync(new IdentityRole(roleName));
+            }
+
+            await _userManager.AddToRoleAsync(user, roleName); 
+        }
+
+        public async Task AddPropertyOwnerAsync(PropertyOwner owner)
+        {
+            await _context.PropertyOwners.AddAsync(owner);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task AddInteriorDesignerAsync(InteriorDesigner designer)
+        {
+            await _context.InteriorDesigners.AddAsync(designer);
+            await _context.SaveChangesAsync();
+        }
+
+
     }
 
 

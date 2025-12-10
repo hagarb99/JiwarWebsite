@@ -1,15 +1,16 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using GEWAR;
+using GEWAR.Models;
+using GEWAR.Models.Configurations;
+using Jiwar.DTOs.BookingDTOs;
+using Jiwar.Models;
+using Jiwar.Repositories;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using System.Collections.Generic;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Jiwar.Models;
-using Jiwar.Repositories;
-using Jiwar.DTOs.BookingDTOs;
-using GEWAR.Models.Configurations;
-using System.Collections.Generic;
 using System.Threading.Tasks;
-using GEWAR.Models;
-using GEWAR;
 
 
 namespace Jiwar.Repositories
@@ -82,6 +83,15 @@ namespace Jiwar.Repositories
             return await giwarContext.Set<Booking>()
                 .Include(b => b.BookingRating)
                 .FirstOrDefaultAsync(b => b.Id == id);
+        }
+
+        public async Task<IEnumerable<Booking>> GetBookingsByProperty(int PropertyID)
+        {
+            return await giwarContext.Set<Booking>()
+                .Where(b => b.PropertyID == PropertyID)
+                .Include(b => b.Customer)
+                .Include(b => b.Offer)
+                .ToListAsync();
         }
     }
 }
