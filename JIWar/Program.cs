@@ -1,4 +1,6 @@
-﻿using GEWAR;
+﻿using System.Text;
+using AutoMapper;
+using GEWAR;
 using GEWAR.Configurations;
 using GEWAR.Models;
 using GEWAR.Models.Configurations;
@@ -14,14 +16,14 @@ using Jiwar.Repositories.Interfaces;
 using Jiwar.Repositories.Valuation;
 using Jiwar.Service;
 using Jiwar.Services;
+using Jiwar.Services.DesignerService;
 using Jiwar.Services.ValuationService;
 using JIWAR.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
-using System.Text;
-
 
 
 namespace Jiwar
@@ -114,6 +116,7 @@ namespace Jiwar
             //Dependency Injection for Repositories and Services
             // Generic
             builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+
             // Repositories
             builder.Services.AddScoped<IAccountRepository, AccountRepository>();
             builder.Services.AddScoped<IBookingRepository, BookingRepository>();
@@ -132,6 +135,12 @@ namespace Jiwar
             builder.Services.AddScoped<IAccountService, AccountService>();
             builder.Services.AddScoped<IPaymentService, PaymentService>();
             builder.Services.AddScoped<IBookingService, BookingService>();  // ← المهم
+                                                                            // Replace this line:
+                                                                            // builder.Services.AddScoped<DesignerService, IDesignerService>();  
+
+            // With this corrected line:
+            builder.Services.AddScoped<IDesignerService, DesignerService>();
+           
 
             builder.Services.AddScoped<TokenService>();
 
@@ -140,6 +149,7 @@ namespace Jiwar
             builder.Services.AddScoped<IAnalyticsRepository, AnalyticsRepository>();
             builder.Services.AddScoped<IAdminAnalyticsService, AdminAnalyticsService>();
             builder.Services.AddScoped<IValuationHistoryService, ValuationHistoryService>();
+            builder.Services.AddAutoMapper(options => options.AddProfile<DesignerProfile>());
 
 
 

@@ -22,7 +22,7 @@ namespace GEWAR.Models
 
         // علاقات أخرى لو عندك
         public virtual User User { get; set; }
-        public virtual InteriorDesigner Designer { get; set; }
+        //public virtual InteriorDesigner Designer { get; set; }
         public virtual ICollection<Design> Designs { get; set; } = new List<Design>();
 
     }

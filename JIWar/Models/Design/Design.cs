@@ -17,6 +17,7 @@ namespace GEWAR.Models
         // 🔗 Navigation Properties
         public virtual Request?  Request { get; set; }
         public virtual InteriorDesigner? InteriorDesigner { get; set; }
+        public int RequestID { get; internal set; }
     }
 }
     
