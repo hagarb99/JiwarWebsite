@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Jiwar.Migrations
 {
     [DbContext(typeof(GiwarContext))]
-    [Migration("20251120125603_init")]
+    [Migration("20251210112100_init")]
     partial class init
     {
         /// <inheritdoc />
@@ -24,55 +24,6 @@ namespace Jiwar.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
-
-            modelBuilder.Entity("GEWAR.Models.Booking", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<decimal>("Cost")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<string>("CustomerID")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<DateTime?>("EndDate")
-                        .HasColumnType("datetime");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<int?>("OfferID")
-                        .HasColumnType("int");
-
-                    b.Property<string>("PaymentStatus")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<int>("PropertyID")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("StartDate")
-                        .HasColumnType("datetime");
-
-                    b.Property<string>("status")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CustomerID");
-
-                    b.HasIndex("OfferID");
-
-                    b.HasIndex("PropertyID");
-
-                    b.ToTable("Booking", "Transactions");
-                });
 
             modelBuilder.Entity("GEWAR.Models.Chat", b =>
                 {
@@ -94,6 +45,9 @@ namespace Jiwar.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
 
+                    b.Property<int>("PropertyID")
+                        .HasColumnType("int");
+
                     b.Property<string>("ReceiverID")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
@@ -108,6 +62,8 @@ namespace Jiwar.Migrations
                         .HasDefaultValueSql("GETUTCDATE()");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("PropertyID");
 
                     b.HasIndex("ReceiverID");
 
@@ -190,13 +146,13 @@ namespace Jiwar.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("InteriorDesignerDesignerID")
+                    b.Property<string>("InteriorDesignerUserID")
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<int?>("RequestId")
+                    b.Property<int>("RequestID")
                         .HasColumnType("int");
 
                     b.Property<string>("SelectedStyle")
@@ -207,16 +163,34 @@ namespace Jiwar.Migrations
 
                     b.HasIndex("DesignerID");
 
-                    b.HasIndex("InteriorDesignerDesignerID");
+                    b.HasIndex("InteriorDesignerUserID");
 
-                    b.HasIndex("RequestId");
+                    b.HasIndex("RequestID");
 
                     b.ToTable("Design", (string)null);
                 });
 
+            modelBuilder.Entity("GEWAR.Models.Feature", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Features", (string)null);
+                });
+
             modelBuilder.Entity("GEWAR.Models.InteriorDesigner", b =>
                 {
-                    b.Property<string>("DesignerID")
+                    b.Property<string>("UserID")
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<int?>("ExperienceYears")
@@ -224,6 +198,10 @@ namespace Jiwar.Migrations
 
                     b.Property<int>("Id")
                         .HasColumnType("int");
+
+                    b.Property<string>("InteriorDesignerID")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
@@ -236,14 +214,7 @@ namespace Jiwar.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
-                    b.Property<string>("UserID")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("DesignerID");
-
-                    b.HasIndex("UserID")
-                        .IsUnique();
+                    b.HasKey("UserID");
 
                     b.ToTable("InteriorDesigner", (string)null);
                 });
@@ -392,11 +363,6 @@ namespace Jiwar.Migrations
                         .HasColumnType("datetime2")
                         .HasDefaultValueSql("GETDATE()");
 
-                    b.Property<string>("PaymentMethod")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
                     b.Property<int>("RelatedID")
                         .HasColumnType("int");
 
@@ -404,14 +370,17 @@ namespace Jiwar.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Status")
-                        .IsRequired()
+                    b.Property<int>("Status")
                         .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("int");
 
                     b.Property<string>("UserID")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("paymentMethod")
+                        .HasMaxLength(50)
+                        .HasColumnType("int");
 
                     b.HasKey("PaymentID");
 
@@ -471,6 +440,9 @@ namespace Jiwar.Migrations
                     b.Property<decimal?>("Area_sqm")
                         .HasColumnType("decimal(10,2)");
 
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("int");
+
                     b.Property<string>("City")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -481,19 +453,31 @@ namespace Jiwar.Migrations
                         .HasColumnType("datetime2")
                         .HasDefaultValueSql("GETUTCDATE()");
 
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("District")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("EstimatedPrice")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
                     b.Property<int>("Id")
                         .HasColumnType("int");
 
-                    b.Property<bool>("IsAvaliable")
+                    b.Property<bool?>("IsAvaliable")
                         .HasColumnType("bit");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<decimal>("LocationLang")
+                    b.Property<decimal?>("LocationLang")
                         .HasColumnType("decimal(10,6)");
 
-                    b.Property<decimal>("LocationLat")
+                    b.Property<decimal?>("LocationLat")
                         .HasColumnType("decimal(10,6)");
 
                     b.Property<int?>("NumBathrooms")
@@ -502,22 +486,37 @@ namespace Jiwar.Migrations
                     b.Property<int?>("NumBedrooms")
                         .HasColumnType("int");
 
-                    b.Property<int>("OwnerID")
+                    b.Property<string>("OwnerID")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("OwnerUserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<decimal>("Price")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("PropertyType")
                         .HasColumnType("int");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Tour360Url")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("statusEnum")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<string>("userId")
-                        .HasColumnType("nvarchar(450)");
-
                     b.HasKey("PropertyID");
 
                     b.HasIndex("OwnerID");
 
-                    b.HasIndex("userId");
+                    b.HasIndex("OwnerUserId");
 
                     b.ToTable("Properties", "RealEstate");
                 });
@@ -554,6 +553,21 @@ namespace Jiwar.Migrations
                     b.ToTable("PropertyAnalytics", "Analytics");
                 });
 
+            modelBuilder.Entity("GEWAR.Models.PropertyFeature", b =>
+                {
+                    b.Property<int>("PropertyId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("FeatureId")
+                        .HasColumnType("int");
+
+                    b.HasKey("PropertyId", "FeatureId");
+
+                    b.HasIndex("FeatureId");
+
+                    b.ToTable("PropertyFeature", (string)null);
+                });
+
             modelBuilder.Entity("GEWAR.Models.PropertyMedia", b =>
                 {
                     b.Property<int>("Id")
@@ -574,6 +588,9 @@ namespace Jiwar.Migrations
                         .IsRequired()
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
+
+                    b.Property<int>("Order")
+                        .HasColumnType("int");
 
                     b.Property<int>("PropertyID")
                         .HasColumnType("int");
@@ -609,6 +626,10 @@ namespace Jiwar.Migrations
                     b.Property<string>("DesignerID")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("InteriorDesignerID")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
@@ -782,10 +803,6 @@ namespace Jiwar.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
-                    b.Property<string>("DesignerID")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
@@ -803,8 +820,6 @@ namespace Jiwar.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CustomerID");
-
-                    b.HasIndex("DesignerID");
 
                     b.HasIndex("PropertyID");
 
@@ -864,15 +879,26 @@ namespace Jiwar.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int>("DurationInMonths")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("EndDate")
                         .HasColumnType("datetime");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("PlanType")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("Price")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime");
@@ -952,18 +978,17 @@ namespace Jiwar.Migrations
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("bit");
 
-                    b.Property<string>("ProfilePicName")
-                        .IsRequired()
-                        .HasMaxLength(150)
-                        .HasColumnType("nvarchar(150)");
-
                     b.Property<string>("ProfilePicURL")
-                        .IsRequired()
                         .HasMaxLength(250)
                         .HasColumnType("nvarchar(250)");
 
                     b.Property<DateTime>("RegistrationDate")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
@@ -974,11 +999,6 @@ namespace Jiwar.Migrations
                     b.Property<string>("UserName")
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
-
-                    b.Property<string>("UserTypeEnum")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
 
                     b.HasKey("Id");
 
@@ -1118,7 +1138,7 @@ namespace Jiwar.Migrations
                     b.ToTable("BookingRatings", "Ratings");
                 });
 
-            modelBuilder.Entity("Jiwar.Models.PropertyOwner", b =>
+            modelBuilder.Entity("Jiwar.Models.Booking", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -1126,8 +1146,128 @@ namespace Jiwar.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<decimal>("Cost")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("CustomerID")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime?>("EndDate")
+                        .HasColumnType("datetime");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<int?>("OfferID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PaymentMethod")
+                        .HasColumnType("int");
+
+                    b.Property<string>("PaymentStatus")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<int>("PropertyID")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("StartDate")
+                        .HasColumnType("datetime");
+
+                    b.Property<string>("status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CustomerID");
+
+                    b.HasIndex("OfferID");
+
+                    b.HasIndex("PropertyID");
+
+                    b.ToTable("Booking", "Transactions");
+                });
+
+            modelBuilder.Entity("Jiwar.Models.BookingPayment", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("decimal(10,2)");
+
+                    b.Property<int>("BookingID")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETUTCDATE()");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("PaymentMethod")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PaymentReference")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("PaymentStatus")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("UserID")
                         .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BookingID");
+
+                    b.HasIndex("UserID");
+
+                    b.ToTable("BookingPayments", (string)null);
+                });
+
+            modelBuilder.Entity("Jiwar.Models.DistrictPriceHistory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal>("AvgPricePerMeter")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("District")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("RecordDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("DistrictPriceHistories");
+                });
+
+            modelBuilder.Entity("Jiwar.Models.PropertyOwner", b =>
+                {
+                    b.Property<string>("UserID")
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("planTypeEnum")
@@ -1140,12 +1280,157 @@ namespace Jiwar.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserID")
-                        .IsUnique();
+                    b.HasKey("UserID");
 
                     b.ToTable("PropertyOwners", (string)null);
+                });
+
+            modelBuilder.Entity("Jiwar.Models.PropertyPriceHistory", b =>
+                {
+                    b.Property<int>("PropertyPriceHistoryId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PropertyPriceHistoryId"));
+
+                    b.Property<DateTime>("DateRecorded")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("PropertyID")
+                        .HasColumnType("int");
+
+                    b.HasKey("PropertyPriceHistoryId");
+
+                    b.HasIndex("PropertyID");
+
+                    b.ToTable("PropertyPriceHistories", (string)null);
+                });
+
+            modelBuilder.Entity("Jiwar.Models.ReportOrder", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("decimal(10,2)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETUTCDATE()");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("PaymentMethod")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PaymentReference")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("PaymentStatus")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ReportID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserID")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ReportID");
+
+                    b.HasIndex("UserID");
+
+                    b.ToTable("ReportOrders", (string)null);
+                });
+
+            modelBuilder.Entity("Jiwar.Models.Valuation.ValuationHistory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal>("Area")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("Bathrooms")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Bedrooms")
+                        .HasColumnType("int");
+
+                    b.Property<string>("City")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("ConfidenceScore")
+                        .HasPrecision(5, 2)
+                        .HasColumnType("decimal(5,2)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("FactorBreakdownJson")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FinishType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<decimal>("MaxPrice")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("MinPrice")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("MostLikelyPrice")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("PropertyAge")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("View")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("ValuationHistories");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -1281,33 +1566,14 @@ namespace Jiwar.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("GEWAR.Models.Booking", b =>
+            modelBuilder.Entity("GEWAR.Models.Chat", b =>
                 {
-                    b.HasOne("GEWAR.Models.User", "Customer")
-                        .WithMany()
-                        .HasForeignKey("CustomerID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("GEWAR.Models.Offer", "Offer")
-                        .WithMany()
-                        .HasForeignKey("OfferID");
-
                     b.HasOne("GEWAR.Models.Property", "Property")
                         .WithMany()
                         .HasForeignKey("PropertyID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Customer");
-
-                    b.Navigation("Offer");
-
-                    b.Navigation("Property");
-                });
-
-            modelBuilder.Entity("GEWAR.Models.Chat", b =>
-                {
                     b.HasOne("GEWAR.Models.User", "Receiver")
                         .WithMany()
                         .HasForeignKey("ReceiverID")
@@ -1320,6 +1586,8 @@ namespace Jiwar.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.Navigation("Property");
+
                     b.Navigation("Receiver");
 
                     b.Navigation("Sender");
@@ -1327,7 +1595,7 @@ namespace Jiwar.Migrations
 
             modelBuilder.Entity("GEWAR.Models.Complaint", b =>
                 {
-                    b.HasOne("GEWAR.Models.Booking", "Booking")
+                    b.HasOne("Jiwar.Models.Booking", "Booking")
                         .WithMany()
                         .HasForeignKey("BookingID")
                         .OnDelete(DeleteBehavior.Restrict);
@@ -1360,12 +1628,13 @@ namespace Jiwar.Migrations
 
                     b.HasOne("GEWAR.Models.InteriorDesigner", null)
                         .WithMany("Designs")
-                        .HasForeignKey("InteriorDesignerDesignerID");
+                        .HasForeignKey("InteriorDesignerUserID");
 
                     b.HasOne("GEWAR.Models.Request", "Request")
                         .WithMany("Designs")
-                        .HasForeignKey("RequestId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .HasForeignKey("RequestID")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.Navigation("InteriorDesigner");
 
@@ -1462,13 +1731,13 @@ namespace Jiwar.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("GEWAR.Models.User", "user")
+                    b.HasOne("GEWAR.Models.User", "OwnerUser")
                         .WithMany()
-                        .HasForeignKey("userId");
+                        .HasForeignKey("OwnerUserId");
+
+                    b.Navigation("OwnerUser");
 
                     b.Navigation("PropertyOwner");
-
-                    b.Navigation("user");
                 });
 
             modelBuilder.Entity("GEWAR.Models.PropertyAnalytics", b =>
@@ -1478,6 +1747,25 @@ namespace Jiwar.Migrations
                         .HasForeignKey("PropertyID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Property");
+                });
+
+            modelBuilder.Entity("GEWAR.Models.PropertyFeature", b =>
+                {
+                    b.HasOne("GEWAR.Models.Feature", "Feature")
+                        .WithMany("PropertyFeatures")
+                        .HasForeignKey("FeatureId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("GEWAR.Models.Property", "Property")
+                        .WithMany("PropertyFeatures")
+                        .HasForeignKey("PropertyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Feature");
 
                     b.Navigation("Property");
                 });
@@ -1525,7 +1813,7 @@ namespace Jiwar.Migrations
 
             modelBuilder.Entity("GEWAR.Models.Report", b =>
                 {
-                    b.HasOne("GEWAR.Models.Booking", "Booking")
+                    b.HasOne("Jiwar.Models.Booking", "Booking")
                         .WithMany()
                         .HasForeignKey("BookingID")
                         .OnDelete(DeleteBehavior.SetNull);
@@ -1549,19 +1837,11 @@ namespace Jiwar.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("GEWAR.Models.InteriorDesigner", "Designer")
-                        .WithMany()
-                        .HasForeignKey("DesignerID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("GEWAR.Models.Property", "property")
                         .WithMany()
                         .HasForeignKey("PropertyID")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
-
-                    b.Navigation("Designer");
 
                     b.Navigation("User");
 
@@ -1646,7 +1926,7 @@ namespace Jiwar.Migrations
 
             modelBuilder.Entity("JIWAR.Models.BookingRating", b =>
                 {
-                    b.HasOne("GEWAR.Models.Booking", "Booking")
+                    b.HasOne("Jiwar.Models.Booking", "Booking")
                         .WithOne("BookingRating")
                         .HasForeignKey("JIWAR.Models.BookingRating", "BookingID")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -1663,15 +1943,100 @@ namespace Jiwar.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("Jiwar.Models.Booking", b =>
+                {
+                    b.HasOne("GEWAR.Models.User", "Customer")
+                        .WithMany()
+                        .HasForeignKey("CustomerID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("GEWAR.Models.Offer", "Offer")
+                        .WithMany()
+                        .HasForeignKey("OfferID");
+
+                    b.HasOne("GEWAR.Models.Property", "Property")
+                        .WithMany()
+                        .HasForeignKey("PropertyID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Customer");
+
+                    b.Navigation("Offer");
+
+                    b.Navigation("Property");
+                });
+
+            modelBuilder.Entity("Jiwar.Models.BookingPayment", b =>
+                {
+                    b.HasOne("Jiwar.Models.Booking", "Booking")
+                        .WithMany()
+                        .HasForeignKey("BookingID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("GEWAR.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserID")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Booking");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Jiwar.Models.PropertyOwner", b =>
                 {
-                    b.HasOne("GEWAR.Models.User", "user")
+                    b.HasOne("GEWAR.Models.User", "Owneruser")
                         .WithOne("propertyOwner")
                         .HasForeignKey("Jiwar.Models.PropertyOwner", "UserID")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.Navigation("user");
+                    b.Navigation("Owneruser");
+                });
+
+            modelBuilder.Entity("Jiwar.Models.PropertyPriceHistory", b =>
+                {
+                    b.HasOne("GEWAR.Models.Property", "Property")
+                        .WithMany("PriceHistory")
+                        .HasForeignKey("PropertyID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Property");
+                });
+
+            modelBuilder.Entity("Jiwar.Models.ReportOrder", b =>
+                {
+                    b.HasOne("GEWAR.Models.Report", "Report")
+                        .WithMany()
+                        .HasForeignKey("ReportID")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("GEWAR.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserID")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Report");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Jiwar.Models.Valuation.ValuationHistory", b =>
+                {
+                    b.HasOne("GEWAR.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -1725,10 +2090,9 @@ namespace Jiwar.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("GEWAR.Models.Booking", b =>
+            modelBuilder.Entity("GEWAR.Models.Feature", b =>
                 {
-                    b.Navigation("BookingRating")
-                        .IsRequired();
+                    b.Navigation("PropertyFeatures");
                 });
 
             modelBuilder.Entity("GEWAR.Models.InteriorDesigner", b =>
@@ -1749,7 +2113,11 @@ namespace Jiwar.Migrations
 
                     b.Navigation("PortfolioProperties");
 
+                    b.Navigation("PriceHistory");
+
                     b.Navigation("PropertyAnalytics");
+
+                    b.Navigation("PropertyFeatures");
 
                     b.Navigation("PropertyMedia");
 
@@ -1789,6 +2157,12 @@ namespace Jiwar.Migrations
                     b.Navigation("WishLists");
 
                     b.Navigation("propertyOwner")
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Jiwar.Models.Booking", b =>
+                {
+                    b.Navigation("BookingRating")
                         .IsRequired();
                 });
 

@@ -72,7 +72,7 @@ namespace GEWAR
         //public DbSet<BookingPayment> BookingPayments { get; set; }
         //>>>>>>> 02b43b58d5d86a20d8f5436f5d65824c7904293d
         //public DbSet<BookingPayment> BookingPayments { get; set; }
-//>>>>>>> 02b43b58d5d86a20d8f5436f5d65824c7904293d
+        //>>>>>>> 02b43b58d5d86a20d8f5436f5d65824c7904293d
 
 
 
@@ -83,6 +83,33 @@ namespace GEWAR
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            // أولًا: تحديد precision للأعمدة decimal
+            modelBuilder.Entity<Property>(entity =>
+            {
+                entity.Property(e => e.EstimatedPrice).HasPrecision(18, 2);
+                entity.Property(e => e.Price).HasPrecision(18, 2);
+            });
+
+            modelBuilder.Entity<Subscription>(entity =>
+            {
+                entity.Property(e => e.Price).HasPrecision(18, 2);
+            });
+
+            modelBuilder.Entity<DistrictPriceHistory>(entity =>
+            {
+                entity.Property(e => e.AvgPricePerMeter).HasPrecision(18, 2);
+            });
+
+            modelBuilder.Entity<ValuationHistory>(entity =>
+            {
+                entity.Property(e => e.Area).HasPrecision(18, 2);
+                entity.Property(e => e.ConfidenceScore).HasPrecision(5, 2);
+                entity.Property(e => e.MaxPrice).HasPrecision(18, 2);
+                entity.Property(e => e.MinPrice).HasPrecision(18, 2);
+                entity.Property(e => e.MostLikelyPrice).HasPrecision(18, 2);
+            });
+
+            // ثانياً: تطبيق جميع Configurations
             modelBuilder.ApplyConfiguration(new BookingConfiguration());
             modelBuilder.ApplyConfiguration(new BookingRatingConfiguration());
             modelBuilder.ApplyConfiguration(new ChatConfiguration());
@@ -92,7 +119,7 @@ namespace GEWAR
             modelBuilder.ApplyConfiguration(new InvestmentPortfolioConfiguration());
             modelBuilder.ApplyConfiguration(new NotificationConfiguration());
             modelBuilder.ApplyConfiguration(new OfferConfiguration());
-            modelBuilder.ApplyConfiguration( new PaymentConfiguration());
+            modelBuilder.ApplyConfiguration(new PaymentConfiguration());
             modelBuilder.ApplyConfiguration(new PortfolioPropertyConfiguration());
             modelBuilder.ApplyConfiguration(new PropertyConfiguration());
             modelBuilder.ApplyConfiguration(new PropertyAnalyticsConfiguration());
@@ -114,10 +141,11 @@ namespace GEWAR
             modelBuilder.ApplyConfiguration(new PropertyPriceHistoryConfiguration());
             modelBuilder.ApplyConfiguration(new BookingPaymentConfiguration());
 
-
-
             base.OnModelCreating(modelBuilder);
+
+            // تغيير اسم الجدول للمستخدمين
             modelBuilder.Entity<User>().ToTable("Users");
         }
+
     }
 }
