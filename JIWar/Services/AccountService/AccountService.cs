@@ -5,6 +5,7 @@ using Jiwar.Controllers;
 using Jiwar.Helpers;
 using Jiwar.Models;
 using Jiwar.Repositories;
+using Jiwar.Services.GoogleService;
 using Microsoft.AspNetCore.Identity;
 using System.Data;
 using System.Security.Claims;
@@ -13,14 +14,18 @@ namespace Jiwar.Account.Services
 {
     public class AccountService : IAccountService
     {
-        //private readonly UserManager<User> userManager;
-        //private readonly SignInManager<User> signInManager;
         private readonly IAccountRepository repo;
         private readonly TokenService _tokenService;
-        public AccountService(IAccountRepository repo, TokenService tokenService)
+        private readonly GoogleAuthService _googleAuthService;
+        private readonly UserManager<User> _userManager;
+        public AccountService(IAccountRepository repo, TokenService tokenService , GoogleAuthService _googleAuthService,
+            UserManager<User> _userManager
+            )
         {
             this.repo = repo;
             _tokenService = tokenService;
+            this._googleAuthService = _googleAuthService;
+            this._userManager = _userManager;
         }
         public async Task<ResultViewModel<UserResponseDTO>> RegisterAsync(RegisterDto dto)
         {
@@ -75,14 +80,7 @@ namespace Jiwar.Account.Services
             if (user == null)
                 return ResultViewModel<UserResponseDTO>.Fail("Invalid email or password.");
 
-            //var result = await signInManager.CheckPasswordSignInAsync(user, dto.Password, false);
-            //if (!result.Succeeded)
-            //  return  ResultViewModel<UserResponseDTO>.Fail("Your Account under reviewing");
-
-            ////////////////////////////////////////////////////////////
-            //roles
-            //var roles = await userManager.GetRolesAsync(user);
-            var token = _tokenService.CreateToken(user);
+            var token = await _tokenService.CreateTokenAsync(user);
 
             return ResultViewModel<UserResponseDTO>.Ok("Login successful.",
                 new UserResponseDTO
@@ -139,13 +137,12 @@ namespace Jiwar.Account.Services
 
         public async Task<ResultViewModel<UserResponseDTO>> EditProfileAsync(ClaimsPrincipal userClaims, EditProfileDto dto)
         {
-            // استخراج الـ UserId من التوكن
+            
             var user = await repo.GetUserFromClaimsAsync(userClaims);
 
             if (user == null)
                 return ResultViewModel<UserResponseDTO>.Fail("User not found.");
 
-            // تحديث البيانات
             if (!string.IsNullOrEmpty(dto.Name))
                 user.Name = dto.Name;
 
@@ -196,6 +193,41 @@ namespace Jiwar.Account.Services
             await repo.AddInteriorDesignerAsync(designer);
         }
 
+        public async Task<ResultViewModel<UserResponseDTO>> GoogleSignInAsync(string idToken)
+        {
+            var payload = await _googleAuthService.VerifyGoogleTokenAsync(idToken);
+            if (payload == null)
+                return ResultViewModel<UserResponseDTO>.Fail("Invalid Google token");
+
+            var user = await _userManager.FindByEmailAsync(payload.Email);
+            if (user == null)
+            {
+                user = new User
+                {
+                    UserName = payload.Email,
+                    Email = payload.Email,
+                    GoogleId = payload.Subject,
+                    Name = payload.Name,
+                    ProfilePicURL = payload.Picture,
+                    RegistrationDate = DateTime.UtcNow,
+                    Role = "Customer"
+                };
+                var result = await _userManager.CreateAsync(user);
+                if (!result.Succeeded)
+                    return ResultViewModel<UserResponseDTO>.Fail(string.Join("; ", result.Errors.Select(e => e.Description)));
+            }
+
+            var token = await _tokenService.CreateTokenAsync(user);
+
+            return ResultViewModel<UserResponseDTO>.Ok("Login successful", new UserResponseDTO
+            {
+                Email = user.Email,
+                Name = user.Name,
+                GoogleId = user.GoogleId,
+                Role = user.Role,
+                Token = token
+            });
+        }
 
 
     }
