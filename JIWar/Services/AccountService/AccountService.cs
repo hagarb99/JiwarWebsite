@@ -2,6 +2,7 @@
 using GEWAR.Models;
 using Jiwar.Account.DTOs;
 using Jiwar.Controllers;
+using Jiwar.DTOs.AccountDTOs.EditProfileDtos;
 using Jiwar.Helpers;
 using Jiwar.Models;
 using Jiwar.Repositories;
@@ -229,6 +230,24 @@ namespace Jiwar.Account.Services
             });
         }
 
+        public Task UpdateCustomerProfileAsync(Guid userId, CustomerEditProfileDto dto)
+        {
+            throw new NotImplementedException();
+        }
 
+        public Task UpdatePropertyOwnerProfileAsync(Guid userId, PropertyOwnerEditProfileDto dto)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task UpdateInteriorDesignerProfileAsync(Guid userId, InteriorDesignerEditProfileDto dto)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task UpdateAdminProfileAsync(Guid userId, AdminEditProfileDto dto)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

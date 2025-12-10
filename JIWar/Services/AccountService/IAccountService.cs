@@ -1,10 +1,14 @@
-﻿
-using GEWAR.Models;
+﻿using GEWAR.Models;
+using Jiwar.DTOs.AccountDTOs.EditProfileDtos;
 using Jiwar.Helpers;
 using Jiwar.Models;
-using System.Security.Claims;
+using Jiwar.DTOs.AccountDTOs.EditProfileDtos;
+using Jiwar.DTOs.AccountDTOs;
 
-namespace Jiwar.Account.DTOs
+using System.Security.Claims;
+using Jiwar.Account.DTOs;
+
+namespace Jiwar.Account
 {
     public interface IAccountService
     {
@@ -24,6 +28,11 @@ namespace Jiwar.Account.DTOs
         Task AddUserToRoleAsync(User user, string roleName);
         Task AddPropertyOwnerAsync(PropertyOwner owner);
         Task AddInteriorDesignerAsync(InteriorDesigner designer);
+
+        Task UpdateCustomerProfileAsync(Guid userId, CustomerEditProfileDto dto);
+        Task UpdatePropertyOwnerProfileAsync(Guid userId, PropertyOwnerEditProfileDto dto);
+        Task UpdateInteriorDesignerProfileAsync(Guid userId,InteriorDesignerEditProfileDto dto);
+        Task UpdateAdminProfileAsync(Guid userId, AdminEditProfileDto dto);
 
 
 
