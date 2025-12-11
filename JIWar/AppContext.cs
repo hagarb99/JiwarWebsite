@@ -61,29 +61,13 @@ namespace GEWAR
         public DbSet<BookingPayment> BookingPayments { get; set; }
         public DbSet<ValuationHistory> ValuationHistories { get; set; }
 
-
-        //<<<<<<< HEAD
         public DbSet<DistrictPriceHistory> DistrictPriceHistories { get; set; }
         public object DistrictPriceHistory { get; internal set; }
-        //=======
-        //public DbSet<BookingPayment> BookingPayments { get; set; }
-        //>>>>>>> 02b43b58d5d86a20d8f5436f5d65824c7904293d
+       
 
-        //public DbSet<BookingPayment> BookingPayments { get; set; }
-        //>>>>>>> 02b43b58d5d86a20d8f5436f5d65824c7904293d
-        //public DbSet<BookingPayment> BookingPayments { get; set; }
-        //>>>>>>> 02b43b58d5d86a20d8f5436f5d65824c7904293d
-
-
-
-        //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        //{
-        //    optionsBuilder.UseSqlServer("workstation id=JIWARDB.mssql.somee.com;packet size=4096;user id=hagarb_SQLLogin_1;pwd=zlvwboiwro;data source=JIWARDB.mssql.somee.com;persist security info=False;initial catalog=JIWARDB;TrustServerCertificate=True");
-        //}
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            // أولًا: تحديد precision للأعمدة decimal
             modelBuilder.Entity<Property>(entity =>
             {
                 entity.Property(e => e.EstimatedPrice).HasPrecision(18, 2);
