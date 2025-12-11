@@ -1,6 +1,7 @@
 ﻿using GEWAR.Models;
 using Jiwar.Account.DTOs;
 using Jiwar.Account.Services;
+using Jiwar.DTOs.AccountDTOs.EditProfileDtos;
 using Jiwar.DTOs.ChatDTOs;
 using Jiwar.Service;
 using Microsoft.AspNetCore.Authorization;
@@ -12,6 +13,7 @@ using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Jiwar.DTOs.AccountDTOs.EditProfileDtos;
 
 
 namespace Jiwar.Account
@@ -167,6 +169,21 @@ namespace Jiwar.Account
             var result = await accountService.EditProfileAsync(User, dto);
 
             return Ok(result);
+        }
+
+        [Authorize(Roles = "Customer")]
+        [HttpPut("profile/customer")]
+        public async Task<IActionResult> UpdateCustomerProfile([FromBody] CustomerEditProfileDto dto)
+        {
+            var userIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdStr))
+                return Unauthorized(new { message = "User ID not found in token." });
+
+            if (!Guid.TryParse(userIdStr, out var userId))
+                return BadRequest(new { message = "Invalid user id format." });
+
+            await accountService.UpdateCustomerProfileAsync(userId, dto);
+            return NoContent();
         }
 
         [HttpPost("{propertyId}/chat/send")]

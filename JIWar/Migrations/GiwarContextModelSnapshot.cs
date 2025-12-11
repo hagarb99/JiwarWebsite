@@ -149,7 +149,7 @@ namespace Jiwar.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<int?>("RequestId")
+                    b.Property<int>("RequestID")
                         .HasColumnType("int");
 
                     b.Property<string>("SelectedStyle")
@@ -162,7 +162,7 @@ namespace Jiwar.Migrations
 
                     b.HasIndex("InteriorDesignerUserID");
 
-                    b.HasIndex("RequestId");
+                    b.HasIndex("RequestID");
 
                     b.ToTable("Design", (string)null);
                 });
@@ -195,6 +195,10 @@ namespace Jiwar.Migrations
 
                     b.Property<int>("Id")
                         .HasColumnType("int");
+
+                    b.Property<string>("InteriorDesignerID")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
@@ -455,6 +459,7 @@ namespace Jiwar.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("EstimatedPrice")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("Id")
@@ -486,6 +491,7 @@ namespace Jiwar.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<decimal>("Price")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("PropertyType")
@@ -617,6 +623,10 @@ namespace Jiwar.Migrations
                     b.Property<string>("DesignerID")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("InteriorDesignerID")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
@@ -790,10 +800,6 @@ namespace Jiwar.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
-                    b.Property<string>("DesignerUserID")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
@@ -811,8 +817,6 @@ namespace Jiwar.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CustomerID");
-
-                    b.HasIndex("DesignerUserID");
 
                     b.HasIndex("PropertyID");
 
@@ -890,6 +894,7 @@ namespace Jiwar.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("Price")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<DateTime>("StartDate")
@@ -1239,6 +1244,7 @@ namespace Jiwar.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<decimal>("AvgPricePerMeter")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("District")
@@ -1363,6 +1369,7 @@ namespace Jiwar.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<decimal>("Area")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("Bathrooms")
@@ -1376,7 +1383,8 @@ namespace Jiwar.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("ConfidenceScore")
-                        .HasColumnType("decimal(18,2)");
+                        .HasPrecision(5, 2)
+                        .HasColumnType("decimal(5,2)");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -1393,12 +1401,15 @@ namespace Jiwar.Migrations
                         .HasColumnType("bit");
 
                     b.Property<decimal>("MaxPrice")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<decimal>("MinPrice")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<decimal>("MostLikelyPrice")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("PropertyAge")
@@ -1618,8 +1629,9 @@ namespace Jiwar.Migrations
 
                     b.HasOne("GEWAR.Models.Request", "Request")
                         .WithMany("Designs")
-                        .HasForeignKey("RequestId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .HasForeignKey("RequestID")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.Navigation("InteriorDesigner");
 
@@ -1822,19 +1834,11 @@ namespace Jiwar.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("GEWAR.Models.InteriorDesigner", "Designer")
-                        .WithMany()
-                        .HasForeignKey("DesignerUserID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("GEWAR.Models.Property", "property")
                         .WithMany()
                         .HasForeignKey("PropertyID")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
-
-                    b.Navigation("Designer");
 
                     b.Navigation("User");
 
