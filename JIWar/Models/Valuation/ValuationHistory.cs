@@ -27,6 +27,6 @@ namespace Jiwar.Models.Valuation
 
         public DateTime CreatedAt { get; set; } = DateTime.Now;
 
-        public User User { get; set; }
+        public virtual User User { get; set; }
     }
 }

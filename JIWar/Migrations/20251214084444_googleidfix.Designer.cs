@@ -12,13 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Jiwar.Migrations
 {
     [DbContext(typeof(GiwarContext))]
-<<<<<<<< HEAD:JIWar/Migrations/20251210112100_init.Designer.cs
-    [Migration("20251210112100_init")]
-    partial class init
-========
-    [Migration("20251209083752_initials")]
-    partial class initials
->>>>>>>> c0e2779ad13968ca3a0159b3ef358f3140fafa09:JIWar/Migrations/20251209083752_initials.Designer.cs
+    [Migration("20251214084444_googleidfix")]
+    partial class googleidfix
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -26,6 +21,9 @@ namespace Jiwar.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("ProductVersion", "9.0.9")
+                .HasAnnotation("Proxies:ChangeTracking", false)
+                .HasAnnotation("Proxies:CheckEquality", false)
+                .HasAnnotation("Proxies:LazyLoading", true)
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -952,6 +950,9 @@ namespace Jiwar.Migrations
 
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("bit");
+
+                    b.Property<string>("GoogleId")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("bit");

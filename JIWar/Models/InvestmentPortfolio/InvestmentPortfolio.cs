@@ -13,7 +13,7 @@ namespace GEWAR.Models
         public string Name { get; set; }
         public DateTime CreationDate { get; set; }
 
-        public User User { get; set; }
+        public virtual User User { get; set; }
 
         public virtual ICollection<PortfolioProperty> PortfolioProperties { get; set; } = new List<PortfolioProperty>(); // Navigation property(table PortfolioPropertie)
 

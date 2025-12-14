@@ -6,7 +6,7 @@ namespace GEWAR.Models
     public string Name { get; set; }
 
     // Navigation
-    public ICollection<PropertyFeature> PropertyFeatures { get; set; }
+    public virtual ICollection<PropertyFeature> PropertyFeatures { get; set; }
 }
 
 }
