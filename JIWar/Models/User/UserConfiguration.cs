@@ -66,7 +66,7 @@ namespace GEWAR.Configurations
 
             builder.HasOne(u => u.InteriorDesigner)
          .WithOne(d => d.User)   // يشير للـ navigation property داخل InteriorDesigner
-         .HasForeignKey<InteriorDesigner>(d => d.UserID) // يشير للـ FK داخل InteriorDesigner
+         .HasForeignKey<InteriorDesigner>(d => d.InteriorDesignerID) // يشير للـ FK داخل InteriorDesigner
          .OnDelete(DeleteBehavior.Cascade);
 
         }

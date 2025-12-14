@@ -13,22 +13,25 @@ namespace Jiwar.Models
     {
         public void Configure(EntityTypeBuilder<InteriorDesigner> builder)
         {
-            builder.ToTable("InteriorDesigner");
+            builder.ToTable("InteriorDesigners");
 
-            builder.HasKey(d => d.UserID);
+            // 🔑 Primary Key
+            builder.HasKey(id => id.InteriorDesignerID);
 
-            builder.Property(d => d.Specialization)
-                .HasMaxLength(255)
-                .IsRequired(false);
+            builder.Property(id => id.InteriorDesignerID)
+                   .IsRequired();
 
-            builder.Property(d => d.PortfolioURL)
-                .HasMaxLength(500)
-                .IsRequired(false);
+            // 🔗 One-to-One مع User
+            builder.HasOne(id => id.User)
+                   .WithOne(u => u.InteriorDesigner)
+                   .HasForeignKey<InteriorDesigner>(id => id.InteriorDesignerID)
+                   .OnDelete(DeleteBehavior.Restrict);
 
-            builder.HasOne(d => d.User)
-                .WithOne()
-                .HasForeignKey<InteriorDesigner>(d => d.UserID)
-                .OnDelete(DeleteBehavior.Cascade);
+            builder.Property(id => id.Specialization)
+                   .HasMaxLength(200);
+
+            builder.Property(id => id.PortfolioURL)
+                   .HasMaxLength(500);
         }
     }
 }

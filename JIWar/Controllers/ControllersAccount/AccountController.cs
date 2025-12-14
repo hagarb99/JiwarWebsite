@@ -175,12 +175,12 @@ namespace Jiwar.Account
         [HttpPut("profile/customer")]
         public async Task<IActionResult> UpdateCustomerProfile([FromBody] CustomerEditProfileDto dto)
         {
-            var userIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (string.IsNullOrEmpty(userIdStr))
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userId))
                 return Unauthorized(new { message = "User ID not found in token." });
 
-            if (!Guid.TryParse(userIdStr, out var userId))
-                return BadRequest(new { message = "Invalid user id format." });
+            //if (!Guid.TryParse(userIdStr, out var userId))
+            //    return BadRequest(new { message = "Invalid user id format." });
 
             await accountService.UpdateCustomerProfileAsync(userId, dto);
             return NoContent();
@@ -209,6 +209,30 @@ namespace Jiwar.Account
             var history = await _propertyService.GetChatHistoryAsync(senderId, receiverId, propertyId);
             return Ok(history);
         }
+
+
+        [Authorize(Roles = "PropertyOwner")]
+        [HttpPost("complete-profile/property-owner")]
+        public async Task<IActionResult> CompletePropertyOwnerProfile([FromBody] PropertyOwnerEditProfileDto dto)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userId)) return Unauthorized("User ID not found in token.");
+
+            await accountService.UpdatePropertyOwnerProfileAsync(userId, dto);
+            return Ok("PropertyOwner profile completed successfully.");
+        }
+
+        [Authorize(Roles = "InteriorDesigner")]
+        [HttpPost("complete-profile/interior-designer")]
+        public async Task<IActionResult> CompleteInteriorDesignerProfile([FromBody] InteriorDesignerEditProfileDto dto)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userId)) return Unauthorized("User ID not found in token.");
+
+            await accountService.UpdateInteriorDesignerProfileAsync(userId, dto);
+            return Ok("InteriorDesigner profile completed successfully.");
+        }
+
 
 
     }
