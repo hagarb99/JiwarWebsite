@@ -22,6 +22,8 @@ namespace GEWAR.Models
         public virtual Request Request { get; set; }
         public virtual InteriorDesigner Designer { get; set; }
 
+ }
 
-    }
 }
+
+
