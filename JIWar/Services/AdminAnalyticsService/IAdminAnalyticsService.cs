@@ -4,7 +4,8 @@ namespace Jiwar.Services
 {
     public interface IAdminAnalyticsService
 {
-    Task<AdminAnalyticsDTO> GetDashboardDataAsync();
-}
+ //   Task<AdminAnalyticsDTO> GetDashboardDataAsync();
+        Task<AdminAnalyticsDTO> GetAnalyticsAsync();
+    }
 }
 
