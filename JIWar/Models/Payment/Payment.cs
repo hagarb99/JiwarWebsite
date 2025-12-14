@@ -18,6 +18,6 @@ namespace GEWAR.Models
         public DateTime PaymentDate { get; set; } = DateTime.Now;
         public PaymentStatusEnum Status { get; set; }
 
-        public User User { get; set; }
+        public virtual User User { get; set; }
     }
 }

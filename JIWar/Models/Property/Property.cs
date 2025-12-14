@@ -41,7 +41,7 @@ namespace GEWAR.Models
         public virtual ICollection<PropertyPriceHistory> PriceHistory { get; set; } = new List<PropertyPriceHistory>();
 
 
-        public User OwnerUser { get; set; }
+        public virtual User OwnerUser { get; set; }
         //make relation-many prop-prop one prop owner
         //
         public virtual PropertyOwner PropertyOwner { get; set; }

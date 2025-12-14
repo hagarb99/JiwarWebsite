@@ -35,9 +35,8 @@ namespace GEWAR.Configurations
                  .HasMaxLength(50)
                 .IsRequired();
 
-            //builder.Property(u => u.Role)
-            //    .HasColumnType("nvarchar(50)")
-            //       .IsRequired();
+            builder.Property(u => u.GoogleId)
+                   .IsRequired(false);
 
 
 
