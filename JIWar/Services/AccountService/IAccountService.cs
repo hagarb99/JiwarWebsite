@@ -18,7 +18,7 @@ namespace Jiwar.Account
         Task<ResultViewModel<string>> ChangePasswordAsync(ClaimsPrincipal userClaims, ChangePasswordDto dto);
         Task<ResultViewModel<string>> ForgetPasswordAsync(ForgetPasswordDto dto);
         Task<ResultViewModel<string>> ResetPasswordAsync(ResetPasswordDto dto);
-        Task<ResultViewModel<UserResponseDTO>> EditProfileAsync(ClaimsPrincipal userClaims, EditProfileDto dto);
+        Task<ResultViewModel<UserResponseDTO>> EditProfileAsync(ClaimsPrincipal userClaims, EditProfileBaseDto dto);
         Task<bool> RoleExistsAsync(string roleName);
         Task AddUserToRoleAsync(User user, string roleName);
         Task AddPropertyOwnerAsync(PropertyOwner owner);

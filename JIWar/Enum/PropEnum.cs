@@ -2,9 +2,15 @@
 {
     public enum PropEnum
     {
-        Available,     
+           
         Booked,         
         UnderMaintenance, // العقار تحت الصيانة
-        Sold
+        Sold,
+        Active,
+        Inactive,
+        Rented,
+        Pending
     }
+
 }
+
