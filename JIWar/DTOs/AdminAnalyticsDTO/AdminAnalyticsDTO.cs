@@ -1,4 +1,4 @@
-namespace Jiwar.DTOs
+﻿namespace Jiwar.DTOs
 {
     public class AdminAnalyticsDTO
     {
@@ -7,6 +7,8 @@ namespace Jiwar.DTOs
         public ValuationMetricsDTO ValuationMetrics { get; set; }
         public PaymentMetricsDTO PaymentMetrics { get; set; }
         public EngagementMetricsDTO EngagementMetrics { get; set; }
+
+      
     }
 
     public class UsersMetricsDTO
@@ -40,6 +42,21 @@ namespace Jiwar.DTOs
         public decimal TotalRevenue { get; set; }
         public Dictionary<string, decimal> RevenuePerPeriod { get; set; } // day/week/month
         public Dictionary<string, int> PaymentMethodDistribution { get; set; } // Paymob/Fawry
+
+        // 📅 Today / Week / Month
+        public Dictionary<string, decimal> RevenueByPeriod { get; set; }
+
+        // 💳 Booking / Subscription / Report
+        public Dictionary<string, decimal> RevenueByType { get; set; }
+
+        public int TotalTransactions { get; set; }
+
+
+        public PaymentMetricsDTO()
+        {
+            RevenueByPeriod = new Dictionary<string, decimal>();
+            RevenueByType = new Dictionary<string, decimal>();
+        }
     }
 
     public class EngagementMetricsDTO
@@ -60,4 +77,7 @@ namespace Jiwar.DTOs
         public string DistrictName { get; set; }
         public int Count { get; set; }
     }
+
+ 
+
 }

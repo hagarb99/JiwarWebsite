@@ -1,5 +1,4 @@
-﻿using System.Text;
-using AutoMapper;
+﻿using AutoMapper;
 using GEWAR;
 using GEWAR.Configurations;
 using GEWAR.Models;
@@ -13,6 +12,7 @@ using Jiwar.Models.Offers;
 using Jiwar.Repositories;
 using Jiwar.Repositories.DistrictAnalyticService;
 using Jiwar.Repositories.Interfaces;
+using Jiwar.Repositories.User;
 using Jiwar.Repositories.Valuation;
 using Jiwar.Service;
 using Jiwar.Services;
@@ -25,6 +25,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 
 namespace Jiwar
@@ -145,6 +146,8 @@ namespace Jiwar
             builder.Services.AddScoped<IReportOrderRepository, ReportOrderRepository>();
             builder.Services.AddScoped<IBookingPaymentRepository, BookingPaymentRepository>();
             builder.Services.AddScoped<IValuationHistoryRepository, ValuationHistoryRepository>();
+            builder.Services.AddScoped<IUserRepository, UserRepository>();
+
 
             // Services
             builder.Services.AddScoped<IPropertyService, PropertyService>();

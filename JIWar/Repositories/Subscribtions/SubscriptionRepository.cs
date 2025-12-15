@@ -1,33 +1,60 @@
-using Jiwar.Models;
-using Microsoft.EntityFrameworkCore;
-using Jiwar.Repositories.Interfaces;
 using GEWAR;
 using GEWAR.Models;
+using Jiwar.Repositories.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace Jiwar.Repositories
 {
-    public class SubscriptionRepository : GenericRepository<Subscription>, ISubscriptionRepository
+    public class SubscriptionRepository : ISubscriptionRepository
     {
         private readonly GiwarContext _context;
 
-        public SubscriptionRepository(GiwarContext context) : base(context)
+        public SubscriptionRepository(GiwarContext context)
         {
             _context = context;
         }
 
-        public async Task<IEnumerable<Subscription>> GetAllSubscriptionsAsync()
+        public async Task<decimal> GetTotalRevenueAsync()
         {
-            return await _dbSet.ToListAsync();
+            return await _context.Subscriptions
+                .Where(s => s.statusEnum2 == StatusEnum2.Active)
+                .SumAsync(s => s.Price);
         }
 
-        public async Task<Subscription> GetSubscriptionByIdAsync(int id)
+        public async Task<decimal> GetTodayRevenueAsync()
         {
-            return await _dbSet.FirstOrDefaultAsync(s => s.Id == id);
+            var today = DateTime.UtcNow.Date;
+
+            return await _context.Subscriptions
+                .Where(s =>
+                    s.statusEnum2 == StatusEnum2.Active &&
+                    s.StartDate.Date == today)
+                .SumAsync(s => s.Price);
         }
 
-        public Task SaveAsync()
+        public async Task<decimal> GetWeekRevenueAsync()
         {
-            throw new NotImplementedException();
+            var lastWeek = DateTime.UtcNow.AddDays(-7);
+
+            return await _context.Subscriptions
+                .Where(s =>
+                    s.statusEnum2 == StatusEnum2.Active &&
+                    s.StartDate >= lastWeek)
+                .SumAsync(s => s.Price);
+        }
+
+        public async Task<decimal> GetMonthRevenueAsync()
+        {
+            var startOfMonth = new DateTime(
+                DateTime.UtcNow.Year,
+                DateTime.UtcNow.Month,
+                1);
+
+            return await _context.Subscriptions
+                .Where(s =>
+                    s.statusEnum2 == StatusEnum2.Active &&
+                    s.StartDate >= startOfMonth)
+                .SumAsync(s => s.Price);
         }
     }
 }

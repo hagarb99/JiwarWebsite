@@ -28,5 +28,32 @@ namespace Jiwar.Repositories.Valuation
                 .OrderByDescending(v => v.CreatedAt)
                 .ToListAsync();
         }
+
+        public async Task<int> GetTotalValuationsAsync()
+        {
+            return await _context.ValuationHistories.CountAsync();
+        }
+
+        public async Task<int> GetValuationsTodayAsync()
+        {
+            var today = DateTime.UtcNow.Date;
+            return await _context.ValuationHistories
+                .CountAsync(v => v.CreatedAt >= today);
+        }
+
+        public async Task<int> GetValuationsThisWeekAsync()
+        {
+            var weekAgo = DateTime.UtcNow.AddDays(-7);
+            return await _context.ValuationHistories
+                .CountAsync(v => v.CreatedAt >= weekAgo);
+        }
+
+        public async Task<int> GetValuationsThisMonthAsync()
+        {
+            var monthStart = new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month, 1);
+            return await _context.ValuationHistories
+                .CountAsync(v => v.CreatedAt >= monthStart);
+        }
     }
+
 }

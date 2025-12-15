@@ -5,10 +5,12 @@ using System.Threading.Tasks;
 
 namespace Jiwar.Repositories.Interfaces
 {
-    public interface ISubscriptionRepository : IGenericRepository<Subscription>
+    public interface ISubscriptionRepository
     {
-        Task<IEnumerable<Subscription>> GetAllSubscriptionsAsync();
-        Task<Subscription> GetSubscriptionByIdAsync(int id);
-        Task SaveAsync();
+        Task<decimal> GetTotalRevenueAsync();
+        Task<decimal> GetTodayRevenueAsync();
+        Task<decimal> GetWeekRevenueAsync();
+        Task<decimal> GetMonthRevenueAsync();
     }
+
 }

@@ -11,6 +11,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<None Include="DTOs\Payment\PaymentMetricsDTO.cs" />
 		<None Include="Repositories\Booking\IBookingRepository.cs" />
 	</ItemGroup>
 
@@ -43,7 +44,6 @@
 	<ItemGroup>
 	  <Folder Include="Repositories\BookingRating\" />
 	  <Folder Include="Repositories\Property\" />
-	  <Folder Include="Repositories\User\" />
 	  <Folder Include="Services\WishlistService\" />
 	</ItemGroup>
 

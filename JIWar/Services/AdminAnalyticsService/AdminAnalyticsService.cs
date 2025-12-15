@@ -1,107 +1,127 @@
-﻿using GEWAR;
-using GEWAR.Models;
+﻿using GEWAR.Models;
 using Jiwar.DTOs;
 using Jiwar.Enum;
-using Microsoft.EntityFrameworkCore;
+using Jiwar.Repositories;
 using Jiwar.Repositories.Interfaces;
+using Jiwar.Repositories.User;
+using Jiwar.Repositories.Valuation;
+using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Jiwar.DTOs.Payment;
 
 namespace Jiwar.Services
 {
- 
     public class AdminAnalyticsService : IAdminAnalyticsService
     {
         private readonly IUserRepository _userRepo;
         private readonly IPropertyRepository _propertyRepo;
-        private readonly IValuationRepository _valuationRepo;
-        private readonly IPaymentRepository _paymentRepo;
+        private readonly IValuationHistoryRepository _valuationRepo;
+        private readonly IBookingPaymentRepository _bookingPaymentRepo;
+        private readonly ISubscriptionRepository _subscriptionRepo;
+        private readonly IReportOrderRepository _reportOrderRepo;
 
         public AdminAnalyticsService(
             IUserRepository userRepo,
             IPropertyRepository propertyRepo,
-            IValuationRepository valuationRepo,
-            IPaymentRepository paymentRepo)
+            IValuationHistoryRepository valuationRepo,
+            IBookingPaymentRepository bookingPaymentRepo,
+            ISubscriptionRepository subscriptionRepo,
+            IReportOrderRepository reportOrderRepo)
         {
             _userRepo = userRepo;
             _propertyRepo = propertyRepo;
             _valuationRepo = valuationRepo;
-            _paymentRepo = paymentRepo;
+            _bookingPaymentRepo = bookingPaymentRepo;
+            _subscriptionRepo = subscriptionRepo;
+            _reportOrderRepo = reportOrderRepo;
         }
 
         public async Task<AdminAnalyticsDTO> GetAnalyticsAsync()
         {
-            var users = await _userRepo.GetAllAsync();
-            var properties = await _propertyRepo.GetAllAsync();
-            var valuations = await _valuationRepo.GetAllAsync();
-            var payments = await _paymentRepo.GetAllAsync();
-
-            var dto = new AdminAnalyticsDTO
+            // Users Metrics
+            var usersMetrics = new UsersMetricsDTO
             {
-                UsersMetrics = new UsersMetricsDTO
-                {
-                    TotalUsers = users.Count(),
-                    NewSignUpsToday = users.Count(u => u.CreatedDate.Date == DateTime.Today),
-                    NewSignUpsWeek = users.Count(u => u.CreatedDate >= DateTime.Today.AddDays(-7)),
-                    NewSignUpsMonth = users.Count(u => u.CreatedDate >= DateTime.Today.AddMonths(-1)),
-                    ActiveUsers = users.Count(u => u.LastLoginDate >= DateTime.Today.AddDays(-7)),
-                    UserRolesDistribution = users
-                        .GroupBy(u => u.Role)
-                        .ToDictionary(g => g.Key.ToString(), g => g.Count())
-                },
+                TotalUsers = await _userRepo.GetTotalUsersAsync(),
+                NewSignUpsToday = await _userRepo.GetNewUsersTodayAsync(),
+                NewSignUpsWeek = await _userRepo.GetNewUsersThisWeekAsync(),
+                NewSignUpsMonth = await _userRepo.GetNewUsersThisMonthAsync(),
+                ActiveUsers = await _userRepo.GetActiveUsersAsync(),
+                UserRolesDistribution = await _userRepo.GetUsersCountByRoleAsync()
+            };
 
-                PropertyMetrics = new PropertyMetricsDTO
-                {
-                    TotalProperties = properties.Count(),
-                    ActiveListings = properties.Count(p => p.statusEnum == PropEnum.Active),
-                    PendingListings = properties.Count(p => p.statusEnum == PropEnum.Pending),
-                    SoldOrRentedUnits = properties.Count(p => p.statusEnum == PropEnum.Sold || p.statusEnum == PropEnum.Rented),
-                    TopCategories = properties
-                        .GroupBy(p => p.PropertyType.ToString())
-                        .Select(g => new TopCategoryDTO { CategoryName = g.Key, Count = g.Count() })
-                        .OrderByDescending(x => x.Count)
-                        .Take(5)
-                        .ToList(),
-                    TopDistricts = properties
-                        .GroupBy(p => p.District)
-                        .Select(g => new TopDistrictDTO { DistrictName = g.Key, Count = g.Count() })
-                        .OrderByDescending(x => x.Count)
-                        .Take(5)
-                        .ToList()
-                },
+            // Property Metrics
+            var properties = await _propertyRepo.GetAllAsync();
+            var propertyMetrics = new PropertyMetricsDTO
+            {
+                TotalProperties = properties.Count(),
+                ActiveListings = properties.Count(p => p.statusEnum == PropEnum.Active),
+                SoldOrRentedUnits = properties.Count(p =>
+                    p.statusEnum == PropEnum.Sold || p.statusEnum == PropEnum.Rented),
+                TopCategories = properties
+                    .GroupBy(p => p.PropertyType.ToString())
+                    .Select(g => new TopCategoryDTO { CategoryName = g.Key, Count = g.Count() })
+                    .OrderByDescending(x => x.Count)
+                    .Take(5)
+                    .ToList(),
+                TopDistricts = properties
+                    .GroupBy(p => p.District)
+                    .Select(g => new TopDistrictDTO { DistrictName = g.Key, Count = g.Count() })
+                    .OrderByDescending(x => x.Count)
+                    .Take(5)
+                    .ToList()
+            };
 
-                ValuationMetrics = new ValuationMetricsDTO
+            // Valuation Metrics
+            var valuationMetrics = new ValuationMetricsDTO
+            {
+                TotalValuations = await _valuationRepo.GetTotalValuationsAsync(),
+                ValuationsPerPeriod = new Dictionary<string, int>
                 {
-                    TotalValuations = valuations.Count(),
-                    ValuationsPerPeriod = new Dictionary<string, int>
-                {
-                    {"Today", valuations.Count(v => v.DateCreated.Date == DateTime.Today)},
-                    {"Week", valuations.Count(v => v.DateCreated >= DateTime.Today.AddDays(-7))},
-                    {"Month", valuations.Count(v => v.DateCreated >= DateTime.Today.AddMonths(-1))}
-                }
-                },
-
-                PaymentMetrics = new PaymentMetricsDTO
-                {
-                    TotalRevenue = payments.Sum(p => p.Amount),
-                    RevenuePerPeriod = new Dictionary<string, decimal>
-                {
-                    {"Today", payments.Where(p => p.PaymentDate.Date == DateTime.Today).Sum(p => p.Amount)},
-                    {"Week", payments.Where(p => p.PaymentDate >= DateTime.Today.AddDays(-7)).Sum(p => p.Amount)},
-                    {"Month", payments.Where(p => p.PaymentDate >= DateTime.Today.AddMonths(-1)).Sum(p => p.Amount)}
-                },
-                    PaymentMethodDistribution = payments
-                        .GroupBy(p => p.PaymentMethod)
-                        .ToDictionary(g => g.Key, g => g.Count())
-                },
-
-                EngagementMetrics = new EngagementMetricsDTO
-                {
-                    PageVisits = 0, // هنا لو عندك Google Analytics أو PageViews Table
-                    PropertyViews = 0, // نفس الكلام
-                    SearchTrends = new Dictionary<string, int>() // لو عندك Table للبحث
+                    { "Today", await _valuationRepo.GetValuationsTodayAsync() },
+                    { "Week", await _valuationRepo.GetValuationsThisWeekAsync() },
+                    { "Month", await _valuationRepo.GetValuationsThisMonthAsync() }
                 }
             };
 
-            return dto;
+            // Payment Metrics
+            var bookingRevenue = await _bookingPaymentRepo.GetTotalRevenueAsync();
+            var subscriptionRevenue = await _subscriptionRepo.GetTotalRevenueAsync();
+            var reportRevenue = await _reportOrderRepo.GetTotalRevenueAsync();
+
+            var paymentMetrics = new Jiwar.DTOs.PaymentMetricsDTO // نستخدم النوع الصحيح هنا
+            {
+                TotalRevenue = bookingRevenue + subscriptionRevenue + reportRevenue,
+                RevenueByType = new Dictionary<string, decimal>
+                {
+                    { "Booking", bookingRevenue },
+                    { "Subscription", subscriptionRevenue },
+                    { "Report", reportRevenue }
+                },
+                RevenueByPeriod = new Dictionary<string, decimal>
+                {
+                    { "Today", bookingRevenue + subscriptionRevenue + reportRevenue },
+                    { "Week", bookingRevenue + subscriptionRevenue + reportRevenue },
+                    { "Month", bookingRevenue + subscriptionRevenue + reportRevenue }
+                }
+            };
+
+            // Admin Analytics DTO
+            return new AdminAnalyticsDTO
+            {
+                UsersMetrics = usersMetrics,
+                PropertyMetrics = propertyMetrics,
+                ValuationMetrics = valuationMetrics,
+                PaymentMetrics = paymentMetrics,
+                EngagementMetrics = new EngagementMetricsDTO
+                {
+                    PageVisits = 0,
+                    PropertyViews = 0,
+                    SearchTrends = new Dictionary<string, int>()
+                }
+            };
         }
     }
 }
