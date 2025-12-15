@@ -81,7 +81,15 @@ namespace Jiwar.Repositories
             await _context.SaveChangesAsync();
         }
 
+        public async Task<bool> PropertyOwnerExistsAsync(string userId)
+        {
+            return await _context.PropertyOwners.AnyAsync(po => po.UserID == userId);
+        }
 
+        public Task<bool> InteriorDesignerExistsAsync(string userId)
+        {
+            return _context.InteriorDesigners.AnyAsync(id => id.InteriorDesignerID == userId);
+        }
     }
 
 

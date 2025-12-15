@@ -20,6 +20,8 @@ namespace Jiwar.Repositories
         Task AddUserToRoleAsync(User user, string roleName);
         Task AddPropertyOwnerAsync(PropertyOwner owner);
         Task AddInteriorDesignerAsync(InteriorDesigner designer);
+        Task<bool> PropertyOwnerExistsAsync(string userId);
+        Task<bool> InteriorDesignerExistsAsync(string userId);
 
     }
 }

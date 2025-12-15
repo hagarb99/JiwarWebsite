@@ -19,7 +19,7 @@ namespace Jiwar.Services.DesignerService
             return await _context.InteriorDesigners
                 .Include(d => d.Designs)
                 .Include(d => d.Proposals)
-                .FirstOrDefaultAsync(d => d.UserID == designerId);
+                .FirstOrDefaultAsync(d => d.InteriorDesignerID == designerId);
         }
 
         public async Task UpdateDesignerProfileAsync(InteriorDesigner designer)
