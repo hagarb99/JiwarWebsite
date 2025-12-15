@@ -147,6 +147,14 @@ namespace Jiwar
             builder.Services.AddScoped<IValuationHistoryRepository, ValuationHistoryRepository>();
             builder.Services.AddScoped<IUserRepository, UserRepository>();
 
+            builder.Services.AddScoped<IAdminAnalyticsService, AdminAnalyticsService>();
+            builder.Services.AddScoped<IUserRepository, UserRepository>();
+            builder.Services.AddScoped<IPropertyRepository, PropertyRepository>();
+            builder.Services.AddScoped<IValuationHistoryRepository, ValuationHistoryRepository>();
+            builder.Services.AddScoped<IBookingPaymentRepository, BookingPaymentRepository>();
+            builder.Services.AddScoped<ISubscriptionRepository, SubscriptionRepository>();
+            builder.Services.AddScoped<IReportOrderRepository, ReportOrderRepository>();
+
 
             // Services
             builder.Services.AddScoped<IPropertyService, PropertyService>();

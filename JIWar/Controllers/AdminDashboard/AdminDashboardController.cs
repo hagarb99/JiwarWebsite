@@ -1,11 +1,13 @@
 using Jiwar.Services;
 using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
 
 namespace Jiwar.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
     [Route("api/admin/analytics")]
+  
+
     public class AdminAnalyticsController : ControllerBase
     {
         private readonly IAdminAnalyticsService _analyticsService;
