@@ -2,7 +2,7 @@
 using Google;
 using Microsoft.EntityFrameworkCore;
 
-namespace Jiwar.Repositories.User
+namespace Jiwar.Repositories
 {
 
     public class UserRepository : IUserRepository

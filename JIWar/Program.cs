@@ -12,7 +12,7 @@ using Jiwar.Models.Offers;
 using Jiwar.Repositories;
 using Jiwar.Repositories.DistrictAnalyticService;
 using Jiwar.Repositories.Interfaces;
-using Jiwar.Repositories.User;
+using Jiwar.Repositories;
 using Jiwar.Repositories.Valuation;
 using Jiwar.Service;
 using Jiwar.Services;

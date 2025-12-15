@@ -3,7 +3,7 @@ using Jiwar.DTOs;
 using Jiwar.Enum;
 using Jiwar.Repositories;
 using Jiwar.Repositories.Interfaces;
-using Jiwar.Repositories.User;
+using Jiwar.Repositories;
 using Jiwar.Repositories.Valuation;
 using Microsoft.EntityFrameworkCore;
 using System;
