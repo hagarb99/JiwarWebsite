@@ -1,4 +1,4 @@
-﻿namespace Jiwar.Repositories.User
+﻿namespace Jiwar.Repositories
 {
 
     public interface IUserRepository
