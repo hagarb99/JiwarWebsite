@@ -148,7 +148,7 @@ namespace Jiwar.Account.Services
             return ResultViewModel<string>.Ok("Password reset successfully.", "");
         }
 
-        public async Task<ResultViewModel<UserResponseDTO>> EditProfileAsync(ClaimsPrincipal userClaims, EditProfileDto dto)
+        public async Task<ResultViewModel<UserResponseDTO>> EditProfileAsync(ClaimsPrincipal userClaims, EditProfileBaseDto dto)
         {
             
             var user = await repo.GetUserFromClaimsAsync(userClaims);

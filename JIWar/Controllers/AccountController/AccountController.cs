@@ -161,7 +161,7 @@ namespace Jiwar.Account
 
         [Authorize]
         [HttpPut("edit-profile")]
-        public async Task<IActionResult> EditProfile([FromBody] EditProfileDto dto)
+        public async Task<IActionResult> EditProfile([FromBody] EditProfileBaseDto dto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
