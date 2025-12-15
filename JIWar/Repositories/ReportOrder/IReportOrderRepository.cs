@@ -7,5 +7,8 @@ namespace Jiwar.Repositories
         Task<ReportOrder?> GetByReferenceAsync(string reference);
         Task<bool> HasUserPaidForReport(string userId, int reportId);
         Task UpdateAsync(ReportOrder order);
+        Task<ReportOrder?> GetByOrderIdAsync(long orderId);
+        Task<ReportOrder?> GetByReportIdAsync(int reportId);
+
     }
 }

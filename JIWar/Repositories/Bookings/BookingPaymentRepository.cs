@@ -13,6 +13,12 @@ namespace Jiwar.Repositories
         {
             _context = context;
         }
+        public async Task<BookingPayment?> GetByBookingIdAsync(int bookingId)
+        {
+            return await _context.BookingPayments
+                .FirstOrDefaultAsync(p => p.BookingID == bookingId);
+        }
+
 
         public async Task<BookingPayment?> GetByReferenceAsync(string reference)
         {
@@ -32,6 +38,14 @@ namespace Jiwar.Repositories
             _context.BookingPayments.Update(payment);
             await _context.SaveChangesAsync();
         }
+
+        public async Task<BookingPayment?> GetByOrderIdAsync(long orderId)
+        {
+            return await _context.BookingPayments.FirstOrDefaultAsync(p => p.Id == orderId);
+        }
+
+
+
 
     }
 }

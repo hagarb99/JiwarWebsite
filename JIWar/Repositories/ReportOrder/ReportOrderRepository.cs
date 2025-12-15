@@ -31,5 +31,15 @@ namespace Jiwar.Repositories
         {
             throw new NotImplementedException();
         }
+
+        public async Task<ReportOrder?> GetByOrderIdAsync(long orderId)
+        {
+            return await _context.ReportOrders.FirstOrDefaultAsync(p => p.Id == orderId);
+        }
+
+        public async Task<ReportOrder?> GetByReportIdAsync(int reportId)
+        {
+            return await _context.ReportOrders.FirstOrDefaultAsync(r => r.Id == reportId);
+        }
     }
 }
