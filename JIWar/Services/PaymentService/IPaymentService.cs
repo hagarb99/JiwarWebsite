@@ -1,15 +1,14 @@
-﻿namespace Jiwar.Services
+﻿using Jiwar.DTOs;
+
+namespace Jiwar.Services
 {
     public interface IPaymentService
     {
-        //reports payment
-        Task<string> CreatePaymentRequest(string userId, int reportId, PaymentMethod method);
-        Task<bool> ConfirmPayment(string paymentReference);
-        Task<bool> HasUserPaidForReport(string userId, int reportId);
-        //booking payment
-        Task<string> CreateBookingPaymentRequest(string userId, int bookingId, PaymentMethod method);
-        Task<bool> ConfirmBookingPayment(string paymentReference);
-        Task<bool> HasUserPaidForBooking(string userId, int bookingId);
+        Task<string> CreateBookingPaymentAsync(string userId, int bookingId);
+        Task<string> CreateReportPaymentAsync(string userId, int reportId);
+        Task HandlePaymobWebhookAsync(PaymobWebhookDto dto);
+        Task<bool> HasUserPaidForBookingAsync(string userId, int bookingId);
+        Task<bool> HasUserPaidForReportAsync(string userId, int reportId);
 
     }
 }

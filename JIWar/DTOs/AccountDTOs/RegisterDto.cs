@@ -15,7 +15,7 @@ namespace Jiwar.Account.DTOs
         public string Password { get; set; }
         public string PhoneNumber { get; set; }
         [Required]
-        [RegularExpression("Customer|PropertyOwner|InteriorDesigner")]
+        [RegularExpression("Customer|PropertyOwner|InteriorDesigner|Admin")]
         public string Role { get; set; }
     }
 }
