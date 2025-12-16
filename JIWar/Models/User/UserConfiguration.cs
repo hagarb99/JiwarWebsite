@@ -35,9 +35,8 @@ namespace GEWAR.Configurations
                  .HasMaxLength(50)
                 .IsRequired();
 
-            //builder.Property(u => u.Role)
-            //    .HasColumnType("nvarchar(50)")
-            //       .IsRequired();
+            builder.Property(u => u.GoogleId)
+                   .IsRequired(false);
 
 
 
@@ -67,7 +66,7 @@ namespace GEWAR.Configurations
 
             builder.HasOne(u => u.InteriorDesigner)
          .WithOne(d => d.User)   // يشير للـ navigation property داخل InteriorDesigner
-         .HasForeignKey<InteriorDesigner>(d => d.UserID) // يشير للـ FK داخل InteriorDesigner
+         .HasForeignKey<InteriorDesigner>(d => d.InteriorDesignerID) // يشير للـ FK داخل InteriorDesigner
          .OnDelete(DeleteBehavior.Cascade);
 
         }

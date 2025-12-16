@@ -1,6 +1,7 @@
 ﻿using GEWAR.Models;
 using Jiwar.Account.DTOs;
 using Jiwar.Account.Services;
+using Jiwar.DTOs.AccountDTOs.EditProfileDtos;
 using Jiwar.DTOs.ChatDTOs;
 using Jiwar.Service;
 using Microsoft.AspNetCore.Authorization;
@@ -12,6 +13,7 @@ using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Jiwar.DTOs.AccountDTOs.EditProfileDtos;
 
 
 namespace Jiwar.Account
@@ -33,25 +35,6 @@ namespace Jiwar.Account
             this._propertyService = _propertyService;
         }
 
-        //[HttpPost("register")]
-        //public async Task<IActionResult> Register([FromBody] RegisterDto dto)
-        //{
-        //    if (!ModelState.IsValid)
-        //        return BadRequest(ModelState);
-
-        //    try
-        //    {
-        //        if (dto == null)
-        //            return BadRequest("Request body is empty");
-
-        //        var userResponse = await accountService.RegisterAsync(dto);
-        //        return Ok(userResponse); // JSON response
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return BadRequest(new { message = ex.Message });
-        //    }
-        //}
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterDto dto)
         {
@@ -115,33 +98,6 @@ namespace Jiwar.Account
             return Ok(result);
         }
 
-
-        //[Authorize]
-        //[HttpPost("change-password")]
-        //public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDto dto)
-        //{
-        //    if (!ModelState.IsValid)
-        //        return BadRequest(ModelState);
-
-        //    var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
-        //    if (string.IsNullOrEmpty(userId))
-        //        return Unauthorized(new { message = "User ID not found in token." });
-
-        //    var user = await userManager.FindByIdAsync(userId);
-
-        //    if (user == null)
-        //        return Unauthorized(new { message = "User not found." });
-
-        //    var result = await accountService.ChangePasswordAsync(user, dto);
-
-        //    if (!result.Success)
-        //        return BadRequest(new { message = result.Message });
-
-        //    return Ok(new { message = result.Message });
-        //}
-
-        //[Authorize]
         [HttpPost("change-password")]
         public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDto dto)
         {
@@ -169,6 +125,18 @@ namespace Jiwar.Account
             return Ok(result);
         }
 
+        [Authorize(Roles = "Customer")]
+        [HttpPut("profile/customer")]
+        public async Task<IActionResult> UpdateCustomerProfile([FromBody] CustomerEditProfileDto dto)
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userId))
+                return Unauthorized(new { message = "User ID not found in token." });
+
+            await accountService.UpdateCustomerProfileAsync(userId, dto);
+            return NoContent();
+        }
+
         [HttpPost("{propertyId}/chat/send")]
         public async Task<IActionResult> SendMessage(int propertyId, ChatMessageDTO dto)
         {
@@ -192,6 +160,30 @@ namespace Jiwar.Account
             var history = await _propertyService.GetChatHistoryAsync(senderId, receiverId, propertyId);
             return Ok(history);
         }
+
+
+        [Authorize(Roles = "PropertyOwner")]
+        [HttpPost("complete-profile/property-owner")]
+        public async Task<IActionResult> CompletePropertyOwnerProfile([FromBody] PropertyOwnerEditProfileDto dto)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userId)) return Unauthorized("User ID not found in token.");
+
+            await accountService.UpdatePropertyOwnerProfileAsync(userId, dto);
+            return Ok("PropertyOwner profile completed successfully.");
+        }
+
+        [Authorize(Roles = "InteriorDesigner")]
+        [HttpPost("complete-profile/interior-designer")]
+        public async Task<IActionResult> CompleteInteriorDesignerProfile([FromBody] InteriorDesignerEditProfileDto dto)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userId)) return Unauthorized("User ID not found in token.");
+
+            await accountService.UpdateInteriorDesignerProfileAsync(userId, dto);
+            return Ok("InteriorDesigner profile completed successfully.");
+        }
+
 
 
     }

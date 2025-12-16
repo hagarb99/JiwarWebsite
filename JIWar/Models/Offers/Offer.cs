@@ -14,8 +14,8 @@ namespace GEWAR.Models
         public decimal OfferAmount { get; set; }
         public StatusEnum status { get; set; }
         public DateTime OfferDate { get; set; } = DateTime.Now;
-        public User Buyer { get; set; }
-        public Property Property { get; set; }
+        public virtual User Buyer { get; set; }
+        public virtual Property Property { get; set; }
 
 
         // other offer fields (e.g., Title, Price, etc.)

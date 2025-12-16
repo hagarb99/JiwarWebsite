@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Jiwar.Migrations
 {
     /// <inheritdoc />
-    public partial class initials : Migration
+    public partial class init : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -65,7 +65,7 @@ namespace Jiwar.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     District = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    AvgPricePerMeter = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    AvgPricePerMeter = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
                     RecordDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false)
                 },
@@ -117,6 +117,7 @@ namespace Jiwar.Migrations
                     ProfilePicURL = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: true),
                     RegistrationDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Role = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    GoogleId = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
@@ -274,6 +275,7 @@ namespace Jiwar.Migrations
                     Specialization = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
                     ExperienceYears = table.Column<int>(type: "int", nullable: true),
                     PortfolioURL = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
+                    InteriorDesignerID = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Id = table.Column<int>(type: "int", nullable: false),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false)
                 },
@@ -397,7 +399,7 @@ namespace Jiwar.Migrations
                     planTypeEnum = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     statusEnum2 = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    Price = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
                     DurationInMonths = table.Column<int>(type: "int", nullable: false),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false)
                 },
@@ -420,16 +422,16 @@ namespace Jiwar.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     City = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Area = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    Area = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
                     Bedrooms = table.Column<int>(type: "int", nullable: false),
                     Bathrooms = table.Column<int>(type: "int", nullable: false),
                     FinishType = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     View = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     PropertyAge = table.Column<int>(type: "int", nullable: false),
-                    MostLikelyPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    MinPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    MaxPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    ConfidenceScore = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    MostLikelyPrice = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
+                    MinPrice = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
+                    MaxPrice = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
+                    ConfidenceScore = table.Column<decimal>(type: "decimal(5,2)", precision: 5, scale: 2, nullable: false),
                     FactorBreakdownJson = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false)
@@ -469,8 +471,8 @@ namespace Jiwar.Migrations
                     Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CategoryId = table.Column<int>(type: "int", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    EstimatedPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    Price = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
+                    EstimatedPrice = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
                     District = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Id = table.Column<int>(type: "int", nullable: false),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false)
@@ -706,18 +708,11 @@ namespace Jiwar.Migrations
                     Status = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     CreatedDate = table.Column<DateTime>(type: "datetime", nullable: false, defaultValueSql: "GETUTCDATE()"),
                     StatusEnumRequest = table.Column<int>(type: "int", nullable: false),
-                    DesignerUserID = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Requests", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Requests_InteriorDesigner_DesignerUserID",
-                        column: x => x.DesignerUserID,
-                        principalTable: "InteriorDesigner",
-                        principalColumn: "UserID",
-                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Requests_Properties_PropertyID",
                         column: x => x.PropertyID,
@@ -849,7 +844,7 @@ namespace Jiwar.Migrations
                     AI_Generated = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
                     SelectedStyle = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
                     CreationDate = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETUTCDATE()"),
-                    RequestId = table.Column<int>(type: "int", nullable: true),
+                    RequestID = table.Column<int>(type: "int", nullable: false),
                     InteriorDesignerUserID = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false)
                 },
@@ -868,8 +863,8 @@ namespace Jiwar.Migrations
                         principalTable: "InteriorDesigner",
                         principalColumn: "UserID");
                     table.ForeignKey(
-                        name: "FK_Design_Requests_RequestId",
-                        column: x => x.RequestId,
+                        name: "FK_Design_Requests_RequestID",
+                        column: x => x.RequestID,
                         principalSchema: "Transactions",
                         principalTable: "Requests",
                         principalColumn: "Id",
@@ -884,12 +879,13 @@ namespace Jiwar.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     RequestID = table.Column<int>(type: "int", nullable: false),
-                    DesignerID = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     OfferDetails = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true),
                     PriceEstimate = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
                     Status = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
                     CreatedDate = table.Column<DateTime>(type: "datetime", nullable: false, defaultValueSql: "GETUTCDATE()"),
+                    InteriorDesignerID = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     StatusEnumReq = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    DesignerID = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
@@ -1230,9 +1226,9 @@ namespace Jiwar.Migrations
                 column: "InteriorDesignerUserID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Design_RequestId",
+                name: "IX_Design_RequestID",
                 table: "Design",
-                column: "RequestId");
+                column: "RequestID");
 
             migrationBuilder.CreateIndex(
                 name: "IX_InvestmentPortfolio_UserID",
@@ -1366,12 +1362,6 @@ namespace Jiwar.Migrations
                 schema: "Transactions",
                 table: "Requests",
                 column: "CustomerID");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Requests_DesignerUserID",
-                schema: "Transactions",
-                table: "Requests",
-                column: "DesignerUserID");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Requests_PropertyID",
@@ -1533,15 +1523,15 @@ namespace Jiwar.Migrations
                 schema: "Complaints");
 
             migrationBuilder.DropTable(
+                name: "InteriorDesigner");
+
+            migrationBuilder.DropTable(
                 name: "Requests",
                 schema: "Transactions");
 
             migrationBuilder.DropTable(
                 name: "Booking",
                 schema: "Transactions");
-
-            migrationBuilder.DropTable(
-                name: "InteriorDesigner");
 
             migrationBuilder.DropTable(
                 name: "Offers");

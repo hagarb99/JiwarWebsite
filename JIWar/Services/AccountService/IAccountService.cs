@@ -1,19 +1,18 @@
-﻿
-using GEWAR.Models;
+﻿using GEWAR.Models;
+using Jiwar.DTOs.AccountDTOs.EditProfileDtos;
 using Jiwar.Helpers;
 using Jiwar.Models;
-using System.Security.Claims;
+using Jiwar.DTOs.AccountDTOs.EditProfileDtos;
+using Jiwar.DTOs.AccountDTOs;
 
-namespace Jiwar.Account.DTOs
+using System.Security.Claims;
+using Jiwar.Account.DTOs;
+
+namespace Jiwar.Account
 {
     public interface IAccountService
     {
-        //Task<UserResponseDTO> RegisterAsync(RegisterDto dto);
-        //Task<UserResponseDTO> LoginAsync(LoginDto dto);
-        //Task<ResultViewModel<string>> ChangePasswordAsync(ChangePasswordDto dto);
-        //Task<ResultViewModel<string>> ForgetPasswordAsync(ForgetPasswordDto dto);
-        //Task<ResultViewModel<string>> ResetPasswordAsync(ResetPasswordDto dto);
-        //Task<ResultViewModel<string>> EditProfileAsync(EditProfileDto dto);
+       
         Task<ResultViewModel<UserResponseDTO>> RegisterAsync(RegisterDto dto);
         Task<ResultViewModel<UserResponseDTO>> LoginAsync(LoginDto dto);
         Task<ResultViewModel<string>> ChangePasswordAsync(ClaimsPrincipal userClaims, ChangePasswordDto dto);
@@ -25,7 +24,10 @@ namespace Jiwar.Account.DTOs
         Task AddPropertyOwnerAsync(PropertyOwner owner);
         Task AddInteriorDesignerAsync(InteriorDesigner designer);
 
-
+        Task UpdateCustomerProfileAsync(string userId, CustomerEditProfileDto dto);
+        Task UpdatePropertyOwnerProfileAsync(string userId, PropertyOwnerEditProfileDto dto);
+        Task UpdateInteriorDesignerProfileAsync(string userId,InteriorDesignerEditProfileDto dto);
+        Task UpdateAdminProfileAsync(string userId, AdminEditProfileDto dto);
 
     }
 }

@@ -2,6 +2,7 @@
 using GEWAR.Models;
 using Jiwar.Account.DTOs;
 using Jiwar.Controllers;
+using Jiwar.DTOs.AccountDTOs.EditProfileDtos;
 using Jiwar.Helpers;
 using Jiwar.Models;
 using Jiwar.Repositories;
@@ -49,16 +50,17 @@ namespace Jiwar.Account.Services
 
             await repo.AddUserToRoleAsync(user, dto.Role);
 
-            if (dto.Role == "PropertyOwner")
-            {
-                var owner = new PropertyOwner { UserID = user.Id };
-                await repo.AddPropertyOwnerAsync(owner);
-            }
-            else if (dto.Role == "InteriorDesigner")
-            {
-                var designer = new InteriorDesigner { UserID = user.Id };
-                await repo.AddInteriorDesignerAsync(designer);
-            }
+            //if (dto.Role == "PropertyOwner")
+            //{
+            //    var owner = new PropertyOwner { UserID = user.Id };
+            //    await repo.AddPropertyOwnerAsync(owner);
+            //}
+            //else if (dto.Role == "InteriorDesigner")
+            //{
+            //    var designer = new InteriorDesigner { InteriorDesignerID = user.Id };
+            //    await repo.AddInteriorDesignerAsync(designer);
+            //}
+            await repo.AddUserToRoleAsync(user, dto.Role);
 
             return ResultViewModel<UserResponseDTO>.Ok(
                 "User registered successfully.",
@@ -82,6 +84,16 @@ namespace Jiwar.Account.Services
 
             var token = await _tokenService.CreateTokenAsync(user);
 
+            var roles = await _userManager.GetRolesAsync(user);
+            var role = roles.FirstOrDefault();
+
+            bool isProfileCompleted = true;
+            if (role == "PropertyOwner")
+                isProfileCompleted = await repo.PropertyOwnerExistsAsync(user.Id);
+
+            else if (role == "InteriorDesigner")
+                isProfileCompleted = await repo.InteriorDesignerExistsAsync(user.Id);
+
             return ResultViewModel<UserResponseDTO>.Ok("Login successful.",
                 new UserResponseDTO
                 {
@@ -90,7 +102,8 @@ namespace Jiwar.Account.Services
                 Email = user.Email,
                 ProfilePicURL = user.ProfilePicURL,
                 Role = user.Role,
-                Token = token
+                Token = token,
+                IsProfileCompleted = isProfileCompleted
                 });
         }
 
@@ -229,6 +242,35 @@ namespace Jiwar.Account.Services
             });
         }
 
+        public Task UpdateCustomerProfileAsync(string userId, CustomerEditProfileDto dto)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task UpdatePropertyOwnerProfileAsync(string userId, PropertyOwnerEditProfileDto dto)
+        {
+            //var owner  = new PropertyOwner
+            //{
+
+            //};
+            //await repo.AddPropertyOwnerAsync(owner);
+            throw new NotImplementedException();
+        }
+
+        public async Task UpdateInteriorDesignerProfileAsync(string userId, InteriorDesignerEditProfileDto dto)
+        {
+            //var designer = new InteriorDesigner
+            //{
+
+            //};
+            //await repo.AddInteriorDesignerAsync(designer);
+            throw new NotImplementedException();
+        }
+
+        public Task UpdateAdminProfileAsync(string userId, AdminEditProfileDto dto)
+        {
+            throw new NotImplementedException();
+        }
 
     }
 }
