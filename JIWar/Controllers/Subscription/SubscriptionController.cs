@@ -1,13 +1,19 @@
-using Microsoft.AspNetCore.Mvc;
-using JIWar.PropertyOwner;
 using Jiwar.Models;
 using Jiwar.Services;
+using JIWar.PropertyOwner;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 // using Jiwar.Services.interfaces;
 
 namespace Jiwar.Controllers
 {
-    [Route("api/[controller]")]
+   
+    [Authorize]
     [ApiController]
+    [Route("api/[controller]")]
+ 
+
     public class SubscriptionController : ControllerBase
     {
         //commented to try to resolve IPropertyService
@@ -35,7 +41,12 @@ namespace Jiwar.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(SubscriptionCreateDTO dto)
         {
-            var result = await _subscriptionService.CreateAsync(dto);
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (userId == null)
+                return Unauthorized();
+
+            var result = await _subscriptionService.CreateAsync(dto, userId);
             return Ok(result);
         }
 

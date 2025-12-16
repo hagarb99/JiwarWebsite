@@ -1,4 +1,4 @@
-using GEWAR;
+﻿using GEWAR;
 using GEWAR.Models;
 using Jiwar.Models; // Subscription model
 using Jiwar.Repositories.Interfaces;
@@ -49,8 +49,19 @@ namespace Jiwar.Repositories
 
         public async Task SaveAsync()
         {
-            await _context.SaveChangesAsync();
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateException ex)
+            {
+                // هتطبع الرسالة الحقيقية للخطأ اللي حصل
+                Console.WriteLine(ex.InnerException?.Message);
+                throw; // هيرمي الخطأ تاني عشان تعرفي في مكان الاستدعاء
+            }
         }
+
+
 
         // ===============================
         // Revenue Methods

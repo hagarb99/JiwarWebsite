@@ -1,4 +1,4 @@
-using GEWAR.Models;
+﻿using GEWAR.Models;
 using Jiwar.DTOs;
 using Jiwar.Models;
 using Jiwar.Repositories.Interfaces;
@@ -45,14 +45,28 @@ namespace Jiwar.Services
             };
         }
 
-        public async Task<SubscriptionDetailsDTO> CreateAsync(SubscriptionCreateDTO dto)
+
+
+
+        public async Task<SubscriptionDetailsDTO> CreateAsync(SubscriptionCreateDTO dto, string userId)
         {
+
             var model = new Subscription
             {
                 Name = dto.Name,
                 Price = dto.Price,
-                DurationInMonths = dto.DurationInMonths
+                DurationInMonths = dto.DurationInMonths,
+                StartDate = DateTime.UtcNow, // تاريخ البداية افتراضي
+                EndDate = DateTime.UtcNow.AddMonths(dto.DurationInMonths),
+                PlanType = dto.PlanType,
+                planTypeEnum = PlanTypeEnum.Golden,          // أو حسب اختيارك
+                Status = "Active",
+                statusEnum2 = StatusEnum2.Active,
+            
+
+                UserID = userId
             };
+
 
             await _subscriptionRepository.AddAsync(model);
             await _subscriptionRepository.SaveAsync();
