@@ -33,21 +33,21 @@ namespace Jiwar
     public class Program
     {
 
-        public static async Task SeedRolesAsync(IApplicationBuilder app)
-        {
-            using var scope = app.ApplicationServices.CreateScope();
-            var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+        //public static async Task SeedRolesAsync(IApplicationBuilder app)
+        //{
+        //    using var scope = app.ApplicationServices.CreateScope();
+        //    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
 
-            string[] roles = { "Customer", "PropertyOwner", "InteriorDesigner", "Admin" };
+        //    string[] roles = { "Customer", "PropertyOwner", "InteriorDesigner", "Admin" };
 
-            foreach (var role in roles)
-            {
-                if (!await roleManager.RoleExistsAsync(role))
-                {
-                    await roleManager.CreateAsync(new IdentityRole(role));
-                }
-            }
-        }
+        //    foreach (var role in roles)
+        //    {
+        //        if (!await roleManager.RoleExistsAsync(role))
+        //        {
+        //            await roleManager.CreateAsync(new IdentityRole(role));
+        //        }
+        //    }
+        //}
 
         public static async Task Main(string[] args)
         {
@@ -90,7 +90,7 @@ namespace Jiwar
             builder.Services.AddOpenApi();
             builder.Services.AddCors(options =>
             {
-                options.AddPolicy("AllowAll", policy =>
+                options.AddDefaultPolicy(policy =>
                 {
                     policy.AllowAnyOrigin()
                           .AllowAnyMethod()
@@ -186,7 +186,7 @@ namespace Jiwar
 
             // Build App
             var app = builder.Build();
-            await SeedRolesAsync(app);
+            //await SeedRolesAsync(app);
             // Middleware Pipeline
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
@@ -197,7 +197,7 @@ namespace Jiwar
             }
 
             app.UseHttpsRedirection();
-            app.UseCors("AllowAll");
+            app.UseCors();
             app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();

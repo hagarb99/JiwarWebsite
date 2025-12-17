@@ -82,6 +82,10 @@ namespace Jiwar.Account.Services
             if (user == null)
                 return ResultViewModel<UserResponseDTO>.Fail("Invalid email or password.");
 
+            var isPasswordValid = await repo.CheckPasswordAsync(user, dto.Password);
+            if (!isPasswordValid)
+                return ResultViewModel<UserResponseDTO>.Fail("Invalid email or password.");
+
             var token = await _tokenService.CreateTokenAsync(user);
 
             var roles = await _userManager.GetRolesAsync(user);
