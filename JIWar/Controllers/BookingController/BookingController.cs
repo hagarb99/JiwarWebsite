@@ -73,17 +73,14 @@ namespace Jiwar.Controllers
         [HttpPost("pay")]
         public async Task<IActionResult> PayForBooking([FromBody] BuyBookingDto dto)
         {
-            var paymentUrl = await _paymentService.CreateBookingPaymentRequest(dto.UserId, dto.BookingId, dto.Method);
+            var paymentUrl = await _paymentService.CreateBookingPaymentAsync(dto.UserId, dto.BookingId);
             return Ok(new { paymentUrl });
         }
 
         [HttpPost("payment/webhook")]
-        public async Task<IActionResult> BookingPaymentWebhook([FromBody] PaymentWebhookDto dto)
+        public async Task<IActionResult> BookingPaymentWebhook([FromBody] PaymobWebhookDto dto)
         {
-            var success = await _paymentService.ConfirmBookingPayment(dto.Reference);
-            if (!success)
-                return BadRequest("Invalid reference");
-
+            await _paymentService.HandlePaymobWebhookAsync(dto);
             return Ok("Booking payment confirmed");
         }
 
@@ -92,7 +89,7 @@ namespace Jiwar.Controllers
         public async Task<IActionResult> ConfirmBooking(int id)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var hasPaid = await _paymentService.HasUserPaidForBooking(userId, id);
+            var hasPaid = await _paymentService.HasUserPaidForBookingAsync(userId, id);
 
             if (!hasPaid)
                 return Forbid("You must complete payment to confirm this booking.");

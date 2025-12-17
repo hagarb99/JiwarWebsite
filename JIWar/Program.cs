@@ -162,7 +162,7 @@ namespace Jiwar
             builder.Services.AddScoped<ISubscriptionService, SubscriptionService>();
             builder.Services.AddScoped<IReportService, ReportService>();
             builder.Services.AddScoped<IAccountService, AccountService>();
-            builder.Services.AddScoped<IPaymentService, PaymentService>();
+            builder.Services.AddScoped<IPaymentService, PaymobPaymentService>();
             builder.Services.AddScoped<IBookingService, BookingService>();  // ← المهم
                                                                             // Replace this line:
                                                                             // builder.Services.AddScoped<DesignerService, IDesignerService>();  

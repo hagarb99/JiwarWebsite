@@ -31,7 +31,7 @@ namespace Jiwar.Controllers
         public async Task<IActionResult> Download(int id)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var hasPaid = await _paymentService.HasUserPaidForReport(userId, id);
+            var hasPaid = await _paymentService.HasUserPaidForReportAsync(userId, id);
 
             if (!hasPaid)
                 return Forbid("You must purchase this report before downloading.");
@@ -47,17 +47,14 @@ namespace Jiwar.Controllers
         [HttpPost("buy")]
         public async Task<IActionResult> BuyReport([FromBody] BuyReportDto dto)
         {
-            var paymentUrl = await _paymentService.CreatePaymentRequest(dto.UserId, dto.ReportId, dto.Method);
+            var paymentUrl = await _paymentService.CreateReportPaymentAsync(dto.UserId, dto.ReportId);
             return Ok(new { paymentUrl });
         }
 
         [HttpPost("payment/webhook")]
-        public async Task<IActionResult> PaymentWebhook([FromBody] PaymentWebhookDto dto)
+        public async Task<IActionResult> PaymentWebhook([FromBody] PaymobWebhookDto dto)
         {
-            var success = await _paymentService.ConfirmPayment(dto.Reference);
-            if (!success)
-                return BadRequest("Invalid reference");
-
+            await _paymentService.HandlePaymobWebhookAsync(dto);
             return Ok("Payment confirmed");
         }
 

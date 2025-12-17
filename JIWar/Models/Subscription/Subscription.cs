@@ -10,7 +10,7 @@ namespace GEWAR.Models
         public partial class Subscription : BaseModel
     {
      
-        public string UserID { get; set; }
+            public string UserID { get; set; }
             public string PlanType { get; set; }
             public DateTime StartDate { get; set; }
             public DateTime EndDate { get; set; }
