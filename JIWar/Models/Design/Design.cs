@@ -1,23 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using GEWAR.Models;
 
-namespace GEWAR.Models
+namespace Jiwar.Models
 {
     public class Design : BaseModel
     {
-        public string DesignerID { get; set; }       // FK → InteriorDesigner.DesignerID
-        public string DesignURL { get; set; }     // رابط التصميم (قد يكون صورة أو ملف)
-        public bool AI_Generated { get; set; }    // هل التصميم تم إنشاؤه بالذكاء الاصطناعي؟
-        public string? SelectedStyle { get; set; } // نوع الديكور أو النمط المختار
-        public DateTime CreationDate { get; set; }
+        public string DesignerID { get; set; }
+        public virtual InteriorDesigner InteriorDesigner { get; set; }
 
-        // 🔗 Navigation Properties
-        public virtual Request?  Request { get; set; }
-        public virtual InteriorDesigner? InteriorDesigner { get; set; }
-        public int RequestID { get; internal set; }
+        public int PropertyID { get; set; }
+        public virtual Property Property { get; set; }
+
+        public int? ProposalID { get; set; }
+        public virtual DesignerProposal Proposal { get; set; }
+
+        public List<string> ImageURLs { get; set; } = new();
+        public bool AI_Generated { get; set; }
+        public string SelectedStyle { get; set; }
+        public DateTime CreationDate { get; set; }
+        public string Description { get; set; }
+        public string OwnerID { get; set; }
+
     }
+
 }
-    

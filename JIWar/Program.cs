@@ -7,16 +7,17 @@ using Jiwar.Account;
 using Jiwar.Account.DTOs;
 using Jiwar.Account.Services;
 using Jiwar.Controllers;
+using Jiwar.Mappings;
 using Jiwar.Models;
 using Jiwar.Models.Offers;
 using Jiwar.Repositories;
+using Jiwar.Repositories;
 using Jiwar.Repositories.DistrictAnalyticService;
 using Jiwar.Repositories.Interfaces;
-using Jiwar.Repositories;
 using Jiwar.Repositories.Valuation;
 using Jiwar.Service;
 using Jiwar.Services;
-using Jiwar.Services.DesignerService;
+using Jiwar.Services.DesignerProposalService;
 using Jiwar.Services.GoogleService;
 using Jiwar.Services.ValuationService;
 using JIWAR.Models;
@@ -167,7 +168,7 @@ namespace Jiwar
                                                                             // builder.Services.AddScoped<DesignerService, IDesignerService>();  
 
             // With this corrected line:
-            builder.Services.AddScoped<IDesignerService, DesignerService>();
+            builder.Services.AddScoped<IDesignerProposalService, DesignerProposalService>();
            
             builder.Services.AddScoped<IBookingService, BookingService>();
             builder.Services.AddScoped<GoogleAuthService>();
@@ -179,7 +180,7 @@ namespace Jiwar
             builder.Services.AddScoped<IAnalyticsRepository, AnalyticsRepository>();
             builder.Services.AddScoped<IAdminAnalyticsService, AdminAnalyticsService>();
             builder.Services.AddScoped<IValuationHistoryService, ValuationHistoryService>();
-            builder.Services.AddAutoMapper(options => options.AddProfile<DesignerProfile>());
+            builder.Services.AddAutoMapper(cfg => {  cfg.AddProfile<MappingProfile>();});
 
 
 

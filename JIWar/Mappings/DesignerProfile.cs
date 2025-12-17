@@ -1,29 +1,33 @@
 ﻿using AutoMapper;
 using GEWAR.Models;
-using Jiwar.DTOs.CreateProposalDto;
 using Jiwar.DTOs.DesignDto;
 using Jiwar.DTOs.ProposalDto;
 using Jiwar.DTOs.RequestDto;
-using Jiwar.DTOs.UploadDesignDto;
-using static System.Runtime.InteropServices.JavaScript.JSType;
-
-public class MappingProfile : Profile
+using Jiwar.Models;
+namespace Jiwar.Mappings
 {
-    public MappingProfile()
+
+    public class MappingProfile : Profile
     {
-        // Request
-        CreateMap<Request, RequestDto>().ReverseMap();
+        public MappingProfile()
+        {
+            // Requests (لو مستخدمين)
+            CreateMap<Request, RequestDto>().ReverseMap();
+            CreateMap<Proposal, ProposalDto>().ReverseMap();
 
-        // Proposal
-        CreateMap<Proposal, ProposalDto>().ReverseMap();
-        CreateMap<CreateProposalDto, Proposal>();
+            // DesignRequest
+            CreateMap<DesignRequest, DesignRequestDto>()
+                .ForMember(dest => dest.ProposalCount,
+                           opt => opt.MapFrom(src => src.Proposals != null ? src.Proposals.Count : 0));
 
-        // Design
-        CreateMap<Design, DesignDto>().ReverseMap();
-        CreateMap<UploadDesignDto, Design>();
+            CreateMap<DesignRequestDto, DesignRequest>();
 
-        // Designer Profile
-        CreateMap<InteriorDesigner, DesignerProfileDto>();
+            // DesignerProposal
+            CreateMap<DesignerProposal, DesignerProposalDto>().ReverseMap();
+
+            // Final Design
+            CreateMap<Design, DesignDto>().ReverseMap();
+            CreateMap<CreateDesignDto, Design>();
+        }
     }
 }
-
