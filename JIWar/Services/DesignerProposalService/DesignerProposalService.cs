@@ -35,16 +35,19 @@ namespace Jiwar.Services.DesignerProposalService
             if (alreadySubmitted)
                 throw new Exception("You already submitted a proposal for this request");
 
-            var proposal = new DesignerProposal
-            {
-                DesignRequestID = dto.DesignRequestID,
-                DesignerID = designerId,
-                EstimatedCost = dto.EstimatedCost,
-                EstimatedDays = dto.EstimatedDays,
-                ProposalDescription = dto.ProposalDescription,
-                SampleDesignURL = dto.SampleDesignURL,
-                Status = "Pending"
-            };
+            //var proposal = new DesignerProposal
+            //{
+            //    DesignRequestID = dto.DesignRequestID,
+            //    DesignerID = designerId,
+            //    EstimatedCost = dto.EstimatedCost,
+            //    EstimatedDays = dto.EstimatedDays,
+            //    ProposalDescription = dto.ProposalDescription,
+            //    SampleDesignURL = dto.SampleDesignURL,
+            //    Status = "Pending"
+            //};
+            var proposal = _mapper.Map<DesignerProposal>(dto);
+            proposal.DesignerID = designerId;
+            proposal.Status = "Pending";
 
             _context.DesignerProposals.Add(proposal);
 
