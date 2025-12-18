@@ -29,17 +29,17 @@ namespace Jiwar
         {
             using var scope = app.ApplicationServices.CreateScope();
             var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-
-            string[] roles = { "Customer", "PropertyOwner", "InteriorDesigner", "Admin" };
-
-            foreach (var role in roles)
-            {
-                if (!await roleManager.RoleExistsAsync(role))
-                {
-                    await roleManager.CreateAsync(new IdentityRole(role));
-                }
-            }
         }
+        //    string[] roles = { "Customer", "PropertyOwner", "InteriorDesigner", "Admin" };
+
+        //    foreach (var role in roles)
+        //    {
+        //        if (!await roleManager.RoleExistsAsync(role))
+        //        {
+        //            await roleManager.CreateAsync(new IdentityRole(role));
+        //        }
+        //    }
+        //}
 
         public static async Task Main(string[] args)
         {
@@ -53,7 +53,7 @@ namespace Jiwar
             // CORS
             builder.Services.AddCors(options =>
             {
-                options.AddPolicy("AllowAll", policy =>
+                options.AddDefaultPolicy(policy =>
                 {
                     policy.AllowAnyOrigin()
                           .AllowAnyMethod()
