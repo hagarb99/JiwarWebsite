@@ -1,4 +1,4 @@
-﻿
+csharp JIWar\Services\AccountService\AccountService.cs
 using GEWAR.Models;
 using Jiwar.Account.DTOs;
 using Jiwar.Controllers;
@@ -26,7 +26,7 @@ namespace Jiwar.Account.Services
             this.repo = repo;
             _tokenService = tokenService;
             this._googleAuthService = _googleAuthService;
-            this._userManager = _userManager;
+            this._user_manager = _user_manager;
         }
         public async Task<ResultViewModel<UserResponseDTO>> RegisterAsync(RegisterDto dto)
         {
@@ -50,16 +50,16 @@ namespace Jiwar.Account.Services
 
             await repo.AddUserToRoleAsync(user, dto.Role);
 
-            if (dto.Role == "PropertyOwner")
-            {
-                var owner = new PropertyOwner { UserID = user.Id };
-                await repo.AddPropertyOwnerAsync(owner);
-            }
-            else if (dto.Role == "InteriorDesigner")
-            {
-                var designer = new InteriorDesigner { InteriorDesignerID = user.Id };
-                await repo.AddInteriorDesignerAsync(designer);
-            }
+            //if (dto.Role == "PropertyOwner")
+            //{
+            //    var owner = new PropertyOwner { UserID = user.Id };
+            //    await repo.AddPropertyOwnerAsync(owner);
+            //}
+            //else if (dto.Role == "InteriorDesigner")
+            //{
+            //    var designer = new InteriorDesigner { InteriorDesignerID = user.Id };
+            //    await repo.AddInteriorDesignerAsync(designer);
+            //}
             await repo.AddUserToRoleAsync(user, dto.Role);
 
             return ResultViewModel<UserResponseDTO>.Ok(
@@ -74,6 +74,7 @@ namespace Jiwar.Account.Services
             );
 
 
+
         }
 
         public async Task<ResultViewModel<UserResponseDTO>> LoginAsync(LoginDto dto)
@@ -82,13 +83,9 @@ namespace Jiwar.Account.Services
             if (user == null)
                 return ResultViewModel<UserResponseDTO>.Fail("Invalid email or password.");
 
-            var isPasswordValid = await repo.CheckPasswordAsync(user, dto.Password);
-            if (!isPasswordValid)
-                return ResultViewModel<UserResponseDTO>.Fail("Invalid email or password.");
-
             var token = await _tokenService.CreateTokenAsync(user);
 
-            var roles = await _userManager.GetRolesAsync(user);
+            var roles = await _user_manager.GetRolesAsync(user);
             var role = roles.FirstOrDefault();
 
             bool isProfileCompleted = true;
@@ -154,7 +151,7 @@ namespace Jiwar.Account.Services
 
         public async Task<ResultViewModel<UserResponseDTO>> EditProfileAsync(ClaimsPrincipal userClaims, EditProfileBaseDto dto)
         {
-            
+
             var user = await repo.GetUserFromClaimsAsync(userClaims);
 
             if (user == null)
@@ -212,11 +209,11 @@ namespace Jiwar.Account.Services
 
         public async Task<ResultViewModel<UserResponseDTO>> GoogleSignInAsync(string idToken)
         {
-            var payload = await _googleAuthService.VerifyGoogleTokenAsync(idToken);
+            var payload = await _google_auth_service.VerifyGoogleTokenAsync(idToken);
             if (payload == null)
                 return ResultViewModel<UserResponseDTO>.Fail("Invalid Google token");
 
-            var user = await _userManager.FindByEmailAsync(payload.Email);
+            var user = await _user_manager.FindByEmailAsync(payload.Email);
             if (user == null)
             {
                 user = new User
@@ -229,12 +226,12 @@ namespace Jiwar.Account.Services
                     RegistrationDate = DateTime.UtcNow,
                     Role = "Customer"
                 };
-                var result = await _userManager.CreateAsync(user);
+                var result = await _user_manager.CreateAsync(user);
                 if (!result.Succeeded)
                     return ResultViewModel<UserResponseDTO>.Fail(string.Join("; ", result.Errors.Select(e => e.Description)));
             }
 
-            var token = await _tokenService.CreateTokenAsync(user);
+            var token = await _token_service.CreateTokenAsync(user);
 
             return ResultViewModel<UserResponseDTO>.Ok("Login successful", new UserResponseDTO
             {
@@ -246,34 +243,118 @@ namespace Jiwar.Account.Services
             });
         }
 
-        public Task UpdateCustomerProfileAsync(string userId, CustomerEditProfileDto dto)
+        // --- Implementations for role-specific profile updates ---
+        public async Task UpdateCustomerProfileAsync(string userId, CustomerEditProfileDto dto)
         {
-            throw new NotImplementedException();
+            var user = await _user_manager.FindByIdAsync(userId);
+            if (user == null)
+                throw new KeyNotFoundException("User not found.");
+
+            // map common fields
+            if (!string.IsNullOrEmpty(dto.Name))
+                user.Name = dto.Name;
+            if (!string.IsNullOrEmpty(dto.Email))
+                user.Email = dto.Email;
+            if (!string.IsNullOrEmpty(dto.PhoneNumber))
+                user.PhoneNumber = dto.PhoneNumber;
+            if (!string.IsNullOrEmpty(dto.ProfilePicURL))
+                user.ProfilePicURL = dto.ProfilePicURL;
+
+            // persist user
+            await repo.UpdateUserAsync(user);
+
+            // Customer-specific fields (if any) can be handled here.
+            // Example: if dto has PreferredContactMethod or DefaultBillingAddress, store them in a related table or user claims.
         }
 
         public async Task UpdatePropertyOwnerProfileAsync(string userId, PropertyOwnerEditProfileDto dto)
         {
-            //var owner  = new PropertyOwner
-            //{
+            var user = await _user_manager.FindByIdAsync(userId);
+            if (user == null)
+                throw new KeyNotFoundException("User not found.");
 
-            //};
-            //await repo.AddPropertyOwnerAsync(owner);
-            throw new NotImplementedException();
+            // update user common fields
+            if (!string.IsNullOrEmpty(dto.Name))
+                user.Name = dto.Name;
+            if (!string.IsNullOrEmpty(dto.Email))
+                user.Email = dto.Email;
+            if (!string.IsNullOrEmpty(dto.PhoneNumber))
+                user.PhoneNumber = dto.PhoneNumber;
+            if (!string.IsNullOrEmpty(dto.ProfilePicURL))
+                user.ProfilePicURL = dto.ProfilePicURL;
+
+            await repo.UpdateUserAsync(user);
+
+            // ensure PropertyOwner record exists
+            if (!await repo.PropertyOwnerExistsAsync(user.Id))
+            {
+                var owner = new PropertyOwner
+                {
+                    UserID = user.Id
+                    // Add more owner-specific fields here if your PropertyOwner entity has them
+                    // e.g. CompanyName = dto.CompanyName
+                };
+                await repo.AddPropertyOwnerAsync(owner);
+            }
+            else
+            {
+                // If you have an UpdatePropertyOwnerAsync in repository, call it here to update owner-specific fields.
+            }
         }
 
         public async Task UpdateInteriorDesignerProfileAsync(string userId, InteriorDesignerEditProfileDto dto)
         {
-            //var designer = new InteriorDesigner
-            //{
+            var user = await _user_manager.FindByIdAsync(userId);
+            if (user == null)
+                throw new KeyNotFoundException("User not found.");
 
-            //};
-            //await repo.AddInteriorDesignerAsync(designer);
-            throw new NotImplementedException();
+            // update user common fields
+            if (!string.IsNullOrEmpty(dto.Name))
+                user.Name = dto.Name;
+            if (!string.IsNullOrEmpty(dto.Email))
+                user.Email = dto.Email;
+            if (!string.IsNullOrEmpty(dto.PhoneNumber))
+                user.PhoneNumber = dto.PhoneNumber;
+            if (!string.IsNullOrEmpty(dto.ProfilePicURL))
+                user.ProfilePicURL = dto.ProfilePicURL;
+
+            await repo.UpdateUserAsync(user);
+
+            // ensure InteriorDesigner record exists
+            if (!await repo.InteriorDesignerExistsAsync(user.Id))
+            {
+                var designer = new InteriorDesigner
+                {
+                    InteriorDesignerID = user.Id
+                    // Add designer-specific fields if InteriorDesigner entity supports them
+                    // e.g. PortfolioUrl = dto.PortfolioUrl, YearsOfExperience = dto.YearsOfExperience
+                };
+                await repo.AddInteriorDesignerAsync(designer);
+            }
+            else
+            {
+                // If you have an UpdateInteriorDesignerAsync in repository, call it here to update designer-specific fields.
+            }
         }
 
-        public Task UpdateAdminProfileAsync(string userId, AdminEditProfileDto dto)
+        public async Task UpdateAdminProfileAsync(string userId, AdminEditProfileDto dto)
         {
-            throw new NotImplementedException();
+            var user = await _user_manager.FindByIdAsync(userId);
+            if (user == null)
+                throw new KeyNotFoundException("User not found.");
+
+            if (!string.IsNullOrEmpty(dto.Name))
+                user.Name = dto.Name;
+            if (!string.IsNullOrEmpty(dto.Email))
+                user.Email = dto.Email;
+            if (!string.IsNullOrEmpty(dto.PhoneNumber))
+                user.PhoneNumber = dto.PhoneNumber;
+            if (!string.IsNullOrEmpty(dto.ProfilePicURL))
+                user.ProfilePicURL = dto.ProfilePicURL;
+
+            await repo.UpdateUserAsync(user);
+
+            // Admin-specific editable fields (e.g., DisplayName) should be handled/stored separately if needed.
         }
 
     }

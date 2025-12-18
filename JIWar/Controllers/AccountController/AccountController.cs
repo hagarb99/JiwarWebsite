@@ -90,10 +90,8 @@ namespace Jiwar.Account
                 var userResponse = await accountService.LoginAsync(dto);
                 if (!userResponse.Success)
                     return Unauthorized(userResponse);
-                return Ok(new
-                {
-                    user = userResponse.Data
-                });
+
+                return new JsonResult(userResponse.Data);
             }
             catch (Exception ex)
             {

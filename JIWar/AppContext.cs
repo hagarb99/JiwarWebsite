@@ -2,7 +2,6 @@
 using GEWAR.Models;
 using GEWAR.Models.Configurations;
 using Jiwar.Models;
-using Jiwar.Models;
 using Jiwar.Models.Offers;
 using Jiwar.Models.Valuation;
 using JIWAR.Models;
@@ -32,6 +31,10 @@ namespace GEWAR
 
         public DbSet<Complaint> complaints { get; set; }
         public DbSet<Design> Designs { get; set; }
+
+        public DbSet<DesignRequest> DesignRequests { get; set; }
+        public DbSet<DesignerProposal> DesignerProposals { get; set; }
+
         public DbSet<InteriorDesigner> InteriorDesigners { get; set; }
         public DbSet<InvestmentPortfolio> InvestmentPortfolios { get; set; }
         public DbSet<Notification> Notifications { get; set; }
@@ -99,6 +102,11 @@ namespace GEWAR
             modelBuilder.ApplyConfiguration(new ChatConfiguration());
             modelBuilder.ApplyConfiguration(new ComplaintConfiguration());
             modelBuilder.ApplyConfiguration(new DesignConfiguration());
+
+            modelBuilder.ApplyConfiguration(new DesignRequestConfiguration());
+            modelBuilder.ApplyConfiguration(new DesignerProposalConfiguration());
+            // DesignConfiguration already applied
+
             modelBuilder.ApplyConfiguration(new InteriorDesignerConfiguration());
             modelBuilder.ApplyConfiguration(new InvestmentPortfolioConfiguration());
             modelBuilder.ApplyConfiguration(new NotificationConfiguration());
@@ -127,7 +135,7 @@ namespace GEWAR
 
             base.OnModelCreating(modelBuilder);
 
-            // تغيير اسم الجدول للمستخدمين
+
             modelBuilder.Entity<User>().ToTable("Users");
         }
 

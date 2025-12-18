@@ -21,6 +21,9 @@ namespace Jiwar.Migrations
                 name: "Messaging");
 
             migrationBuilder.EnsureSchema(
+                name: "Design");
+
+            migrationBuilder.EnsureSchema(
                 name: "RealEstate");
 
             migrationBuilder.EnsureSchema(
@@ -56,6 +59,29 @@ namespace Jiwar.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetRoles", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "DesignRequests",
+                schema: "Design",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserID = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    PropertyID = table.Column<int>(type: "int", nullable: false),
+                    PreferredStyle = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    Budget = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
+                    Notes = table.Column<string>(type: "nvarchar(2000)", maxLength: 2000, nullable: true),
+                    ImageURLs = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    IsForSaleEnhancement = table.Column<bool>(type: "bit", nullable: false),
+                    Status = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_DesignRequests", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -117,7 +143,7 @@ namespace Jiwar.Migrations
                     ProfilePicURL = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: true),
                     RegistrationDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Role = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    GoogleId = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    GoogleId = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
@@ -155,6 +181,34 @@ namespace Jiwar.Migrations
                         name: "FK_AspNetRoleClaims_AspNetRoles_RoleId",
                         column: x => x.RoleId,
                         principalTable: "AspNetRoles",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "DesignerProposals",
+                schema: "Design",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    DesignRequestID = table.Column<int>(type: "int", nullable: false),
+                    DesignerID = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    EstimatedCost = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    EstimatedDays = table.Column<int>(type: "int", nullable: false),
+                    ProposalDescription = table.Column<string>(type: "nvarchar(2000)", maxLength: 2000, nullable: true),
+                    SampleDesignURL = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
+                    Status = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_DesignerProposals", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_DesignerProposals_DesignRequests_DesignRequestID",
+                        column: x => x.DesignRequestID,
+                        principalSchema: "Design",
+                        principalTable: "DesignRequests",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -268,23 +322,22 @@ namespace Jiwar.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "InteriorDesigner",
+                name: "InteriorDesigners",
                 columns: table => new
                 {
-                    UserID = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Specialization = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    InteriorDesignerID = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Specialization = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
                     ExperienceYears = table.Column<int>(type: "int", nullable: true),
                     PortfolioURL = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
-                    InteriorDesignerID = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Id = table.Column<int>(type: "int", nullable: false),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_InteriorDesigner", x => x.UserID);
+                    table.PrimaryKey("PK_InteriorDesigners", x => x.InteriorDesignerID);
                     table.ForeignKey(
-                        name: "FK_InteriorDesigner_Users_UserID",
-                        column: x => x.UserID,
+                        name: "FK_InteriorDesigners_Users_InteriorDesignerID",
+                        column: x => x.InteriorDesignerID,
                         principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -834,41 +887,53 @@ namespace Jiwar.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Design",
+                name: "Designs",
+                schema: "Design",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    DesignerID = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    DesignURL = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
-                    AI_Generated = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
+                    DesignerID = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    InteriorDesignerID = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    PropertyID = table.Column<int>(type: "int", nullable: false),
+                    ProposalID = table.Column<int>(type: "int", nullable: true),
+                    ImageURLs = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    AI_Generated = table.Column<bool>(type: "bit", nullable: false),
                     SelectedStyle = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
-                    CreationDate = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETUTCDATE()"),
-                    RequestID = table.Column<int>(type: "int", nullable: false),
-                    InteriorDesignerUserID = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    CreationDate = table.Column<DateTime>(type: "datetime", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    OwnerID = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    RequestId = table.Column<int>(type: "int", nullable: true),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Design", x => x.Id);
+                    table.PrimaryKey("PK_Designs", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Design_InteriorDesigner_DesignerID",
-                        column: x => x.DesignerID,
-                        principalTable: "InteriorDesigner",
-                        principalColumn: "UserID",
-                        onDelete: ReferentialAction.Restrict);
+                        name: "FK_Designs_DesignerProposals_ProposalID",
+                        column: x => x.ProposalID,
+                        principalSchema: "Design",
+                        principalTable: "DesignerProposals",
+                        principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_Design_InteriorDesigner_InteriorDesignerUserID",
-                        column: x => x.InteriorDesignerUserID,
-                        principalTable: "InteriorDesigner",
-                        principalColumn: "UserID");
+                        name: "FK_Designs_InteriorDesigners_InteriorDesignerID",
+                        column: x => x.InteriorDesignerID,
+                        principalTable: "InteriorDesigners",
+                        principalColumn: "InteriorDesignerID",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Design_Requests_RequestID",
-                        column: x => x.RequestID,
+                        name: "FK_Designs_Properties_PropertyID",
+                        column: x => x.PropertyID,
+                        principalSchema: "RealEstate",
+                        principalTable: "Properties",
+                        principalColumn: "PropertyID",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Designs_Requests_RequestId",
+                        column: x => x.RequestId,
                         principalSchema: "Transactions",
                         principalTable: "Requests",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -892,10 +957,10 @@ namespace Jiwar.Migrations
                 {
                     table.PrimaryKey("PK_Proposals", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Proposals_InteriorDesigner_DesignerID",
+                        name: "FK_Proposals_InteriorDesigners_DesignerID",
                         column: x => x.DesignerID,
-                        principalTable: "InteriorDesigner",
-                        principalColumn: "UserID",
+                        principalTable: "InteriorDesigners",
+                        principalColumn: "InteriorDesignerID",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Proposals_Requests_RequestID",
@@ -925,10 +990,10 @@ namespace Jiwar.Migrations
                 {
                     table.PrimaryKey("PK_RequestRatings", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_RequestRatings_InteriorDesigner_DesignerID",
+                        name: "FK_RequestRatings_InteriorDesigners_DesignerID",
                         column: x => x.DesignerID,
-                        principalTable: "InteriorDesigner",
-                        principalColumn: "UserID",
+                        principalTable: "InteriorDesigners",
+                        principalColumn: "InteriorDesignerID",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_RequestRatings_Requests_RequestID",
@@ -1035,10 +1100,10 @@ namespace Jiwar.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Complaint_InteriorDesigner_DesignerID",
+                        name: "FK_Complaint_InteriorDesigners_DesignerID",
                         column: x => x.DesignerID,
-                        principalTable: "InteriorDesigner",
-                        principalColumn: "UserID",
+                        principalTable: "InteriorDesigners",
+                        principalColumn: "InteriorDesignerID",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Complaint_Users_UserID",
@@ -1216,19 +1281,34 @@ namespace Jiwar.Migrations
                 column: "UserID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Design_DesignerID",
-                table: "Design",
-                column: "DesignerID");
+                name: "IX_DesignerProposals_DesignRequestID",
+                schema: "Design",
+                table: "DesignerProposals",
+                column: "DesignRequestID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Design_InteriorDesignerUserID",
-                table: "Design",
-                column: "InteriorDesignerUserID");
+                name: "IX_Designs_InteriorDesignerID",
+                schema: "Design",
+                table: "Designs",
+                column: "InteriorDesignerID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Design_RequestID",
-                table: "Design",
-                column: "RequestID");
+                name: "IX_Designs_PropertyID",
+                schema: "Design",
+                table: "Designs",
+                column: "PropertyID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Designs_ProposalID",
+                schema: "Design",
+                table: "Designs",
+                column: "ProposalID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Designs_RequestId",
+                schema: "Design",
+                table: "Designs",
+                column: "RequestId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_InvestmentPortfolio_UserID",
@@ -1449,7 +1529,8 @@ namespace Jiwar.Migrations
                 name: "Complaint");
 
             migrationBuilder.DropTable(
-                name: "Design");
+                name: "Designs",
+                schema: "Design");
 
             migrationBuilder.DropTable(
                 name: "DistrictPriceHistories");
@@ -1510,6 +1591,10 @@ namespace Jiwar.Migrations
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
+                name: "DesignerProposals",
+                schema: "Design");
+
+            migrationBuilder.DropTable(
                 name: "InvestmentPortfolio");
 
             migrationBuilder.DropTable(
@@ -1523,11 +1608,15 @@ namespace Jiwar.Migrations
                 schema: "Complaints");
 
             migrationBuilder.DropTable(
-                name: "InteriorDesigner");
+                name: "InteriorDesigners");
 
             migrationBuilder.DropTable(
                 name: "Requests",
                 schema: "Transactions");
+
+            migrationBuilder.DropTable(
+                name: "DesignRequests",
+                schema: "Design");
 
             migrationBuilder.DropTable(
                 name: "Booking",
