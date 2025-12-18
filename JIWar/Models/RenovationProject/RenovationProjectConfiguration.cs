@@ -7,9 +7,15 @@ namespace GEWAR.Models.Configurations
     {
         public void Configure(EntityTypeBuilder<RenovationProject> builder)
         {
-            builder.ToTable("RenovationProjects");
+            builder.ToTable("RenovationProjects" , "Management");
 
             builder.HasKey(x => x.Id);
+
+            builder.Property(x=>x.UserID)
+            .IsRequired();
+
+            builder.Property(x=>x.PropertyID)
+            .IsRequired();
 
             builder.Property(x => x.EstimatedCost)
                    .HasColumnType("decimal(18,2)");
@@ -17,6 +23,8 @@ namespace GEWAR.Models.Configurations
             builder.Property(x => x.EstimatedProfit)
                    .HasColumnType("decimal(18,2)");
 
+
+            //Relationships
             builder.HasMany(rp => rp.RenovationCosts)
        .WithOne(rc => rc.RenovationProject)
        .HasForeignKey(rc => rc.RenovationProjectID)

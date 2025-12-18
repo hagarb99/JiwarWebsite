@@ -52,5 +52,12 @@ namespace GEWAR.Models
         public decimal Price { get; set; }
         public decimal EstimatedPrice { get; set; }
         public string District { get; internal set; }
+
+        public virtual ICollection<RenovationProject> RenovationProjects { get; set; }
+        = new List<RenovationProject>();
+
+        public virtual ICollection<RenovationSimulation> RenovationSimulations { get; set; }
+
+
     }
 }

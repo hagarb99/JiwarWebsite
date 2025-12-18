@@ -32,6 +32,12 @@ namespace Jiwar.Models
         .HasForeignKey(p => p.PropertyID)
         .OnDelete(DeleteBehavior.Cascade);
 
+     
+         builder.HasIndex(pa => pa.PropertyID);
+         builder.HasIndex(pa => pa.AnalysisDate);
+
+
+
         }
     }
 }

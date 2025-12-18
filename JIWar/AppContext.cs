@@ -1,4 +1,5 @@
 ﻿using GEWAR.Configurations;
+using GEWAR.Data.Configurations;
 using GEWAR.Models;
 using GEWAR.Models.Configurations;
 using Jiwar.Models;
@@ -63,6 +64,11 @@ namespace GEWAR
 
         public DbSet<DistrictPriceHistory> DistrictPriceHistories { get; set; }
         public object DistrictPriceHistory { get; internal set; }
+
+        public DbSet<RenovationSimulation> RenovationSimulations { get; set; }
+        public DbSet<SimulationRecommendation> SimulationRecommendations { get; set; }
+        public DbSet<SimulationMedia> SimulationMedias { get; set; }
+
        
 
 
@@ -124,6 +130,12 @@ namespace GEWAR
             modelBuilder.ApplyConfiguration(new ReportOrderConfiguration());
             modelBuilder.ApplyConfiguration(new PropertyPriceHistoryConfiguration());
             modelBuilder.ApplyConfiguration(new BookingPaymentConfiguration());
+            modelBuilder.ApplyConfiguration(new RenovationSimulationConfiguration());
+            modelBuilder.ApplyConfiguration(new SimulationMediaConfiguration());
+            modelBuilder.ApplyConfiguration(new SimulationRecommendationConfiguration());
+
+
+
 
             base.OnModelCreating(modelBuilder);
 

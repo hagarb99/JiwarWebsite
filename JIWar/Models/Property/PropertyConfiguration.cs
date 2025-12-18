@@ -75,6 +75,13 @@ namespace GEWAR.Models.Configurations
             builder.Property(p => p.LocationLang)
                    .HasColumnType("decimal(10,6)");
 
+           
+           builder.HasMany(p => p.RenovationProjects)
+             .WithOne()
+             .HasForeignKey(rp => rp.PropertyID)
+             .OnDelete(DeleteBehavior.Restrict);
+
+
 
 
 

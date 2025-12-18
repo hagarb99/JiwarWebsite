@@ -20,7 +20,9 @@ namespace Jiwar.Models
                    .HasColumnType("decimal(18,2)")
                    .IsRequired(false);
 
-            // ✅ Relationship with RenovationProject
+            builder.HasIndex(rc=>rc.RenovationProjectID);      
+
+            // Relationship with RenovationProject
             builder.HasOne(rc => rc.RenovationProject)
         .WithMany(rp => rp.RenovationCosts) // ← اربطي بـ collection property
         .HasForeignKey(rc => rc.RenovationProjectID)
