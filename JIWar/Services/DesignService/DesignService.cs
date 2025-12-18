@@ -29,18 +29,10 @@ namespace Jiwar.Services.DesignService
             if (proposal == null)
                 throw new Exception("Proposal not found");
 
-            var design = new Design
-            {
-                DesignerID = designerId,
-                OwnerID = proposal.DesignRequest.UserID,
-                PropertyID = dto.PropertyID,
-                ProposalID = dto.ProposalID,
-                ImageURLs = dto.ImageURLs ?? new List<string>(),
-                AI_Generated = dto.AI_Generated,
-                SelectedStyle = dto.SelectedStyle,
-                Description = dto.Description,
-                CreationDate = DateTime.UtcNow
-            };
+            var design = _mapper.Map<Design>(dto);
+            design.DesignerID = designerId;
+            design.OwnerID = proposal.DesignRequest.UserID;
+            design.CreationDate = DateTime.UtcNow;
 
             _context.Designs.Add(design);
 
