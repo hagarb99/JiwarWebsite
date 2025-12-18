@@ -1,31 +1,29 @@
 using GEWAR.Models;
+using Jiwar.DTOs;
 using Jiwar.DTOs.PropertyDTOs;
 using Jiwar.Enum;
 using Jiwar.Models;
+using JIWar.PropertyOwner;
 
 namespace Jiwar.Service
 {
     public interface IPropertyService
     {
         // Add a new property
-        public  Task<Property> AddPropertyAsync(Property property);
+        //public  Task<Property> AddPropertyAsync(Property property);
+        Task<PropertyWithAnalyticsDTO> AddPropertyAsync(PropertyCreateDTO dto, string ownerId);
 
-        // Update an existing property
        public Task<bool> UpdatePropertyAsync(Property property);
 
-        // Soft delete property
        public Task<bool> DeletePropertyAsync(int id);
 
         // Get all properties of an owner
        public Task<IEnumerable<Property>> GetMyPropertiesAsync(string ownerId);
 
-        // Get details of a specific property
        public Task<Property> GetPropertyDetailsAsync(int id);
 
-        // Add media to a property
        public Task AddPropertyMediaAsync(PropertyMedia media);
 
-        // Remove media from a property
        public Task RemovePropertyMediaAsync(int mediaId);
 
         // Update property status (Active / Inactive / Pending)
