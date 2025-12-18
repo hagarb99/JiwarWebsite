@@ -14,6 +14,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using Jiwar.DTOs.AccountDTOs.EditProfileDtos;
+using AutoMapper;
 
 
 namespace Jiwar.Account
@@ -26,8 +27,13 @@ namespace Jiwar.Account
         private readonly IConfiguration _config;
         private readonly UserManager<User> userManager;
         private readonly IPropertyService _propertyService;
+        private readonly IMapper _mapper;
 
-        public AccountController(IAccountService accountService, IConfiguration config,UserManager<User> userManager, IPropertyService _propertyService)
+        public AccountController(
+            IAccountService accountService,
+            IConfiguration config,
+            UserManager<User> userManager,
+            IPropertyService _propertyService)
         {
             this.accountService = accountService;
             this._config = config;

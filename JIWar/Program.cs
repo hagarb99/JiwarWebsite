@@ -18,6 +18,7 @@ using Jiwar.Services.ValuationService;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
@@ -119,10 +120,11 @@ namespace Jiwar
             builder.Services.AddScoped<GoogleAuthService>();
 
             // AutoMapper
-            builder.Services.AddAutoMapper(cfg =>
-            {
-                cfg.AddProfile<MappingProfile>();
-            });
+            //builder.Services.AddAutoMapper(cfg =>
+            //{
+            //    cfg.AddProfile<MappingProfile>();
+            //});
+            builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
             // Build App
             var app = builder.Build();
