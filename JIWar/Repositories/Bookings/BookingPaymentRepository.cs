@@ -9,20 +9,17 @@ public class BookingPaymentRepository
 {
     private readonly GiwarContext _context;
 
-        public BookingPaymentRepository(GiwarContext context) : base(context)
-        {
-            _context = context;
-        }
-        public async Task<BookingPayment?> GetByBookingIdAsync(int bookingId)
-        {
-            return await _context.BookingPayments
-                .FirstOrDefaultAsync(p => p.BookingID == bookingId);
-        }
-
     public BookingPaymentRepository(GiwarContext context) : base(context)
     {
         _context = context;
     }
+    public async Task<BookingPayment?> GetByBookingIdAsync(int bookingId)
+    {
+        return await _context.BookingPayments
+            .FirstOrDefaultAsync(p => p.BookingID == bookingId);
+    }
+
+
 
     public async Task<BookingPayment?> GetByReferenceAsync(string reference)
     {
@@ -38,21 +35,17 @@ public class BookingPaymentRepository
             p.PaymentStatus == PaymentStatusEnum.Completed);
     }
 
-        public async Task UpdateAsync(BookingPayment payment)
-        {
-            _context.BookingPayments.Update(payment);
-            await _context.SaveChangesAsync();
-        }
-
-        public async Task<BookingPayment?> GetByOrderIdAsync(long orderId)
-        {
-            return await _context.BookingPayments.FirstOrDefaultAsync(p => p.Id == orderId);
-        }
     public async Task UpdateAsync(BookingPayment payment)
     {
         _context.BookingPayments.Update(payment);
         await _context.SaveChangesAsync();
     }
+
+    public async Task<BookingPayment?> GetByOrderIdAsync(long orderId)
+    {
+        return await _context.BookingPayments.FirstOrDefaultAsync(p => p.Id == orderId);
+    }
+ 
 
     // ===============================
     // 🔹 Analytics Methods
@@ -86,7 +79,7 @@ public class BookingPaymentRepository
         return await _context.BookingPayments
             .Where(p =>
                 p.PaymentStatus == PaymentStatusEnum.Completed &&
-                p.CreatedAt>= lastWeek)
+                p.CreatedAt >= lastWeek)
             .SumAsync(p => p.Amount);
     }
 
