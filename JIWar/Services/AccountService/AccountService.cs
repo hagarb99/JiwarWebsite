@@ -50,16 +50,16 @@ namespace Jiwar.Account.Services
 
             await repo.AddUserToRoleAsync(user, dto.Role);
 
-            //if (dto.Role == "PropertyOwner")
-            //{
-            //    var owner = new PropertyOwner { UserID = user.Id };
-            //    await repo.AddPropertyOwnerAsync(owner);
-            //}
-            //else if (dto.Role == "InteriorDesigner")
-            //{
-            //    var designer = new InteriorDesigner { InteriorDesignerID = user.Id };
-            //    await repo.AddInteriorDesignerAsync(designer);
-            //}
+            if (dto.Role == "PropertyOwner")
+            {
+                var owner = new PropertyOwner { UserID = user.Id };
+                await repo.AddPropertyOwnerAsync(owner);
+            }
+            else if (dto.Role == "InteriorDesigner")
+            {
+                var designer = new InteriorDesigner { InteriorDesignerID = user.Id };
+                await repo.AddInteriorDesignerAsync(designer);
+            }
             await repo.AddUserToRoleAsync(user, dto.Role);
 
             return ResultViewModel<UserResponseDTO>.Ok(
