@@ -180,6 +180,8 @@ namespace Jiwar
             builder.Services.AddScoped<IAdminAnalyticsService, AdminAnalyticsService>();
             builder.Services.AddScoped<IValuationHistoryService, ValuationHistoryService>();
             builder.Services.AddAutoMapper(options => options.AddProfile<DesignerProfile>());
+            builder.Services.AddScoped<IValuationService, ValuationService>();
+           
 
 
 

@@ -9,10 +9,10 @@ public class BookingPaymentRepository
 {
     private readonly GiwarContext _context;
 
-        public BookingPaymentRepository(GiwarContext context) : base(context)
-        {
-            _context = context;
-        }
+        //public BookingPaymentRepository(GiwarContext context) : base(context)
+        //{
+        //    _context = context;
+        //}
         public async Task<BookingPayment?> GetByBookingIdAsync(int bookingId)
         {
             return await _context.BookingPayments
@@ -48,11 +48,11 @@ public class BookingPaymentRepository
         {
             return await _context.BookingPayments.FirstOrDefaultAsync(p => p.Id == orderId);
         }
-    public async Task UpdateAsync(BookingPayment payment)
-    {
-        _context.BookingPayments.Update(payment);
-        await _context.SaveChangesAsync();
-    }
+    //public async Task UpdateAsync(BookingPayment payment)
+    //{
+    //    _context.BookingPayments.Update(payment);
+    //    await _context.SaveChangesAsync();
+    //}
 
     // ===============================
     // 🔹 Analytics Methods
