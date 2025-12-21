@@ -129,7 +129,7 @@ namespace Jiwar
             // Build App
             var app = builder.Build();
 
-            await SeedRolesAsync(app);
+            //await SeedRolesAsync(app);
 
             // await SeedRolesAsync(app);
             // Middleware Pipeline
