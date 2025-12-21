@@ -136,7 +136,6 @@ namespace Jiwar.Repositories
             if (!await properties.AnyAsync())
                 return 0m;
 
-            // ????? ??????? ?? decimal? ??? decimal ???????? GetValueOrDefault()
             var avgPricePerSqm = await properties
                 .AverageAsync(p => (decimal?)(p.Price / p.Area_sqm));
 
@@ -163,5 +162,25 @@ namespace Jiwar.Repositories
         {
             return GetComparablePropertiesAsync(city, price, district, areaTolerancePercentage, ageToleranceYears, minComps);
         }
+        public async Task<PropertyOwner> GetOwnerByIdAsync(string ownerId)
+        {
+            return await _context.PropertyOwners.FirstOrDefaultAsync(o => o.UserID == ownerId);
+        }
+
+        public async Task<PropertyOwner> CreateOwnerAsync(string ownerId)
+        {
+            var owner = new PropertyOwner { UserID = ownerId };
+            _context.PropertyOwners.Add(owner);
+            await _context.SaveChangesAsync();
+            return owner;
+        }
+
+
+        public async Task UpdateAsync(Property property)
+        {
+            _dbSet.Update(property);
+            await _context.SaveChangesAsync();
+        }
+
     }
 }

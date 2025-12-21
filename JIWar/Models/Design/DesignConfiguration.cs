@@ -1,11 +1,7 @@
-﻿using GEWAR.Models;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Jiwar.DTOs.DesignDto;
+
 
 namespace Jiwar.Models
 {
@@ -13,38 +9,30 @@ namespace Jiwar.Models
     {
         public void Configure(EntityTypeBuilder<Design> builder)
         {
-            //  Table name
-            builder.ToTable("Design");
+            builder.ToTable("Designs", "Design");
 
-            //  Primary Key
             builder.HasKey(d => d.Id);
 
-            //  Properties
-            builder.Property(d => d.DesignURL)
-                   .IsRequired()
-                   .HasMaxLength(500);
+            builder.Property(d => d.DesignerID)
+                   .IsRequired();
 
-            builder.Property(d => d.SelectedStyle)
-                   .HasMaxLength(100);
+            builder.Property(d => d.PropertyID)
+                   .IsRequired();
 
             builder.Property(d => d.AI_Generated)
-                   .HasDefaultValue(false);
+                   .IsRequired();
+
+            builder.Property(d => d.SelectedStyle)
+                   .HasMaxLength(100)
+                   .IsRequired(false);
 
             builder.Property(d => d.CreationDate)
-                   .HasDefaultValueSql("GETUTCDATE()");
+                   .HasColumnType("datetime")
+                   .IsRequired();
 
-            //  Relationships
-
-            // Each Design belongs to one Request
-            builder.HasOne(d => d.Request)
-       .WithMany(r => r.Designs) 
-       .OnDelete(DeleteBehavior.Restrict);
-
-            // Each Design belongs to one Interior Designer
-            builder.HasOne(d => d.InteriorDesigner)
-                   .WithMany()
-                   .HasForeignKey(d => d.DesignerID)
-                   .OnDelete(DeleteBehavior.Restrict);
+            builder.Property(d => d.ProposalID)
+                   .IsRequired(false);
         }
     }
 }
+

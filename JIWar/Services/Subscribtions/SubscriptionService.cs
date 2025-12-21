@@ -1,9 +1,11 @@
-using Jiwar.Services;
-using Jiwar.Repositories.Interfaces;
+﻿using GEWAR.Models;
+using Jiwar.DTOs;
 using Jiwar.Models;
+using Jiwar.Repositories.Interfaces;
 using JIWar.PropertyOwner;
-using Microsoft.EntityFrameworkCore;
-using GEWAR.Models;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Jiwar.Services
 {
@@ -18,7 +20,7 @@ namespace Jiwar.Services
 
         public async Task<IEnumerable<SubscriptionDetailsDTO>> GetAllAsync()
         {
-            var list = await _subscriptionRepository.GetAllSubscriptionsAsync();
+            var list = await _subscriptionRepository.GetAllAsync();
 
             return list.Select(s => new SubscriptionDetailsDTO
             {
@@ -29,9 +31,9 @@ namespace Jiwar.Services
             });
         }
 
-        public async Task<SubscriptionDetailsDTO> GetByIdAsync(int id)
+        public async Task<SubscriptionDetailsDTO?> GetByIdAsync(int id)
         {
-            var s = await _subscriptionRepository.GetSubscriptionByIdAsync(id);
+            var s = await _subscriptionRepository.GetByIdAsync(id);
             if (s == null) return null;
 
             return new SubscriptionDetailsDTO
@@ -43,14 +45,28 @@ namespace Jiwar.Services
             };
         }
 
-        public async Task<SubscriptionDetailsDTO> CreateAsync(SubscriptionCreateDTO dto)
+
+
+
+        public async Task<SubscriptionDetailsDTO> CreateAsync(SubscriptionCreateDTO dto, string userId)
         {
+
             var model = new Subscription
             {
                 Name = dto.Name,
                 Price = dto.Price,
-                DurationInMonths = dto.DurationInMonths
+                DurationInMonths = dto.DurationInMonths,
+                StartDate = DateTime.UtcNow, // تاريخ البداية افتراضي
+                EndDate = DateTime.UtcNow.AddMonths(dto.DurationInMonths),
+                PlanType = dto.PlanType,
+                planTypeEnum = PlanTypeEnum.Golden,          // أو حسب اختيارك
+                Status = "Active",
+                statusEnum2 = StatusEnum2.Active,
+            
+
+                UserID = userId
             };
+
 
             await _subscriptionRepository.AddAsync(model);
             await _subscriptionRepository.SaveAsync();
@@ -66,7 +82,7 @@ namespace Jiwar.Services
 
         public async Task<bool> UpdateAsync(SubscriptionUpdateDTO dto)
         {
-            var model = await _subscriptionRepository.GetSubscriptionByIdAsync(dto.Id);
+            var model = await _subscriptionRepository.GetByIdAsync(dto.Id);
             if (model == null) return false;
 
             model.Name = dto.Name;
@@ -81,7 +97,7 @@ namespace Jiwar.Services
 
         public async Task<bool> DeleteAsync(int id)
         {
-            var model = await _subscriptionRepository.GetSubscriptionByIdAsync(id);
+            var model = await _subscriptionRepository.GetByIdAsync(id);
             if (model == null) return false;
 
             _subscriptionRepository.Remove(model);

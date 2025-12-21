@@ -4,6 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using GEWAR.Models;
+using Jiwar.Models;
+
+
 namespace GEWAR.Models
 {
     public partial class Request : BaseModel

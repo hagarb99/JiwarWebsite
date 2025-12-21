@@ -1,4 +1,5 @@
 ﻿
+using AutoMapper;
 using GEWAR.Models;
 using Jiwar.Account.DTOs;
 using Jiwar.Controllers;
@@ -19,26 +20,23 @@ namespace Jiwar.Account.Services
         private readonly TokenService _tokenService;
         private readonly GoogleAuthService _googleAuthService;
         private readonly UserManager<User> _userManager;
-        public AccountService(IAccountRepository repo, TokenService tokenService , GoogleAuthService _googleAuthService,
-            UserManager<User> _userManager
-            )
+        private readonly IMapper mapper;
+        public AccountService(
+            IAccountRepository repo,
+            TokenService tokenService ,
+            GoogleAuthService _googleAuthService,
+            UserManager<User> _userManager,
+            IMapper mapper)
         {
             this.repo = repo;
             _tokenService = tokenService;
             this._googleAuthService = _googleAuthService;
             this._userManager = _userManager;
+            this.mapper = mapper;
         }
         public async Task<ResultViewModel<UserResponseDTO>> RegisterAsync(RegisterDto dto)
         {
-            var user = new User
-            {
-                UserName = dto.Username,
-                Name = dto.Name,
-                Email = dto.Email,
-                Role = dto.Role,
-                PhoneNumber = dto.PhoneNumber,
-                RegistrationDate = DateTime.UtcNow
-            };
+            var user = mapper.Map<User>(dto);
             var result = await repo.CreateUserAsync(user, dto.Password);
             if (!result.Succeeded)
             {
@@ -50,27 +48,20 @@ namespace Jiwar.Account.Services
 
             await repo.AddUserToRoleAsync(user, dto.Role);
 
-            //if (dto.Role == "PropertyOwner")
-            //{
-            //    var owner = new PropertyOwner { UserID = user.Id };
-            //    await repo.AddPropertyOwnerAsync(owner);
-            //}
-            //else if (dto.Role == "InteriorDesigner")
-            //{
-            //    var designer = new InteriorDesigner { InteriorDesignerID = user.Id };
-            //    await repo.AddInteriorDesignerAsync(designer);
-            //}
-            await repo.AddUserToRoleAsync(user, dto.Role);
+            if (dto.Role == "PropertyOwner")
+            {
+                var owner = new PropertyOwner { UserID = user.Id };
+                await repo.AddPropertyOwnerAsync(owner);
+            }
+            else if (dto.Role == "InteriorDesigner")
+            {
+                var designer = new InteriorDesigner { InteriorDesignerID = user.Id };
+                await repo.AddInteriorDesignerAsync(designer);
+            }
 
             return ResultViewModel<UserResponseDTO>.Ok(
                 "User registered successfully.",
-                new UserResponseDTO
-                {
-                    Id = user.Id,
-                    Name = user.Name,
-                    Email = user.Email,
-                    Role = user.Role
-                }
+                 mapper.Map<UserResponseDTO>(user)
             );
 
 
@@ -80,6 +71,10 @@ namespace Jiwar.Account.Services
         {
             var user = await repo.FindByEmailAsync(dto.Email);
             if (user == null)
+                return ResultViewModel<UserResponseDTO>.Fail("Invalid email or password.");
+
+            var isPasswordValid = await repo.CheckPasswordAsync(user, dto.Password);
+            if (!isPasswordValid)
                 return ResultViewModel<UserResponseDTO>.Fail("Invalid email or password.");
 
             var token = await _tokenService.CreateTokenAsync(user);
@@ -94,17 +89,23 @@ namespace Jiwar.Account.Services
             else if (role == "InteriorDesigner")
                 isProfileCompleted = await repo.InteriorDesignerExistsAsync(user.Id);
 
-            return ResultViewModel<UserResponseDTO>.Ok("Login successful.",
-                new UserResponseDTO
-                {
-                Id = user.Id,
-                Name = user.Name,
-                Email = user.Email,
-                ProfilePicURL = user.ProfilePicURL,
-                Role = user.Role,
-                Token = token,
-                IsProfileCompleted = isProfileCompleted
-                });
+
+            var userDto = mapper.Map<UserResponseDTO>(user);
+            userDto.Token = token;
+            userDto.IsProfileCompleted = isProfileCompleted;
+
+            return ResultViewModel<UserResponseDTO>.Ok("Login successful.", userDto);
+            //return ResultViewModel<UserResponseDTO>.Ok("Login successful.",
+            //    new UserResponseDTO
+            //    {
+            //    Id = user.Id,
+            //    Name = user.Name,
+            //    Email = user.Email,
+            //    ProfilePicURL = user.ProfilePicURL,
+            //    Role = user.Role,
+            //    Token = token,
+            //    IsProfileCompleted = isProfileCompleted
+            //    });
         }
 
         public async Task<ResultViewModel<string>> ChangePasswordAsync(ClaimsPrincipal userClaims, ChangePasswordDto dto)
@@ -148,7 +149,7 @@ namespace Jiwar.Account.Services
             return ResultViewModel<string>.Ok("Password reset successfully.", "");
         }
 
-        public async Task<ResultViewModel<UserResponseDTO>> EditProfileAsync(ClaimsPrincipal userClaims, EditProfileDto dto)
+        public async Task<ResultViewModel<UserResponseDTO>> EditProfileAsync(ClaimsPrincipal userClaims, EditProfileBaseDto dto)
         {
             
             var user = await repo.GetUserFromClaimsAsync(userClaims);
@@ -156,17 +157,7 @@ namespace Jiwar.Account.Services
             if (user == null)
                 return ResultViewModel<UserResponseDTO>.Fail("User not found.");
 
-            if (!string.IsNullOrEmpty(dto.Name))
-                user.Name = dto.Name;
-
-            if (!string.IsNullOrEmpty(dto.Email))
-                user.Email = dto.Email;
-
-            if (!string.IsNullOrEmpty(dto.PhoneNumber))
-                user.PhoneNumber = dto.PhoneNumber;
-
-            if (!string.IsNullOrEmpty(dto.ProfilePicURL))
-                user.ProfilePicURL = dto.ProfilePicURL;
+            mapper.Map(dto, user);
 
             var result = await repo.UpdateUserAsync(user);
 
@@ -175,14 +166,7 @@ namespace Jiwar.Account.Services
 
             return ResultViewModel<UserResponseDTO>.Ok(
                 "Profile updated successfully.",
-                new UserResponseDTO
-                {
-                    Id = user.Id,
-                    Name = user.Name,
-                    Email = user.Email,
-                    Role = user.Role,
-                    ProfilePicURL = user.ProfilePicURL
-                }
+                mapper.Map<UserResponseDTO>(user)
             );
         }
 
@@ -225,6 +209,7 @@ namespace Jiwar.Account.Services
                     RegistrationDate = DateTime.UtcNow,
                     Role = "Customer"
                 };
+
                 var result = await _userManager.CreateAsync(user);
                 if (!result.Succeeded)
                     return ResultViewModel<UserResponseDTO>.Fail(string.Join("; ", result.Errors.Select(e => e.Description)));
@@ -232,14 +217,19 @@ namespace Jiwar.Account.Services
 
             var token = await _tokenService.CreateTokenAsync(user);
 
-            return ResultViewModel<UserResponseDTO>.Ok("Login successful", new UserResponseDTO
-            {
-                Email = user.Email,
-                Name = user.Name,
-                GoogleId = user.GoogleId,
-                Role = user.Role,
-                Token = token
-            });
+            var userDto = mapper.Map<UserResponseDTO>(user);
+            userDto.Token = token;
+
+            return ResultViewModel<UserResponseDTO>.Ok("Login successful", userDto);
+
+            //return ResultViewModel<UserResponseDTO>.Ok("Login successful", new UserResponseDTO
+            //{
+            //    Email = user.Email,
+            //    Name = user.Name,
+            //    GoogleId = user.GoogleId,
+            //    Role = user.Role,
+            //    Token = token
+            //});
         }
 
         public Task UpdateCustomerProfileAsync(string userId, CustomerEditProfileDto dto)

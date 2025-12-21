@@ -18,6 +18,8 @@ namespace GEWAR.Models
         [NotMapped]
         public string SentMessages { get; internal set; }
         public string Role { get; set; }
+      //  public bool IsActive { get; set; }
+
         public virtual PropertyOwner propertyOwner { get; set; }
 
         public string? GoogleId { get; set; }
