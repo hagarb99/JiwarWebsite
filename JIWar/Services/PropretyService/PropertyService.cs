@@ -22,6 +22,7 @@ namespace Jiwar.Service
             )
         {
             _propertyRepo = propertyRepo;
+            propertyAnalyticsService = analyticsService;
         }
 
         //public async Task<Property> AddPropertyAsync(Property property)
@@ -56,17 +57,17 @@ namespace Jiwar.Service
 
             await _propertyRepo.AddAsync(property);
 
-            var analytics = await propertyAnalyticsService.AnalyzePropertyAsync(property);
+            //var analytics = await propertyAnalyticsService.AnalyzePropertyAsync(property);
 
-            string priceStatus = property.Price > analytics.FairValue_Estimate ? "Overpriced" :
-                                 property.Price < analytics.FairValue_Estimate ? "Underpriced" : "Fair";
+            //string priceStatus = property.Price > analytics.FairValue_Estimate ? "Overpriced" :
+            //                     property.Price < analytics.FairValue_Estimate ? "Underpriced" : "Fair";
 
             return new PropertyWithAnalyticsDTO
             {
                 PropertyId = property.PropertyID,
                 OwnerPrice = property.Price,
-                EstimatedPrice = (decimal)analytics.FairValue_Estimate,
-                PriceStatus = priceStatus,
+                //EstimatedPrice = (decimal)analytics.FairValue_Estimate,
+                //PriceStatus = priceStatus,
                 Tour360Url = property.Tour360Url
             };
         }

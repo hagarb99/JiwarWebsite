@@ -182,7 +182,7 @@ public class PropertyController : ControllerBase
         _analyticsService = analyticsService;
         _context = context;
     }
-
+    
     [HttpPost("add")]
     public async Task<IActionResult> Add(PropertyCreateDTO dto)
     {
@@ -272,6 +272,7 @@ public class PropertyController : ControllerBase
     [HttpGet("my/{ownerId}")]
     public async Task<IActionResult> MyProperties(string ownerId)
     {
+        var user = User.Claims;
         var list = await _propertyService.GetMyPropertiesAsync(ownerId);
         return Ok(list);
     }

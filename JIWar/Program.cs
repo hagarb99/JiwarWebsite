@@ -49,8 +49,36 @@ namespace Jiwar
 
             // Controllers & Swagger
             builder.Services.AddControllers();
+
             builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
+            builder.Services.AddSwaggerGen(c =>
+            {
+                c.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+                {
+                    Name = "Authorization",
+                    Type = Microsoft.OpenApi.Models.SecuritySchemeType.ApiKey,
+                    Scheme = "Bearer",
+                    BearerFormat = "JWT",
+                    In = Microsoft.OpenApi.Models.ParameterLocation.Header,
+                    Description = "Enter 'Bearer' followed by your token in the text box below."
+                });
+
+                c.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
+                 {
+                     {
+                         new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+                         {
+                             Reference = new Microsoft.OpenApi.Models.OpenApiReference
+                             {
+                                 Type = Microsoft.OpenApi.Models.ReferenceType.SecurityScheme,
+                                 Id = "Bearer"
+                             }
+                         },
+                         new string[] {}
+                     }
+                 });
+
+            });
 
             // CORS
             builder.Services.AddCors(options =>
@@ -75,9 +103,16 @@ namespace Jiwar
 
             // Authentication
             var key = builder.Configuration["Jwt:Key"];
-            builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            builder.Services.AddAuthentication(opt =>
+            {
+                opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                opt.DefaultSignInScheme = JwtBearerDefaults.AuthenticationScheme;
+                opt.DefaultSignOutScheme = JwtBearerDefaults.AuthenticationScheme;
+                opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
                 .AddJwtBearer(options =>
                 {
+                    options.SaveToken = true;
                     options.TokenValidationParameters = new TokenValidationParameters
                     {
                         IssuerSigningKey =
