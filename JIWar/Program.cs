@@ -113,6 +113,9 @@ namespace Jiwar
             builder.Services.AddScoped<IValuationHistoryService, ValuationHistoryService>();
             builder.Services.AddScoped<IPropertyAnalyticsService, PropertyAnalyticsService>();
             builder.Services.AddScoped<IDesignerProposalService, DesignerProposalService>();
+            builder.Services.AddScoped<IValuationHistoryService, ValuationHistoryService>();
+            builder.Services.AddScoped<IValuationService, ValuationService>();
+            builder.Services.AddScoped<IValuationHistoryRepository, ValuationHistoryRepository>();
 
             // Other Services
             builder.Services.AddScoped<TokenService>();
