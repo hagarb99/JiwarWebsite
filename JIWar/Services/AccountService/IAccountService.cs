@@ -28,6 +28,7 @@ namespace Jiwar.Account
         Task UpdatePropertyOwnerProfileAsync(string userId, PropertyOwnerEditProfileDto dto);
         Task UpdateInteriorDesignerProfileAsync(string userId,InteriorDesignerEditProfileDto dto);
         Task UpdateAdminProfileAsync(string userId, AdminEditProfileDto dto);
+        Task<ResultViewModel<UserResponseDTO>> GoogleSignInAsync(string idToken);
 
     }
 }

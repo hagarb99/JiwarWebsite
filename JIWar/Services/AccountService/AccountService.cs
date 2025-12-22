@@ -190,6 +190,43 @@ namespace Jiwar.Account.Services
             await repo.AddInteriorDesignerAsync(designer);
         }
 
+        //public async Task<ResultViewModel<UserResponseDTO>> GoogleSignInAsync(string idToken)
+        //{
+        //    var payload = await _googleAuthService.VerifyGoogleTokenAsync(idToken);
+        //    if (payload == null)
+        //        return ResultViewModel<UserResponseDTO>.Fail("Invalid Google token");
+
+        //    var user = await _userManager.FindByEmailAsync(payload.Email);
+        //    if (user == null)
+        //    {
+        //        user = new User
+        //        {
+        //            UserName = payload.Email,
+        //            Email = payload.Email,
+        //            GoogleId = payload.Subject,
+        //            Name = payload.Name,
+        //            ProfilePicURL = payload.Picture,
+        //            RegistrationDate = DateTime.UtcNow,
+        //            Role = "Customer"
+        //        };
+
+        //        var result = await _userManager.CreateAsync(user);
+        //        if (result.Succeeded)
+        //        {
+        //            // Optional: Disable password requirement explicitly
+        //            await _userManager.RemovePasswordAsync(user);  // Removes any password requirement
+        //        }
+        //        //if (!result.Succeeded)
+        //        //    return ResultViewModel<UserResponseDTO>.Fail(string.Join("; ", result.Errors.Select(e => e.Description)));
+        //    }
+
+        //    var token = await _tokenService.CreateTokenAsync(user);
+
+        //    var userDto = mapper.Map<UserResponseDTO>(user);
+        //    userDto.Token = token;
+
+        //    return ResultViewModel<UserResponseDTO>.Ok("Login successful", userDto);
+        //}
         public async Task<ResultViewModel<UserResponseDTO>> GoogleSignInAsync(string idToken)
         {
             var payload = await _googleAuthService.VerifyGoogleTokenAsync(idToken);
@@ -197,8 +234,10 @@ namespace Jiwar.Account.Services
                 return ResultViewModel<UserResponseDTO>.Fail("Invalid Google token");
 
             var user = await _userManager.FindByEmailAsync(payload.Email);
+
             if (user == null)
             {
+                // Create new user for Google login (no password)
                 user = new User
                 {
                     UserName = payload.Email,
@@ -207,29 +246,42 @@ namespace Jiwar.Account.Services
                     Name = payload.Name,
                     ProfilePicURL = payload.Picture,
                     RegistrationDate = DateTime.UtcNow,
-                    Role = "Customer"
+                    Role = "Customer",
                 };
 
-                var result = await _userManager.CreateAsync(user);
-                if (!result.Succeeded)
-                    return ResultViewModel<UserResponseDTO>.Fail(string.Join("; ", result.Errors.Select(e => e.Description)));
+                var createResult = await _userManager.CreateAsync(user);
+                if (!createResult.Succeeded)
+                {
+                    return ResultViewModel<UserResponseDTO>.Fail(
+                        string.Join("; ", createResult.Errors.Select(e => e.Description)));
+                }
+
+                // Remove password requirement since this is external login
+                await _userManager.RemovePasswordAsync(user);
+
+                // Optional: Add external login info (recommended for better Identity support)
+                await _userManager.AddLoginAsync(user, new UserLoginInfo("Google", payload.Subject, "Google"));
+            }
+            else
+            {
+                // Existing user – update Google data if changed
+                user.GoogleId = payload.Subject;
+                user.Name = payload.Name;
+                user.ProfilePicURL = payload.Picture;
+                await _userManager.UpdateAsync(user);
             }
 
+            // Generate JWT token
             var token = await _tokenService.CreateTokenAsync(user);
 
+            // Map to response DTO
             var userDto = mapper.Map<UserResponseDTO>(user);
             userDto.Token = token;
 
-            return ResultViewModel<UserResponseDTO>.Ok("Login successful", userDto);
+            // Optional: Set IsProfileCompleted if needed
+            // userDto.IsProfileCompleted = ...
 
-            //return ResultViewModel<UserResponseDTO>.Ok("Login successful", new UserResponseDTO
-            //{
-            //    Email = user.Email,
-            //    Name = user.Name,
-            //    GoogleId = user.GoogleId,
-            //    Role = user.Role,
-            //    Token = token
-            //});
+            return ResultViewModel<UserResponseDTO>.Ok("Login successful", userDto);
         }
 
         public Task UpdateCustomerProfileAsync(string userId, CustomerEditProfileDto dto)

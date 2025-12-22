@@ -1,6 +1,9 @@
-﻿using GEWAR.Models;
+﻿using AutoMapper;
+using GEWAR.Models;
 using Jiwar.Account.DTOs;
 using Jiwar.Account.Services;
+using Jiwar.DTOs;
+using Jiwar.DTOs.AccountDTOs.EditProfileDtos;
 using Jiwar.DTOs.AccountDTOs.EditProfileDtos;
 using Jiwar.DTOs.ChatDTOs;
 using Jiwar.Service;
@@ -13,8 +16,6 @@ using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using Jiwar.DTOs.AccountDTOs.EditProfileDtos;
-using AutoMapper;
 
 
 namespace Jiwar.Account
@@ -57,12 +58,15 @@ namespace Jiwar.Account
                 if (!userResponse.Success)
                     return BadRequest(userResponse);
 
-                return Ok(userResponse); 
+                return Ok(userResponse);
             }
             catch (Exception ex)
             {
                 return BadRequest(new { message = ex.Message });
             }
+            //if (!ModelState.IsValid) return BadRequest(ModelState);
+            //var userResponse = await accountService.RegisterAsync(dto);
+            //return userResponse.Success ? Ok(userResponse) : BadRequest(userResponse);
         }
 
 
@@ -84,6 +88,10 @@ namespace Jiwar.Account
             {
                 return BadRequest(new { message = ex.Message });
             }
+
+            //if (!ModelState.IsValid) return BadRequest(ModelState);
+            //var userResponse = await accountService.LoginAsync(dto);
+            //return userResponse.Success ? Ok(userResponse.Data) : Unauthorized(userResponse);
         }
 
 
@@ -142,7 +150,7 @@ namespace Jiwar.Account
         }
 
         [HttpPost("{propertyId}/chat/send")]
-        public async Task<IActionResult> SendMessage(int propertyId, ChatMessageDTO dto)
+        public async Task<IActionResult> SendMessage(int propertyId, [FromBody] ChatMessageDTO dto)
         {
             var chat = new Chat
             {
@@ -188,7 +196,18 @@ namespace Jiwar.Account
             return Ok("InteriorDesigner profile completed successfully.");
         }
 
+        [HttpPost("google-signin")]
+        public async Task<IActionResult> GoogleSignIn([FromBody] GoogleSignInRequest req)
+        {
+            if (string.IsNullOrEmpty(req?.IdToken))
+                return BadRequest("IdToken is required");
 
+            var result = await accountService.GoogleSignInAsync(req.IdToken);
+
+            return result.Success
+                ? Ok(result)
+                : BadRequest(result);
+        }
 
     }
 }

@@ -77,6 +77,7 @@ namespace GEWAR
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+
             modelBuilder.Entity<Property>(entity =>
             {
                 entity.Property(e => e.EstimatedPrice).HasPrecision(18, 2);
@@ -146,7 +147,9 @@ namespace GEWAR
 
 
             base.OnModelCreating(modelBuilder);
-
+            modelBuilder.Entity<User>()
+        .Property(u => u.PasswordHash)
+        .IsRequired(false);
 
             modelBuilder.Entity<User>().ToTable("Users");
         }
