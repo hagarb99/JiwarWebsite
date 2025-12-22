@@ -12,7 +12,7 @@ namespace GEWAR.Models
     public decimal? BudgetMax { get; set; }
 
     // goals selected by user
-    public string RenovationGoalsJson { get; set; } // JSON
+    public string? RenovationGoalsJson { get; set; } // JSON
 
     public SimulationStatusEnum Status { get; set; } // Draft / Completed
 

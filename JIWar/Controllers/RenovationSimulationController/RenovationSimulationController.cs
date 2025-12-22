@@ -92,8 +92,18 @@ public class RenovationSimulationController : ControllerBase
     public async Task<IActionResult> GetResults(int id)
     {
         var result = await _service.GetResultsAsync(id);
+        return Ok(result);
+    }
+}
 
-        if (result == null)
-            return NotFound();
+    //public async Task<IActionResult> GetResults(int id)
+    //{
+    //    var result = await _service.GetResultsAsync(id);
+
+//    if (result == null)
+//        return NotFound();
+
+//    return Ok(result);
+//}
 
 
