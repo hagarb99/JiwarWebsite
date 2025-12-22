@@ -10,6 +10,7 @@ namespace GEWAR.Models
 {
     public class Property : BaseModel
     {
+
         public int PropertyID { get; set; }
         public string OwnerID { get; set; } // FK → PropertyOwner
         public string Address { get; set; }
@@ -52,5 +53,12 @@ namespace GEWAR.Models
         public decimal Price { get; set; }
         public decimal EstimatedPrice { get; set; }
         public string District { get; internal set; }
+
+        public virtual ICollection<RenovationProject> RenovationProjects { get; set; }
+        = new List<RenovationProject>();
+
+        public virtual ICollection<RenovationSimulation> RenovationSimulations { get; set; }
+
+
     }
 }

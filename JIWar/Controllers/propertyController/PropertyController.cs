@@ -182,61 +182,70 @@ public class PropertyController : ControllerBase
         _analyticsService = analyticsService;
         _context = context;
     }
-
+    
     [HttpPost("add")]
     public async Task<IActionResult> Add(PropertyCreateDTO dto)
     {
         var ownerId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        if (ownerId == null)
-            return Unauthorized("Invalid token - missing user id");
+        if (ownerId == null) return Unauthorized("Invalid token - missing user id");
 
-        // التأكد من وجود Owner في قاعدة البيانات
-        var owner = await _context.PropertyOwners.FirstOrDefaultAsync(po => po.UserID == ownerId);
-        if (owner == null)
-        {
-            owner = new PropertyOwner { UserID = ownerId };
-            _context.PropertyOwners.Add(owner);
-            await _context.SaveChangesAsync();
-        }
+        var resultDto = await _propertyService.AddPropertyAsync(dto, ownerId);
+        return Ok(resultDto);
 
-        // إنشاء Property
-        var property = new Property
-        {
-            Title = dto.Title,
-            Description = dto.Description,
-            Price = dto.Price,
-            Address = dto.Address,
-            City = dto.City,
-            District = dto.District,
-            Area_sqm = dto.Area,
-            NumBedrooms = dto.Rooms,
-            NumBathrooms = dto.Bathrooms,
-            CategoryId = dto.CategoryId,
-            Tour360Url = dto.Tour360Url,
-            LocationLat = dto.LocationLat,
-            LocationLang = dto.LocationLang,
-            OwnerID = owner.UserID,  // ربط الـ Property بالـ Owner
-            IsAvaliable = true
-        };
-
-        // حفظ Property
-        await _propertyService.AddPropertyAsync(property);
-
-        // حساب التحليل التقديري
-        var analytics = await _analyticsService.AnalyzePropertyAsync(property);
-
-        string priceStatus = property.Price > analytics.FairValue_Estimate ? "Overpriced" :
-                             property.Price < analytics.FairValue_Estimate ? "Underpriced" : "Fair";
-
-        return Ok(new
-        {
-            propertyId = property.PropertyID,
-            ownerPrice = property.Price,
-            estimatedPrice = analytics.FairValue_Estimate,
-            priceStatus = priceStatus,
-            tour360Url = property.Tour360Url
-        });
     }
+    //public async Task<IActionResult> Add(PropertyCreateDTO dto)
+    //{
+    //    var ownerId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+    //    if (ownerId == null)
+    //        return Unauthorized("Invalid token - missing user id");
+
+    //    // التأكد من وجود Owner في قاعدة البيانات
+    //    var owner = await _context.PropertyOwners.FirstOrDefaultAsync(po => po.UserID == ownerId);
+    //    if (owner == null)
+    //    {
+    //        owner = new PropertyOwner { UserID = ownerId };
+    //        _context.PropertyOwners.Add(owner);
+    //        await _context.SaveChangesAsync();
+    //    }
+
+    //    // إنشاء Property
+    //    var property = new Property
+    //    {
+    //        Title = dto.Title,
+    //        Description = dto.Description,
+    //        Price = dto.Price,
+    //        Address = dto.Address,
+    //        City = dto.City,
+    //        District = dto.District,
+    //        Area_sqm = dto.Area,
+    //        NumBedrooms = dto.Rooms,
+    //        NumBathrooms = dto.Bathrooms,
+    //        CategoryId = dto.CategoryId,
+    //        Tour360Url = dto.Tour360Url,
+    //        LocationLat = dto.LocationLat,
+    //        LocationLang = dto.LocationLang,
+    //        OwnerID = owner.UserID,  // ربط الـ Property بالـ Owner
+    //        IsAvaliable = true
+    //    };
+
+    //    // حفظ Property
+    //    await _propertyService.AddPropertyAsync(property);
+
+    //    // حساب التحليل التقديري
+    //    var analytics = await _analyticsService.AnalyzePropertyAsync(property);
+
+    //    string priceStatus = property.Price > analytics.FairValue_Estimate ? "Overpriced" :
+    //                         property.Price < analytics.FairValue_Estimate ? "Underpriced" : "Fair";
+
+    //    return Ok(new
+    //    {
+    //        propertyId = property.PropertyID,
+    //        ownerPrice = property.Price,
+    //        estimatedPrice = analytics.FairValue_Estimate,
+    //        priceStatus = priceStatus,
+    //        tour360Url = property.Tour360Url
+    //    });
+    //}
 
     [HttpPut("update")]
     public async Task<IActionResult> Update(PropertyUpdateDTO dto)
@@ -263,6 +272,7 @@ public class PropertyController : ControllerBase
     [HttpGet("my/{ownerId}")]
     public async Task<IActionResult> MyProperties(string ownerId)
     {
+        var user = User.Claims;
         var list = await _propertyService.GetMyPropertiesAsync(ownerId);
         return Ok(list);
     }

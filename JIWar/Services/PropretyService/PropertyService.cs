@@ -1,43 +1,77 @@
 using GEWAR;
 using GEWAR.Models;
+using Jiwar.DTOs;
 using Jiwar.DTOs.PropertyDTOs;
 using Jiwar.Enum;
 using Jiwar.Models;
 using Jiwar.Repositories;
 using Jiwar.Repositories.Interfaces;
+using Jiwar.Services;
+using JIWar.PropertyOwner;
 using Microsoft.EntityFrameworkCore;
 namespace Jiwar.Service
 {
     public class PropertyService : IPropertyService
     {
         private readonly IPropertyRepository _propertyRepo;
+        private readonly IPropertyAnalyticsService propertyAnalyticsService;
 
-        public PropertyService(IPropertyRepository propertyRepo)
+        public PropertyService(
+            IPropertyRepository propertyRepo,
+            IPropertyAnalyticsService analyticsService
+            )
         {
             _propertyRepo = propertyRepo;
+            propertyAnalyticsService = analyticsService;
         }
 
-        // 1. Add Property
         //public async Task<Property> AddPropertyAsync(Property property)
         //{
+        //    //_context.Properties.Add(property);
+        //    //await _context.SaveChangesAsync();
         //    await _propertyRepo.AddAsync(property);
         //    return property;
         //}
-
-        private readonly GiwarContext _context;
-
-        public PropertyService(IPropertyRepository propertyRepo, GiwarContext context)
+        public async Task<PropertyWithAnalyticsDTO> AddPropertyAsync(PropertyCreateDTO dto, string ownerId)
         {
-            _propertyRepo = propertyRepo;
-            _context = context;
+            var owner = await EnsureOwnerExistsAsync(ownerId);
+
+            var property = new Property
+            {
+                Title = dto.Title,
+                Description = dto.Description,
+                Price = dto.Price,
+                Address = dto.Address,
+                City = dto.City,
+                District = dto.District,
+                Area_sqm = dto.Area,
+                NumBedrooms = dto.Rooms,
+                NumBathrooms = dto.Bathrooms,
+                CategoryId = dto.CategoryId,
+                Tour360Url = dto.Tour360Url,
+                LocationLat = dto.LocationLat,
+                LocationLang = dto.LocationLang,
+                OwnerID = owner.UserID,
+                IsAvaliable = true
+            };
+
+            await _propertyRepo.AddAsync(property);
+
+            //var analytics = await propertyAnalyticsService.AnalyzePropertyAsync(property);
+
+            //string priceStatus = property.Price > analytics.FairValue_Estimate ? "Overpriced" :
+            //                     property.Price < analytics.FairValue_Estimate ? "Underpriced" : "Fair";
+
+            return new PropertyWithAnalyticsDTO
+            {
+                PropertyId = property.PropertyID,
+                OwnerPrice = property.Price,
+                //EstimatedPrice = (decimal)analytics.FairValue_Estimate,
+                //PriceStatus = priceStatus,
+                Tour360Url = property.Tour360Url
+            };
         }
 
-        public async Task<Property> AddPropertyAsync(Property property)
-        {
-            _context.Properties.Add(property);
-            await _context.SaveChangesAsync();
-            return property;
-        }
 
 
         // 2. Update Property
@@ -46,7 +80,8 @@ namespace Jiwar.Service
             var existing = await _propertyRepo.GetByIdAsync(property.PropertyID);
             if (existing == null) return false;
 
-            _propertyRepo.Update(property);
+            //_propertyRepo.Update(property);
+            await _propertyRepo.UpdateAsync(property);
             return true;
         }
 
@@ -57,8 +92,8 @@ namespace Jiwar.Service
             if (property == null) return false;
 
             property.IsDeleted = true;
-            _propertyRepo.Update(property);
-
+            //_propertyRepo.Update(property);
+            await _propertyRepo.UpdateAsync(property);
             return true;
         }
 
@@ -129,6 +164,16 @@ namespace Jiwar.Service
             .ToList() ?? new List<string>()
 
             });
+
         }
+
+        public async Task<PropertyOwner> EnsureOwnerExistsAsync(string ownerId)
+        {
+            var owner = await _propertyRepo.GetOwnerByIdAsync(ownerId);
+            if (owner == null) owner = await _propertyRepo.CreateOwnerAsync(ownerId);
+            return owner;
+        }
+
+        
     }
 }

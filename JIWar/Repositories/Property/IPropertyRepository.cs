@@ -20,4 +20,7 @@ public interface IPropertyRepository : IGenericRepository<Property>
     Task<IEnumerable<Property>> GetPropertiesByIdsAsync(List<int> ids);
     Task<decimal> GetCityAveragePricePerSqmAsync(string city);
     Task<List<Property>> GetComparablePropertiesAsync(string city, decimal v1, string v2, int areaTolerancePercentage, int ageToleranceYears, int minComps);
+    Task UpdateAsync(Property property);
+    Task<PropertyOwner> GetOwnerByIdAsync(string ownerId);
+    Task<PropertyOwner> CreateOwnerAsync(string ownerId);
 }

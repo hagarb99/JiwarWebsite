@@ -24,6 +24,10 @@ namespace GEWAR.Models
         public StatusEnumReqPro StatusEnumReq { get; set; }
         public virtual Request Request { get; set; }
         public virtual InteriorDesigner Designer { get; set; }
-        public string DesignerID { get; internal set; }
-    }
+
+         public string DesignerID { get; internal set; }
+
+ }
+
 }
+

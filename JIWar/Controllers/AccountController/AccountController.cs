@@ -14,6 +14,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using Jiwar.DTOs.AccountDTOs.EditProfileDtos;
+using AutoMapper;
 
 
 namespace Jiwar.Account
@@ -26,8 +27,13 @@ namespace Jiwar.Account
         private readonly IConfiguration _config;
         private readonly UserManager<User> userManager;
         private readonly IPropertyService _propertyService;
+        private readonly IMapper _mapper;
 
-        public AccountController(IAccountService accountService, IConfiguration config,UserManager<User> userManager, IPropertyService _propertyService)
+        public AccountController(
+            IAccountService accountService,
+            IConfiguration config,
+            UserManager<User> userManager,
+            IPropertyService _propertyService)
         {
             this.accountService = accountService;
             this._config = config;
@@ -35,25 +41,6 @@ namespace Jiwar.Account
             this._propertyService = _propertyService;
         }
 
-        //[HttpPost("register")]
-        //public async Task<IActionResult> Register([FromBody] RegisterDto dto)
-        //{
-        //    if (!ModelState.IsValid)
-        //        return BadRequest(ModelState);
-
-        //    try
-        //    {
-        //        if (dto == null)
-        //            return BadRequest("Request body is empty");
-
-        //        var userResponse = await accountService.RegisterAsync(dto);
-        //        return Ok(userResponse); // JSON response
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return BadRequest(new { message = ex.Message });
-        //    }
-        //}
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterDto dto)
         {
@@ -115,33 +102,6 @@ namespace Jiwar.Account
             return Ok(result);
         }
 
-
-        //[Authorize]
-        //[HttpPost("change-password")]
-        //public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDto dto)
-        //{
-        //    if (!ModelState.IsValid)
-        //        return BadRequest(ModelState);
-
-        //    var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
-        //    if (string.IsNullOrEmpty(userId))
-        //        return Unauthorized(new { message = "User ID not found in token." });
-
-        //    var user = await userManager.FindByIdAsync(userId);
-
-        //    if (user == null)
-        //        return Unauthorized(new { message = "User not found." });
-
-        //    var result = await accountService.ChangePasswordAsync(user, dto);
-
-        //    if (!result.Success)
-        //        return BadRequest(new { message = result.Message });
-
-        //    return Ok(new { message = result.Message });
-        //}
-
-        //[Authorize]
         [HttpPost("change-password")]
         public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDto dto)
         {
@@ -176,9 +136,6 @@ namespace Jiwar.Account
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (string.IsNullOrEmpty(userId))
                 return Unauthorized(new { message = "User ID not found in token." });
-
-            //if (!Guid.TryParse(userIdStr, out var userId))
-            //    return BadRequest(new { message = "Invalid user id format." });
 
             await accountService.UpdateCustomerProfileAsync(userId, dto);
             return NoContent();

@@ -21,25 +21,18 @@ namespace Jiwar.Services.DesignRequestService
         {
             // ممكن تضيفي هنا Validation على الـ Property وملكيته
 
-            var request = new DesignRequest
-            {
-                UserID = userId,
-                PropertyID = dto.PropertyID,
-                PreferredStyle = dto.PreferredStyle,
-                Budget = dto.Budget,
-                Notes = dto.Notes,
-                ImageURLs = dto.ImageURLs ?? new List<string>(),
-                IsForSaleEnhancement = dto.IsForSaleEnhancement,
-                Status = "Open",
-                CreatedAt = DateTime.UtcNow
-            };
+            
+            var request = _mapper.Map<DesignRequest>(dto);
+            request.UserID = userId;
+            request.Status = "Open";
+            request.CreatedAt = DateTime.UtcNow;
 
             _context.DesignRequests.Add(request);
             await _context.SaveChangesAsync();
 
             // نحسب عدد العروض (في البداية صفر)
             var dtoResult = _mapper.Map<DesignRequestDto>(request);
-            dtoResult.ProposalCount = 0;
+            //dtoResult.ProposalCount = 0;
 
             return dtoResult;
         }
@@ -53,11 +46,11 @@ namespace Jiwar.Services.DesignRequestService
 
             var result = _mapper.Map<List<DesignRequestDto>>(requests);
 
-            foreach (var r in result)
-            {
-                var original = requests.First(x => x.Id == r.Id);
-                r.ProposalCount = original.Proposals?.Count ?? 0;
-            }
+            //foreach (var r in result)
+            //{
+            //    var original = requests.First(x => x.Id == r.Id);
+            //    r.ProposalCount = original.Proposals?.Count ?? 0;
+            //}
 
             return result;
         }
@@ -71,11 +64,11 @@ namespace Jiwar.Services.DesignRequestService
 
             var result = _mapper.Map<List<DesignRequestDto>>(requests);
 
-            foreach (var r in result)
-            {
-                var original = requests.First(x => x.Id == r.Id);
-                r.ProposalCount = original.Proposals?.Count ?? 0;
-            }
+            //foreach (var r in result)
+            //{
+            //    var original = requests.First(x => x.Id == r.Id);
+            //    r.ProposalCount = original.Proposals?.Count ?? 0;
+            //}
 
             return result;
         }
@@ -89,7 +82,7 @@ namespace Jiwar.Services.DesignRequestService
             if (request == null) return null;
 
             var dto = _mapper.Map<DesignRequestDto>(request);
-            dto.ProposalCount = request.Proposals?.Count ?? 0;
+            //dto.ProposalCount = request.Proposals?.Count ?? 0;
             return dto;
         }
 

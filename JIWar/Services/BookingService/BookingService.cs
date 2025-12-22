@@ -1,4 +1,5 @@
-﻿using GEWAR.Models;
+﻿using AutoMapper;
+using GEWAR.Models;
 using Jiwar.DTOs.BookingDTOs;
 using Jiwar.Models;
 using Jiwar.Repositories;
@@ -12,10 +13,15 @@ namespace Jiwar.Services
     {
         private readonly IBookingRepository _bookingRepo;
         private readonly IPropertyRepository _propertyRepo;
-        public BookingService(IBookingRepository bookingRepo , IPropertyRepository _propertyRepo)
+        private readonly IMapper mapper;
+        public BookingService(
+            IBookingRepository bookingRepo , 
+            IPropertyRepository _propertyRepo,
+            IMapper mapper)
         {
             _bookingRepo = bookingRepo;
             this._propertyRepo = _propertyRepo;
+            this.mapper = mapper;
         }
 
         public async Task<BookingDto> GetByIdAsync(int id)
@@ -23,13 +29,13 @@ namespace Jiwar.Services
             var booking = await _bookingRepo.GetByIdAsync(id);
             if (booking == null) return null;
 
-            return MapToDto(booking);
+            return mapper.Map<BookingDto>(booking);
         }
 
         public async Task<List<BookingDto>> GetAllAsync()
         {
             var bookings = await _bookingRepo.GetAllAsync();
-            return bookings.Select(MapToDto).ToList();
+            return mapper.Map<List<BookingDto>>(bookings);
         }
 
         public async Task<BookingDto> CreateAsync(CreateBookingDto dto, string customerId)
@@ -55,23 +61,18 @@ namespace Jiwar.Services
             var cost = property.Price * totalDays;
 
             // TODO: Apply offer if dto.OfferID is provided
-            int? offerId = dto.OfferID == 0 ? null : dto.OfferID;
-            // 5. Create booking
-            var booking = new Booking
-            {
-                PropertyID = dto.PropertyID,
-                CustomerID = customerId,
-                OfferID = offerId,
-                StartDate = dto.StartDate,
-                EndDate = dto.EndDate,
-                Cost = cost,
-                status = StatusEnum.Pending,
-                PaymentStatus = PaymentStatusEnum.Pending,
-                PaymentMethod  = PaymentMethod.Paymob
-            };
+            //int? offerId = dto.OfferID == 0 ? null : dto.OfferID;
+
+            
+            var booking = mapper.Map<Booking>(dto);
+            booking.CustomerID = customerId;
+            booking.Cost = cost;
+            booking.status = StatusEnum.Pending;
+            booking.PaymentStatus = PaymentStatusEnum.Pending;
+            booking.PaymentMethod = PaymentMethod.Paymob;
 
             var created = await _bookingRepo.AddAsync(booking);
-            return MapToDto(created);
+            return mapper.Map<BookingDto>(created);
         }
 
 
@@ -80,11 +81,7 @@ namespace Jiwar.Services
             var booking = await _bookingRepo.GetByIdAsync(id);
             if (booking == null) return false;
 
-            booking.PropertyID = dto.PropertyID;
-            booking.OfferID = dto.OfferID;
-            booking.StartDate = dto.StartDate;
-            booking.EndDate = dto.EndDate;
-            booking.PaymentMethod = dto.PaymentMethod;
+            mapper.Map(dto, booking);
 
             return await _bookingRepo.UpdateAsync(booking);
         }
@@ -94,22 +91,5 @@ namespace Jiwar.Services
             return await _bookingRepo.DeleteAsync(id);
         }
 
-        private BookingDto MapToDto(Booking booking)
-        {
-            return new BookingDto
-            {
-                Id = booking.Id,
-                PropertyID = booking.PropertyID,
-                CustomerID = booking.CustomerID,
-                OfferID = booking.OfferID,
-                StartDate = booking.StartDate,
-                EndDate = booking.EndDate,
-                Cost = booking.Cost,
-                PaymentStatus = booking.PaymentStatus ?? PaymentStatusEnum.Pending,
-                PaymentMethod = booking.PaymentMethod
-
-
-            };
-        }
     }
 }

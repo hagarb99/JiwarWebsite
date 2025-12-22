@@ -14,6 +14,5 @@ namespace Jiwar.Account
         public string? GoogleId { get; set; }
         public bool IsProfileCompleted { get; set; }
 
-
     }
 }

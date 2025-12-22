@@ -1366,7 +1366,7 @@ namespace Jiwar.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("DistrictPriceHistories");
+                    b.ToTable("DistrictPriceHistories", (string)null);
                 });
 
             modelBuilder.Entity("Jiwar.Models.PropertyOwner", b =>
@@ -1534,7 +1534,7 @@ namespace Jiwar.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("ValuationHistories");
+                    b.ToTable("ValuationHistories", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
