@@ -118,7 +118,9 @@ public class RenovationSimulationService : IRenovationSimulationService
         return await _repo.GetByIdAsync(simulationId);
     }
 
-
-
+    Task<SimulationRecommendationDto> IRenovationSimulationService.GetResultsAsync(int simulationId)
+    {
+        throw new NotImplementedException();
+    }
 }
 
