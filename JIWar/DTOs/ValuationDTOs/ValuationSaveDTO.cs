@@ -1,9 +1,11 @@
 ﻿namespace Jiwar.DTOs.ValuationDTOs
 {
+  
+    
     public class ValuationSaveDTO
     {
-        public string UserId { get; set; }
 
+        public string UserId { get; set; } = null!;
         public string City { get; set; }
         public decimal Area { get; set; }
         public int Bedrooms { get; set; }
@@ -15,7 +17,8 @@
         public decimal MostLikelyPrice { get; set; }
         public decimal MinPrice { get; set; }
         public decimal MaxPrice { get; set; }
-        public decimal ConfidenceScore { get; set; }
+        public int ConfidenceScore { get; set; }
         public Dictionary<string, decimal> FactorBreakdown { get; set; }
     }
+
 }
