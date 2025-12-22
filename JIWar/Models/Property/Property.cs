@@ -10,6 +10,7 @@ namespace GEWAR.Models
 {
     public class Property : BaseModel
     {
+
         public int PropertyID { get; set; }
         public string OwnerID { get; set; } // FK → PropertyOwner
         public string Address { get; set; }
