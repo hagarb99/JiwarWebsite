@@ -96,7 +96,4 @@ public class RenovationSimulationController : ControllerBase
         if (result == null)
             return NotFound();
 
-        return Ok(result);
-    }
-}
 
