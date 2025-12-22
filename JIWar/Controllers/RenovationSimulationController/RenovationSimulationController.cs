@@ -1,6 +1,7 @@
 using Jiwar.DTOs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 [ApiController]
 [Route("api/renovation-simulations")]
@@ -18,11 +19,12 @@ public class RenovationSimulationController : ControllerBase
     [HttpPost("start")]
     public async Task<IActionResult> Start([FromBody] StartSimulationDto dto)
     {
-        var userId = User.FindFirst("sub")?.Value
-            ?? User.FindFirst("id")?.Value;
+        //var userId = User.FindFirst("sub")?.Value
+        //    ?? User.FindFirst("id")?.Value;
 
-        if (userId == null)
-            return Unauthorized();
+        //if (userId == null)
+        //    return Unauthorized();
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
         var simulationId = await _service.StartSimulationAsync(userId, dto.PropertyId);
 
@@ -90,11 +92,18 @@ public class RenovationSimulationController : ControllerBase
     public async Task<IActionResult> GetResults(int id)
     {
         var result = await _service.GetResultsAsync(id);
-
-        if (result == null)
-            return NotFound();
-
         return Ok(result);
     }
 }
+
+    //public async Task<IActionResult> GetResults(int id)
+    //{
+    //    var result = await _service.GetResultsAsync(id);
+
+//    if (result == null)
+//        return NotFound();
+
+//    return Ok(result);
+//}
+
 

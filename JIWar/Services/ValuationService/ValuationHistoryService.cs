@@ -1,4 +1,5 @@
-﻿using Jiwar.DTOs.ValuationDTOs;
+﻿using GEWAR.Models;
+using Jiwar.DTOs.ValuationDTOs;
 using Jiwar.Models.Valuation;
 using Jiwar.Repositories.Valuation;
 using Newtonsoft.Json;
@@ -14,8 +15,34 @@ namespace Jiwar.Services.ValuationService
         {
             _repo = repo;
         }
+        public async Task SaveValuationAsync(ValuationSaveDTO dto, string userId)
+        {
+            var history = new ValuationHistory
+            {
+                UserId = dto.UserId,
+                City = dto.City,
+                Area = dto.Area,
+                Bedrooms = dto.Bedrooms,
+                Bathrooms = dto.Bathrooms,
+                FinishType = dto.FinishType,
+                View = dto.View,
+                PropertyAge = dto.PropertyAge,
+                MostLikelyPrice = dto.MostLikelyPrice,
+                MinPrice = dto.MinPrice,
+                MaxPrice = dto.MaxPrice,
+                ConfidenceScore = dto.ConfidenceScore,
+                FactorBreakdownJson = JsonConvert.SerializeObject(dto.FactorBreakdown),
+                CreatedAt = DateTime.UtcNow
+            };
 
-        public async Task SaveValuationAsync(ValuationSaveDTO dto)
+            await _repo.SaveAsync(history);
+        }
+
+
+    
+
+        /*
+        public async Task SaveValuationAsync(ValuationSaveDTO dto,string userId)
         {
             var history = new ValuationHistory
             {
@@ -34,8 +61,10 @@ namespace Jiwar.Services.ValuationService
                 FactorBreakdownJson = JsonConvert.SerializeObject(dto.FactorBreakdown)
             };
 
+
+
             await _repo.SaveAsync(history);
-        }
+        }*/
 
         public async Task<IEnumerable<UserValuationListDTO>> GetMyValuationsAsync(string userId)
         {

@@ -1,4 +1,5 @@
 using Jiwar.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 
@@ -17,11 +18,18 @@ namespace Jiwar.Controllers
             _analyticsService = analyticsService;
         }
 
-        [HttpGet]
+        [HttpGet("admin/all")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetAnalytics()
         {
             var data = await _analyticsService.GetAnalyticsAsync();
+            
             return Ok(data);
         }
+
+     
+    
+         
+
     }
 }

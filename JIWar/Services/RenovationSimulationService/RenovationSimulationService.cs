@@ -1,6 +1,7 @@
-using System.Text.Json;
 using GEWAR.Models;
 using GEWAR.Models.Jiwar.Enum;
+using Jiwar.DTOs;
+using System.Text.Json;
 
 public class RenovationSimulationService : IRenovationSimulationService
 {
@@ -22,7 +23,8 @@ public class RenovationSimulationService : IRenovationSimulationService
         {
             UserID = userId,
             PropertyID = propertyId,
-            Status = SimulationStatusEnum.Draft
+            Status = SimulationStatusEnum.Draft,
+            RenovationGoalsJson = "[]", // initialize to empty JSON array
         };
 
         await _repo.AddAsync(simulation);
@@ -102,8 +104,21 @@ public class RenovationSimulationService : IRenovationSimulationService
         await _repo.SaveChangesAsync();
     }
 
+
+    // 6️ Get Results
+    //1-this is right
+    //2-and i will try tomorow to complete it
+    //3-and handlr ai recommendation engine
+    //public Task<SimulationRecommendationDto> GetResultsAsync(int simulationId)
+    //{
+
+    //}
     public async Task<RenovationSimulation?> GetResultsAsync(int simulationId)
     {
         return await _repo.GetByIdAsync(simulationId);
     }
+
+
+
 }
+

@@ -1,4 +1,5 @@
 using GEWAR.Models;
+using Jiwar.DTOs;
 
 public interface IRenovationSimulationService
 {
@@ -16,6 +17,8 @@ public interface IRenovationSimulationService
 
     Task CompleteSimulationAsync(int simulationId);
 
-    Task<RenovationSimulation?> GetResultsAsync(int simulationId);
+    //Task<RenovationSimulation?> GetResultsAsync(int simulationId);
+    Task<SimulationRecommendationDto> GetResultsAsync(int simulationId);
+
 }
 
