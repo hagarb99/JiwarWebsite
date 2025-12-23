@@ -1,4 +1,5 @@
 ﻿using Jiwar.Services.AI.Enums;
+using Microsoft.Identity.Client;
 using System.Text;
 using System.Text.Json;
 

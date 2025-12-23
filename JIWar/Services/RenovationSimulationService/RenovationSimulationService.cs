@@ -122,7 +122,7 @@ public class RenovationSimulationService : IRenovationSimulationService
         var prompt = RenovationSystemPrompt.Build(context);
 
         // 3️⃣ Call AI
-        var aiResponse = await _aiService.GenerateAsync(
+        var aiResponse = await _aiService.SendAsync(
             prompt,
             AiModelEnum.Gpt4o
         );
