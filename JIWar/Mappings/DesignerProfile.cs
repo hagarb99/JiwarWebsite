@@ -22,8 +22,11 @@ namespace Jiwar.Mappings
 
             CreateMap<DesignRequestDto, DesignRequest>();
 
-            // DesignerProposal
-            CreateMap<DesignerProposal, DesignerProposalDto>().ReverseMap();
+            CreateMap<DesignerProposal, DesignerProposalDto>()
+     .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Designer.User.Name))
+     .ForMember(dest => dest.InteriorDesignerEmail, opt => opt.MapFrom(src => src.Designer.User.Email))
+     .ReverseMap();
+
 
             // Final Design
             CreateMap<Design, DesignDto>().ReverseMap();

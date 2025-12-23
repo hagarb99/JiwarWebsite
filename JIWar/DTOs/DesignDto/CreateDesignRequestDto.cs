@@ -4,6 +4,7 @@ namespace Jiwar.DTOs.DesignDto
 {
     public class CreateDesignDto
     {
+
         public int PropertyID { get; set; }
         public int ProposalID { get; set; }
         public List<string> ImageURLs { get; set; }
@@ -13,3 +14,4 @@ namespace Jiwar.DTOs.DesignDto
     }
 
 }
+

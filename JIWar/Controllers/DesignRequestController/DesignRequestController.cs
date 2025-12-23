@@ -18,6 +18,7 @@ namespace Jiwar.Controllers
             _service = service;
         }
 
+        [Authorize(Roles = "PropertyOwner,Customer")]
         [HttpPost("create")]
         public async Task<IActionResult> CreateDesignRequest([FromBody] DesignRequestDto dto)
         {
@@ -28,6 +29,7 @@ namespace Jiwar.Controllers
             return Ok(result);
         }
 
+        [Authorize(Roles = "PropertyOwner,Customer")]
         [HttpGet("my")]
         public async Task<IActionResult> GetMyRequests()
         {
@@ -38,12 +40,18 @@ namespace Jiwar.Controllers
             return Ok(result);
         }
 
+
+
+        [Authorize(Roles = "InteriorDesigner")]
         [HttpGet("available")]
         public async Task<IActionResult> GetAvailableRequests()
         {
             var result = await _service.GetAvailableRequestsAsync();
             return Ok(result);
         }
+
+
+        [Authorize(Roles = "PropertyOwner,Customer,InteriorDesigner")]
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetRequestById(int id)
