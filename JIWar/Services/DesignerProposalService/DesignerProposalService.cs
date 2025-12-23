@@ -6,7 +6,6 @@ using Jiwar.Models;
 using Microsoft.EntityFrameworkCore;
 
 
-
 namespace Jiwar.Services.DesignerProposalService
 {
     public class DesignerProposalService : IDesignerProposalService
@@ -35,16 +34,7 @@ namespace Jiwar.Services.DesignerProposalService
             if (alreadySubmitted)
                 throw new Exception("You already submitted a proposal for this request");
 
-            //var proposal = new DesignerProposal
-            //{
-            //    DesignRequestID = dto.DesignRequestID,
-            //    DesignerID = designerId,
-            //    EstimatedCost = dto.EstimatedCost,
-            //    EstimatedDays = dto.EstimatedDays,
-            //    ProposalDescription = dto.ProposalDescription,
-            //    SampleDesignURL = dto.SampleDesignURL,
-            //    Status = "Pending"
-            //};
+
             var proposal = _mapper.Map<DesignerProposal>(dto);
             proposal.DesignerID = designerId;
             proposal.Status = "Pending";
@@ -58,28 +48,42 @@ namespace Jiwar.Services.DesignerProposalService
             return _mapper.Map<DesignerProposalDto>(proposal);
         }
 
-        public async Task<List<DesignerProposalDto>> GetProposalsForRequestAsync(int requestId)
+        public async Task<List<ProposalForOwnerDto>> GetProposalsForRequestAsync(int requestId)
         {
             var proposals = await _context.DesignerProposals
+                .Include(p => p.Designer)
                 .Where(p => p.DesignRequestID == requestId)
+           .Select(p => new ProposalForOwnerDto
+           {
+               Id = p.Id,
+               EstimatedCost = p.EstimatedCost,
+               EstimatedDays = p.EstimatedDays,
+               ProposalDescription = p.ProposalDescription,
+               DesignerName = p.Designer.User.Name,
+               DesignerEmail = p.Designer.User.Email
+           })
                 .ToListAsync();
 
-            return _mapper.Map<List<DesignerProposalDto>>(proposals);
+            return proposals;
         }
 
-        public async Task<List<DesignerProposalDto>> GetProposalsForDesignerAsync(string designerId)
+
+        public async Task<IEnumerable<DesignerProposalDto>> GetProposalsForDesignerAsync(string designerId)
         {
             var proposals = await _context.DesignerProposals
                 .Where(p => p.DesignerID == designerId)
                 .ToListAsync();
 
-            return _mapper.Map<List<DesignerProposalDto>>(proposals);
+            return _mapper.Map<IEnumerable<DesignerProposalDto>>(proposals);
         }
+
 
         public async Task<DesignerProposalDto> ChooseProposalAsync(int proposalId, string ownerId)
         {
             var selected = await _context.DesignerProposals
                 .Include(p => p.DesignRequest)
+                .Include(p => p.Designer)
+                .ThenInclude(d => d.User)
                 .FirstOrDefaultAsync(p => p.Id == proposalId);
 
             if (selected == null)
