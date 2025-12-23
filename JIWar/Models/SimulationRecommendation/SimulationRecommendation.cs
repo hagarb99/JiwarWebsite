@@ -1,3 +1,5 @@
+using Jiwar.Enum;
+
 namespace GEWAR.Models
 {
     //api result from model ai
