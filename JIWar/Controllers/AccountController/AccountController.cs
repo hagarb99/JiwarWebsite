@@ -75,23 +75,14 @@ namespace Jiwar.Account
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-
-            try
-            {
                 var userResponse = await accountService.LoginAsync(dto);
+
                 if (!userResponse.Success)
-                    return Unauthorized(userResponse);
-
-                return new JsonResult(userResponse.Data);
-            }
-            catch (Exception ex)
             {
-                return BadRequest(new { message = ex.Message });
+                return Unauthorized(userResponse);
             }
 
-            //if (!ModelState.IsValid) return BadRequest(ModelState);
-            //var userResponse = await accountService.LoginAsync(dto);
-            //return userResponse.Success ? Ok(userResponse.Data) : Unauthorized(userResponse);
+            return Ok(userResponse.Data);
         }
 
 
