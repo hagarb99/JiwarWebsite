@@ -87,6 +87,16 @@ public class RenovationSimulationController : ControllerBase
         return Ok();
     }
 
+    //  AI Generate Recommendations
+    [HttpPost("{id}/generate-recommendations")]
+    public async Task<IActionResult> GenerateRecommendations(int id)
+    {
+        await _service.GenerateRecommendationsAsync(id);
+        return Ok();
+    }
+
+
+
     // 6️⃣ Get Results
     [HttpGet("{id}")]
     public async Task<IActionResult> GetResults(int id)
@@ -94,6 +104,7 @@ public class RenovationSimulationController : ControllerBase
         var result = await _service.GetResultsAsync(id);
         return Ok(result);
     }
+
 }
 
     //public async Task<IActionResult> GetResults(int id)
