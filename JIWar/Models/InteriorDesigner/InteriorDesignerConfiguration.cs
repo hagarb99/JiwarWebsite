@@ -15,13 +15,11 @@ namespace Jiwar.Models
         {
             builder.ToTable("InteriorDesigners");
 
-            // 🔑 Primary Key
             builder.HasKey(id => id.InteriorDesignerID);
 
             builder.Property(id => id.InteriorDesignerID)
                    .IsRequired();
 
-            // 🔗 One-to-One مع User
             builder.HasOne(id => id.User)
                    .WithOne(u => u.InteriorDesigner)
                    .HasForeignKey<InteriorDesigner>(id => id.InteriorDesignerID)
