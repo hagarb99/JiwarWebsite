@@ -2,6 +2,8 @@
 using System.Text.Json;
 using GEWAR.Models.Jiwar.Enum;
 using Jiwar.Enum;
+using Jiwar.Services.AI.Mappers.Renovation;
+
 
 namespace Jiwar.Services.AI.Mappers.Renovation
 {

@@ -1,8 +1,10 @@
-﻿namespace Jiwar.Services.AI.Prompts.Renovations
+﻿
+
+namespace Jiwar.Services.AI.Prompts.Renovations
 {
     public static class RenovationSystemPrompt
     {
-        public static string Base =>
+        public static string Build =>
         """
         You are a professional real estate renovation consultant.
         Your task is to analyze property images and user goals,

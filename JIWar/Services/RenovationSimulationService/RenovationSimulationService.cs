@@ -116,20 +116,26 @@ public class RenovationSimulationService : IRenovationSimulationService
             ?? throw new Exception("Simulation not found");
 
         // 1️⃣ Build AI Context
-        var context = RenovationContextBuilder.Build(simulation);
+        var context = RenovationContextBuilder.Base(simulation);
 
         // 2️⃣ Build Prompt
-        var prompt = RenovationSystemPrompt.Build(context);
+        var prompt = RenovationSystemPrompt.Build; // Fix: Remove invocation, use property directly
 
         // 3️⃣ Call AI
         var aiResponse = await _aiService.SendAsync(
             prompt,
-            AiModelEnum.Gpt4o
+            new Jiwar.Services.AI.AiRequestContext
+            {
+                Purpose = context // or context.ToString() if 'context' is not a string
+                // Set other properties as needed
+            }
         );
 
         // 4️⃣ Parse response
         var recommendations =
-            RenovationRecommendationMapper.Map(aiResponse, simulationId);
+           Jiwar.Services.AI.Mappers.Renovation
+          .RenovationRecommendationMapper
+          .Map(aiResponse, simulationId);
 
         // 5️⃣ Save
         await _repo.AddRecommendationsAsync(recommendations);
@@ -151,6 +157,8 @@ public class RenovationSimulationService : IRenovationSimulationService
     //    return await _repo.GetByIdAsync(simulationId);
     //}
 
+
+    //i will try tomorow to complete it
     Task<SimulationRecommendationDto> IRenovationSimulationService.GetResultsAsync(int simulationId)
     {
         throw new NotImplementedException();

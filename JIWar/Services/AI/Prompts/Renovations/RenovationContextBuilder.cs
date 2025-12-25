@@ -4,7 +4,7 @@ namespace Jiwar.Services.AI.Prompts.Renovations
 {
     public static class RenovationContextBuilder
     {
-        public static string Build(RenovationSimulation simulation)
+        public static string Base(RenovationSimulation simulation)
         {
             return $"""
         Property ID: {simulation.PropertyID}
