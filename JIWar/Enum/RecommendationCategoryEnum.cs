@@ -1,4 +1,4 @@
-namespace GEWAR.Models
+namespace Jiwar.Enum
 {
     public enum RecommendationCategoryEnum
 {

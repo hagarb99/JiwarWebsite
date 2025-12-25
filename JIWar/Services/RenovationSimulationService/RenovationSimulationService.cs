@@ -1,15 +1,20 @@
 using GEWAR.Models;
 using GEWAR.Models.Jiwar.Enum;
 using Jiwar.DTOs;
+using Jiwar.Services.AI;
+using Jiwar.Services.AI.Enums;
+using Jiwar.Services.AI.Prompts.Renovations;
 using System.Text.Json;
 
 public class RenovationSimulationService : IRenovationSimulationService
 {
     private readonly IRenovationSimulationRepository _repo;
+    private readonly IAiService _aiService;
 
-    public RenovationSimulationService(IRenovationSimulationRepository repo)
+    public RenovationSimulationService(IRenovationSimulationRepository repo, IAiService aiService)
     {
         _repo = repo;
+        _aiService = aiService;
     }
 
     // 1️⃣ Start
@@ -105,6 +110,34 @@ public class RenovationSimulationService : IRenovationSimulationService
     }
 
 
+    public async Task GenerateRecommendationsAsync(int simulationId)
+    {
+        var simulation = await _repo.GetByIdAsync(simulationId)
+            ?? throw new Exception("Simulation not found");
+
+        // 1️⃣ Build AI Context
+        var context = RenovationContextBuilder.Build(simulation);
+
+        // 2️⃣ Build Prompt
+        var prompt = RenovationSystemPrompt.Build(context);
+
+        // 3️⃣ Call AI
+        var aiResponse = await _aiService.SendAsync(
+            prompt,
+            AiModelEnum.Gpt4o
+        );
+
+        // 4️⃣ Parse response
+        var recommendations =
+            RenovationRecommendationMapper.Map(aiResponse, simulationId);
+
+        // 5️⃣ Save
+        await _repo.AddRecommendationsAsync(recommendations);
+
+        simulation.Status = SimulationStatusEnum.Analyzed;
+        await _repo.SaveChangesAsync();
+    }
+
     // 6️ Get Results
     //1-this is right
     //2-and i will try tomorow to complete it
@@ -113,10 +146,10 @@ public class RenovationSimulationService : IRenovationSimulationService
     //{
 
     //}
-    public async Task<RenovationSimulation?> GetResultsAsync(int simulationId)
-    {
-        return await _repo.GetByIdAsync(simulationId);
-    }
+    //public async Task<RenovationSimulation?> GetResultsAsync(int simulationId)
+    //{
+    //    return await _repo.GetByIdAsync(simulationId);
+    //}
 
     Task<SimulationRecommendationDto> IRenovationSimulationService.GetResultsAsync(int simulationId)
     {
