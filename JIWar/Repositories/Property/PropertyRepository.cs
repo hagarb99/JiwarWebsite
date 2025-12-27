@@ -1,8 +1,9 @@
-using GEWAR;
+﻿using GEWAR;
 using GEWAR.Models;
 using Jiwar.DTOs.PropertyDTOs;
 using Jiwar.Enum;
 using Jiwar.Models;
+using JIWar.PropertyOwner;
 using Microsoft.EntityFrameworkCore;
 
 namespace Jiwar.Repositories
@@ -21,7 +22,7 @@ namespace Jiwar.Repositories
           
             return await _dbSet
                 .Where(p => p.OwnerID == ownerId && p.IsDeleted == false)
-                .Include(p => p.PropertyMedia)
+                .Include(p => p.PropertyMedia.Where(media => !media.IsDeleted))
                 .Include(p => p.PriceHistory)
                 .Include(p => p.PropertyOwner)
                 .ToListAsync();
@@ -31,7 +32,7 @@ namespace Jiwar.Repositories
         public async Task<Property> GetPropertyDetailsAsync(int id)
         {
             return await _dbSet
-         .Include(p => p.PropertyMedia)
+         .Include(p => p.PropertyMedia.Where(media => !media.IsDeleted))
          .Include(p => p.PriceHistory)
          .Include(p => p.PropertyOwner) 
          .FirstOrDefaultAsync(p => p.PropertyID == id && p.IsDeleted == false);
@@ -44,6 +45,7 @@ namespace Jiwar.Repositories
             await _context.SaveChangesAsync();
         }
 
+
         public async Task RemovePropertyMediaAsync(int mediaId)
         {
             var media = await _context.Set<PropertyMedia>()
@@ -51,7 +53,7 @@ namespace Jiwar.Repositories
 
             if (media != null)
             {
-                media.IsDeleted = true; // Soft delete
+                media.IsDeleted = true; 
                 _context.Set<PropertyMedia>().Update(media);
                 await _context.SaveChangesAsync();
             }
@@ -121,7 +123,7 @@ namespace Jiwar.Repositories
         public async Task<IEnumerable<Property>> GetPropertiesByIdsAsync(List<int> ids)
         {
             return await _context.Properties
-                .Include(p => p.PropertyMedia)
+                .Include(p => p.PropertyMedia.Where(media => !media.IsDeleted))
                .Include(p => p.PropertyFeatures)
                .ThenInclude(pf => pf.Feature)
                 .Where(p => ids.Contains(p.PropertyID) && !p.IsDeleted)
@@ -180,6 +182,45 @@ namespace Jiwar.Repositories
         {
             _dbSet.Update(property);
             await _context.SaveChangesAsync();
+        }
+
+        public async Task<PagedResult<PropertyListBDTO>> GetAllPropertiesPagedAsync(int page, int pageSize)
+        {
+            var query = _context.Properties
+                .AsNoTracking()  // مهم للأداء
+                .Where(p => !p.IsDeleted && p.IsAvaliable == true)
+                .Include(p => p.PropertyMedia.Where(media => !media.IsDeleted))
+                .OrderByDescending(p => p.PropertyID);  
+
+            var totalCount = await query.CountAsync();
+
+            var items = await query
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .Select(p => new PropertyListBDTO
+                {
+                    PropertyID = p.PropertyID,
+                    Title = p.Title,
+                    Price = p.Price,
+                    City = p.City,
+                    District = p.District,
+                    Area_sqm = p.Area_sqm,
+                    NumBedrooms = p.NumBedrooms,
+                    NumBathrooms = p.NumBathrooms,
+                    ThumbnailUrl = p.PropertyMedia
+                        .OrderBy(m => m.Order)
+                        .Select(m => m.MediaURL)
+                        .FirstOrDefault()
+                })
+                .ToListAsync();
+
+            return new PagedResult<PropertyListBDTO>
+            {
+                Items = items,
+                TotalCount = totalCount,
+                Page = page,
+                PageSize = pageSize
+            };
         }
 
     }
