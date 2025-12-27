@@ -13,14 +13,12 @@ namespace Jiwar.Service
         //public  Task<Property> AddPropertyAsync(Property property);
         Task<PropertyWithAnalyticsDTO> AddPropertyAsync(PropertyCreateDTO dto, string ownerId);
 
-       public Task<bool> UpdatePropertyAsync(Property property);
+       public Task<bool> UpdatePropertyAsync(PropertyUpdateDTO dto);
 
        public Task<bool> DeletePropertyAsync(int id);
 
         // Get all properties of an owner
-       public Task<IEnumerable<Property>> GetMyPropertiesAsync(string ownerId);
-
-       public Task<Property> GetPropertyDetailsAsync(int id);
+       public Task<IEnumerable<PropertyDetailsDTO>> GetMyPropertiesAsync(string ownerId);
 
        public Task AddPropertyMediaAsync(PropertyMedia media);
 
@@ -31,8 +29,10 @@ namespace Jiwar.Service
        public Task SendMessageAsync(Chat chat);
         public Task<IEnumerable<Chat>> GetChatHistoryAsync(string senderId, string receiverId, int propertyId);
 
-        Task<IEnumerable<Property>> GetFilteredPropertiesAsync(PropertyFilterDTO filter);
+       public Task<IEnumerable<PropertyListBDTO>> GetFilteredPropertiesAsync(PropertyFilterDTO filter);
 
-        Task<IEnumerable<PropertyComparisonDTO>> GetPropertiesForComparisonAsync(List<int> propertyIds);
+        public Task<IEnumerable<PropertyComparisonDTO>> GetPropertiesForComparisonAsync(List<int> propertyIds);
+       public Task<PagedResult<PropertyListBDTO>> GetAllPropertiesAsync(int page, int pageSize);
+       public Task<PropertyDetailsDTO> GetPropertyDetailsDTOAsync(int id);
     }
 }
