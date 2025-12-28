@@ -301,13 +301,15 @@ public class PropertyController : ControllerBase
 
         return Ok(dto);
     }
-
+    /// ///////////search and filter properties
     [HttpGet("browse")]
     public async Task<IActionResult> Browse([FromQuery] PropertyFilterDTO filter)
     {
         var properties = await _propertyService.GetFilteredPropertiesAsync(filter);
         return Ok(properties);
     }
+
+
 
     [HttpPost("compare")]
     public async Task<IActionResult> Compare([FromBody] List<int> propertyIds)
