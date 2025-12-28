@@ -363,3 +363,4 @@ MigrationBackup/
 FodyWeavers.xsd
 JIWar/Jiwar.csproj
 /JIWar/appsettings.json
+/JIWar/appsetting.json

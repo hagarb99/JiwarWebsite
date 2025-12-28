@@ -12,7 +12,7 @@ namespace Jiwar.Repositories
 
         public GenericRepository(GiwarContext giwarContext)
         {
-            giwarContext = giwarContext;
+            this.giwarContext = giwarContext;
             _dbSet = giwarContext.Set<T>();
         }
 
@@ -34,6 +34,7 @@ namespace Jiwar.Repositories
         public async Task AddAsync(T entity)
         {
             await _dbSet.AddAsync(entity);
+            await giwarContext.SaveChangesAsync();
         }
 
         public async Task AddRangeAsync(IEnumerable<T> entities)

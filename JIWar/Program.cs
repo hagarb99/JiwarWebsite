@@ -102,6 +102,7 @@ namespace Jiwar
                 .AddDefaultTokenProviders();
 
             // Authentication
+
             var key = builder.Configuration["Jwt:Key"];
             builder.Services.AddAuthentication(opt =>
             {
@@ -137,7 +138,7 @@ namespace Jiwar
             builder.Services.AddScoped<IReportOrderRepository, ReportOrderRepository>();
             builder.Services.AddScoped<IValuationHistoryRepository, ValuationHistoryRepository>();
             builder.Services.AddScoped<IAnalyticsRepository, AnalyticsRepository>();
-            builder.Services.AddScoped<IRenovationSimulationRepository,RenovationSimulationRepository>();
+            builder.Services.AddScoped<IRenovationSimulationRepository, RenovationSimulationRepository>();
 
             // Services
             builder.Services.AddScoped<IAccountService, AccountService>();
@@ -150,7 +151,7 @@ namespace Jiwar
             builder.Services.AddScoped<IValuationHistoryService, ValuationHistoryService>();
             builder.Services.AddScoped<IPropertyAnalyticsService, PropertyAnalyticsService>();
             builder.Services.AddScoped<IDesignerProposalService, DesignerProposalService>();
-            builder.Services.AddScoped<IRenovationSimulationService, RenovationSimulationService>();
+            //builder.Services.AddScoped<IRenovationSimulationService, RenovationSimulationService>();
 
 
             // Other Services
@@ -182,6 +183,7 @@ namespace Jiwar
             app.UseCors();
             app.UseAuthentication();
             app.UseAuthorization();
+            app.UseStaticFiles();
             app.MapControllers();
             app.Run();
         }
