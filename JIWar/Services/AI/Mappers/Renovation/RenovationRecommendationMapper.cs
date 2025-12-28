@@ -2,7 +2,6 @@
 using System.Text.Json;
 using GEWAR.Models.Jiwar.Enum;
 using Jiwar.Enum;
-using Jiwar.Services.AI.Mappers.Renovation;
 
 
 namespace Jiwar.Services.AI.Mappers.Renovation
@@ -10,34 +9,60 @@ namespace Jiwar.Services.AI.Mappers.Renovation
     public static class RenovationRecommendationMapper
     {
         public static List<SimulationRecommendation> Map(
-            string aiResponse,
+            string aiJson,
             int simulationId)
         {
-            var result = new List<SimulationRecommendation>();
+            var recommendations = new List<SimulationRecommendation>();
 
-            using var document = JsonDocument.Parse(aiResponse);
+            if (string.IsNullOrWhiteSpace(aiJson))
+                return recommendations;
 
-            if (!document.RootElement.TryGetProperty("recommendations", out var recs))
-                return result;
+            using var doc = JsonDocument.Parse(aiJson);
 
-            foreach (var item in recs.EnumerateArray())
+            if (!doc.RootElement.TryGetProperty("recommendations", out var items))
+                return recommendations;
+
+            foreach (var item in items.EnumerateArray())
             {
-                result.Add(new SimulationRecommendation
-                {
-                    RenovationSimulationID = simulationId,
-                    Category = System.Enum.Parse<RecommendationCategoryEnum>(
-                        item.GetProperty("category").GetString()!,
-                        true),
-                    Title = item.GetProperty("title").GetString()!,
-                    Description = item.GetProperty("description").GetString()!,
-                    Severity = System.Enum.Parse<RecommendationSeverityEnum>(
-                        item.GetProperty("severity").GetString()!,
-                        true),
-                    IsAIGenerated = true
-                });
+                if (!TryParse(item, simulationId, out var rec))
+                    continue;
+
+                recommendations.Add(rec);
             }
 
-            return result;
+            return recommendations;
+        }
+
+          private static bool TryParse(
+            JsonElement item,
+            int simulationId,
+            out SimulationRecommendation recommendation)
+        {
+            recommendation = null!;
+
+            if (!System.Enum.TryParse(
+                    item.GetProperty("category").GetString(),
+                    true,
+                    out RecommendationCategoryEnum category))
+                return false;
+
+            if (!System.Enum.TryParse(
+                    item.GetProperty("severity").GetString(),
+                    true,
+                    out RecommendationSeverityEnum severity))
+                return false;
+
+            recommendation = new SimulationRecommendation
+            {
+                RenovationSimulationID = simulationId,
+                Category = category,
+                Severity = severity,
+                Title = item.GetProperty("title").GetString() ?? string.Empty,
+                Description = item.GetProperty("description").GetString() ?? string.Empty,
+                IsAIGenerated = true
+            };
+
+            return true;
         }
     }
 }

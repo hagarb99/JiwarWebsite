@@ -1,4 +1,8 @@
+using GEWAR;
+using GEWAR.Models;
 using Jiwar.DTOs;
+using Jiwar.Models;
+using Jiwar.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -6,116 +10,109 @@ using System.Security.Claims;
 [ApiController]
 [Route("api/renovation-simulations")]
 [Authorize]
-public class RenovationSimulationController : ControllerBase
+public class RenovationSimulationsController : ControllerBase
 {
     private readonly IRenovationSimulationService _service;
+    private readonly GiwarContext _context;
 
-    public RenovationSimulationController(IRenovationSimulationService service)
+    public RenovationSimulationsController(IRenovationSimulationService service)
     {
         _service = service;
     }
 
-    // 1️⃣ Start Simulation
+    private string UserId => User.FindFirstValue(ClaimTypes.NameIdentifier)!;
+
+    // 1️⃣ Start
     [HttpPost("start")]
-    public async Task<IActionResult> Start([FromBody] StartSimulationDto dto)
+    public async Task<int> StartSimulationAsync(string userId, int? propertyId, decimal budgetMin, decimal budgetMax, string goalsJson)
     {
-        //var userId = User.FindFirst("sub")?.Value
-        //    ?? User.FindFirst("id")?.Value;
+        var simulation = new RenovationSimulation
+        {
+            UserID = userId,
+            PropertyID = propertyId,
+            BudgetMin = budgetMin,
+            BudgetMax = budgetMax,
+            RenovationGoalsJson = goalsJson
+        };
 
-        //if (userId == null)
-        //    return Unauthorized();
-        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        _context.RenovationSimulations.Add(simulation);
+        await _context.SaveChangesAsync();
 
-        var simulationId = await _service.StartSimulationAsync(userId, dto.PropertyId);
-
-        return Ok(new { SimulationId = simulationId });
+        return simulation.Id;
     }
 
-    // 2️⃣ Update Details
-    [HttpPut("{id}/details")]
-    public async Task<IActionResult> UpdateDetails(
-        int id,
-        [FromBody] UpdateSimulationDetailsDto dto)
+    // 2️⃣ Details
+    [HttpPut("{id:int}/details")]
+    public async Task UpdateDetailsAsync(int simulationId, decimal size, int rooms, int bathrooms, string condition)
     {
-        await _service.UpdateDetailsAsync(
-            id,
-            dto.Size,
-            dto.Rooms,
-            dto.Bathrooms,
-            dto.Condition
-        );
+        var simulation = await _context.RenovationSimulations.FindAsync(simulationId);
 
-        return NoContent();
+        if (simulation.PropertyID == null)
+        {
+            // Standalone simulation → save details in SimulationDetails
+            var details = new SimulationDetails
+            {
+                RenovationSimulationID = simulationId,
+                Size = size,
+                Rooms = rooms,
+                Bathrooms = bathrooms,
+                Condition = condition
+            };
+            _context.SimulationDetails.Add(details);
+            await _context.SaveChangesAsync();
+        }
+        else
+        {
+            // Optional: override Property data or ignore
+        }
     }
 
-    // 3️⃣ Upload Media
-    [HttpPost("{id}/media")]
-    public async Task<IActionResult> UploadMedia(
-        int id,
-        [FromBody] UploadSimulationMediaDto dto)
+        // 3️⃣ Media
+     [HttpPost("{id:int}/media")]
+    public async Task<IActionResult> UploadMedia(int id, [FromBody] UploadSimulationMediaDto request)
     {
         await _service.UploadMediaAsync(
             id,
-            dto.MediaType,
-            dto.FileUrl
-        );
-
-        return Ok();
-    }
-
-    // 4️⃣ Set Goals & Budget
-    [HttpPut("{id}/goals")]
-    public async Task<IActionResult> SetGoals(
-        int id,
-        [FromBody] SimulationGoalsDto dto)
-    {
-        await _service.SetGoalsAndBudgetAsync(
-            id,
-            dto.Goals,
-            dto.BudgetMin,
-            dto.BudgetMax
-        );
+            request.MediaType,
+            request.FileUrl);
 
         return NoContent();
     }
 
-    // 5️⃣ Complete Simulation
-    [HttpPost("{id}/complete")]
-    public async Task<IActionResult> Complete(int id)
+    // 4️⃣ Goals & Budget
+    [HttpPut("{id:int}/goals")]
+    public async Task<IActionResult> SetGoals(int id, [FromBody] SimulationGoalsDto request)
+    {
+        await _service.SetGoalsAndBudgetAsync(
+            id,
+            request.Goals,
+            request.BudgetMin,
+            request.BudgetMax);
+
+        return NoContent();
+    }
+
+    // 5️⃣ Submit
+    [HttpPost("{id:int}/submit")]
+    public async Task<IActionResult> Submit(int id)
     {
         await _service.CompleteSimulationAsync(id);
-        return Ok();
+        return NoContent(); // Fixed missing parentheses
     }
 
-    //  AI Generate Recommendations
-    [HttpPost("{id}/generate-recommendations")]
-    public async Task<IActionResult> GenerateRecommendations(int id)
+    // 6️⃣ AI Analyze
+    [HttpPost("{id:int}/analyze")]
+    public async Task<IActionResult> Analyze(int id)
     {
         await _service.GenerateRecommendationsAsync(id);
-        return Ok();
+        return Accepted(); // async AI job
     }
 
-
-
-    // 6️⃣ Get Results
-    [HttpGet("{id}")]
-    public async Task<IActionResult> GetResults(int id)
+    // 7️⃣ Results
+    [HttpGet("{id:int}/results")]
+    public async Task<IActionResult> Results(int id)
     {
         var result = await _service.GetResultsAsync(id);
         return Ok(result);
     }
-
 }
-
-    //public async Task<IActionResult> GetResults(int id)
-    //{
-    //    var result = await _service.GetResultsAsync(id);
-
-//    if (result == null)
-//        return NotFound();
-
-//    return Ok(result);
-//}
-
-
-

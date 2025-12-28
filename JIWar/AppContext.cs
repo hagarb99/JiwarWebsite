@@ -72,7 +72,11 @@ namespace GEWAR
         public DbSet<SimulationRecommendation> SimulationRecommendations { get; set; }
         public DbSet<SimulationMedia> SimulationMedias { get; set; }
 
-       
+        public DbSet<SimulationDetails> SimulationDetails { get; set;}
+
+
+
+
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

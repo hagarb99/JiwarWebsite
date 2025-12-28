@@ -103,6 +103,7 @@ namespace Jiwar
                 .AddDefaultTokenProviders();
 
             // Authentication
+
             var key = builder.Configuration["Jwt:Key"];
             builder.Services.AddAuthentication(opt =>
             {
@@ -141,6 +142,8 @@ namespace Jiwar
             builder.Services.AddScoped<IRenovationSimulationRepository,RenovationSimulationRepository>();
 
             // Services
+            builder.Services.AddScoped<IAiService, OpenAiService>();
+            builder.Services.AddHttpClient(); // Registers IHttpClientFactory
             builder.Services.AddScoped<IAccountService, AccountService>();
             builder.Services.AddScoped<IPropertyService, PropertyService>();
             builder.Services.AddScoped<IBookingService, BookingService>();
@@ -151,9 +154,8 @@ namespace Jiwar
             builder.Services.AddScoped<IValuationHistoryService, ValuationHistoryService>();
             builder.Services.AddScoped<IPropertyAnalyticsService, PropertyAnalyticsService>();
             builder.Services.AddScoped<IDesignerProposalService, DesignerProposalService>();
-            builder.Services.AddScoped<IRenovationSimulationService, RenovationSimulationService>();
-            builder.Services.AddScoped<IAiService, OpenAiService>();
 
+            builder.Services.AddScoped<IRenovationSimulationService, RenovationSimulationService>();
 
 
             // Other Services

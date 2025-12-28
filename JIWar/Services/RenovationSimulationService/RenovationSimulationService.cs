@@ -18,7 +18,7 @@ public class RenovationSimulationService : IRenovationSimulationService
     }
 
     // 1️⃣ Start
-    public async Task<int> StartSimulationAsync(string userId, int propertyId)
+    public async Task<int> StartSimulationAsync(string userId, int propertyId, decimal budgetMin, decimal budgetMax, string goalsJson)
     {
         var draft = await _repo.GetDraftByUserAsync(userId);
         if (draft != null)
@@ -116,7 +116,7 @@ public class RenovationSimulationService : IRenovationSimulationService
             ?? throw new Exception("Simulation not found");
 
         // 1️⃣ Build AI Context
-        var context = RenovationContextBuilder.Base(simulation);
+        var context = RenovationContextBuilder.Build(simulation);
 
         // 2️⃣ Build Prompt
         var prompt = RenovationSystemPrompt.Build; // Fix: Remove invocation, use property directly
@@ -157,11 +157,37 @@ public class RenovationSimulationService : IRenovationSimulationService
     //    return await _repo.GetByIdAsync(simulationId);
     //}
 
-
     //i will try tomorow to complete it
-    Task<SimulationRecommendationDto> IRenovationSimulationService.GetResultsAsync(int simulationId)
+    
+    public async Task<SimulationResultDto> GetResultsAsync(int simulationId)
     {
-        throw new NotImplementedException();
+        var simulation = await _repo.GetByIdAsync(simulationId)
+        ?? throw new Exception("Simulation not found");
+
+        // Deserialize goals
+        var goals = string.IsNullOrWhiteSpace(simulation.RenovationGoalsJson)
+            ? new List<string>()
+            : JsonSerializer.Deserialize<List<string>>(simulation.RenovationGoalsJson)!;
+
+        // Map recommendations
+        var recommendations = simulation.Recommendations?
+            .Select(r => new SimulationRecommendationDto
+            {
+                Category = r.Category,
+                Title = r.Title,
+                Description = r.Description,
+                Severity = r.Severity
+            })
+            .ToList() ?? new List<SimulationRecommendationDto>();
+
+        return new SimulationResultDto
+        {
+            SimulationId = simulation.Id,
+            BudgetMin = simulation.BudgetMin,
+            BudgetMax = simulation.BudgetMax,
+            Goals = goals,
+            Recommendations = recommendations
+        };
     }
 }
 
