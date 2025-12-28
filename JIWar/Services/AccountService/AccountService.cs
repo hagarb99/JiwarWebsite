@@ -95,17 +95,6 @@ namespace Jiwar.Account.Services
             userDto.IsProfileCompleted = isProfileCompleted;
 
             return ResultViewModel<UserResponseDTO>.Ok("Login successful.", userDto);
-            //return ResultViewModel<UserResponseDTO>.Ok("Login successful.",
-            //    new UserResponseDTO
-            //    {
-            //    Id = user.Id,
-            //    Name = user.Name,
-            //    Email = user.Email,
-            //    ProfilePicURL = user.ProfilePicURL,
-            //    Role = user.Role,
-            //    Token = token,
-            //    IsProfileCompleted = isProfileCompleted
-            //    });
         }
 
         public async Task<ResultViewModel<string>> ChangePasswordAsync(ClaimsPrincipal userClaims, ChangePasswordDto dto)

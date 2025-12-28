@@ -58,6 +58,7 @@ namespace GEWAR.Models
         = new List<RenovationProject>();
 
         public virtual ICollection<RenovationSimulation> RenovationSimulations { get; set; }
+        public ListingTypeEnum ListingType { get; set; }
 
 
     }

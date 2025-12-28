@@ -75,14 +75,36 @@ namespace Jiwar.Account
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-                var userResponse = await accountService.LoginAsync(dto);
 
-                if (!userResponse.Success)
+            var userResponse = await accountService.LoginAsync(dto);
+
+            if (!userResponse.Success)
             {
-                return Unauthorized(userResponse);
+                // رجع 401 مع رسالة واضحة فقط (مش الكائن كله)
+                return Unauthorized(new { message = userResponse.Message ?? "Invalid email or password" });
             }
 
-            return Ok(userResponse.Data);
+            // رجع البيانات مع التوكن بشكل نظيف
+            return Ok(new
+            {
+                token = userResponse.Data.Token,
+                id = userResponse.Data.Id,
+                name = userResponse.Data.Name,
+                email = userResponse.Data.Email,
+                profilePicURL = userResponse.Data.ProfilePicURL,
+                role = userResponse.Data.Role,
+                isProfileCompleted = userResponse.Data.IsProfileCompleted
+            });
+            //if (!ModelState.IsValid)
+            //    return BadRequest(ModelState);
+            //    var userResponse = await accountService.LoginAsync(dto);
+
+            //    if (!userResponse.Success)
+            //{
+            //    return Unauthorized(userResponse);
+            //}
+
+            //return Ok(userResponse.Data);
         }
 
 
