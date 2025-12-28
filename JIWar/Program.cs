@@ -138,7 +138,7 @@ namespace Jiwar
             builder.Services.AddScoped<IReportOrderRepository, ReportOrderRepository>();
             builder.Services.AddScoped<IValuationHistoryRepository, ValuationHistoryRepository>();
             builder.Services.AddScoped<IAnalyticsRepository, AnalyticsRepository>();
-            builder.Services.AddScoped<IRenovationSimulationRepository,RenovationSimulationRepository>();
+            builder.Services.AddScoped<IRenovationSimulationRepository, RenovationSimulationRepository>();
 
             // Services
             builder.Services.AddScoped<IAccountService, AccountService>();
