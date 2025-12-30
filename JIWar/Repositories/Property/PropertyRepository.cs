@@ -90,7 +90,7 @@ namespace Jiwar.Repositories
         public async Task<IEnumerable<Property>> GetFilteredPropertiesAsync(PropertyFilterDTO filter)
         {
             var query = _context.Properties
-                .Include(p => p.PropertyMedia)
+                .Include(p => p.PropertyMedia.Where(m => !m.IsDeleted))
                 .Where(p => !p.IsDeleted);
 
             if (!string.IsNullOrEmpty(filter.District))
@@ -189,7 +189,7 @@ namespace Jiwar.Repositories
             var query = _context.Properties
                 .AsNoTracking()  // مهم للأداء
                 .Where(p => !p.IsDeleted && p.IsAvaliable == true)
-                .Include(p => p.PropertyMedia.Where(media => !media.IsDeleted))
+                .Include(p => p.PropertyMedia.Where(m => !m.IsDeleted))
                 .OrderByDescending(p => p.PropertyID);  
 
             var totalCount = await query.CountAsync();

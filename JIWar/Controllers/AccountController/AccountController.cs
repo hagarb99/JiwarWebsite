@@ -28,8 +28,6 @@ namespace Jiwar.Account
         private readonly IConfiguration _config;
         private readonly UserManager<User> userManager;
         private readonly IPropertyService _propertyService;
-        private readonly IMapper _mapper;
-
         public AccountController(
             IAccountService accountService,
             IConfiguration config,
@@ -188,13 +186,18 @@ namespace Jiwar.Account
 
 
         [Authorize(Roles = "PropertyOwner")]
-        [HttpPost("complete-profile/property-owner")]
+        [HttpPut("complete-profile/property-owner")]
         public async Task<IActionResult> CompletePropertyOwnerProfile([FromBody] PropertyOwnerEditProfileDto dto)
         {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (string.IsNullOrEmpty(userId)) return Unauthorized("User ID not found in token.");
+            if (string.IsNullOrEmpty(userId))
+                return Unauthorized("User ID not found in token.");
 
             await accountService.UpdatePropertyOwnerProfileAsync(userId, dto);
+
             return Ok("PropertyOwner profile completed successfully.");
         }
 
@@ -221,6 +224,25 @@ namespace Jiwar.Account
                 ? Ok(result)
                 : BadRequest(result);
         }
+
+        [Authorize]
+        [HttpGet("profile")]
+        public async Task<IActionResult> GetProfile()
+        {
+            // جلب الـ UserId من التوكن
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userId))
+                return Unauthorized(new { message = "User ID not found in token." });
+
+            // استدعاء الـ Service لجلب بيانات البروفايل
+            var profile = await accountService.GetUserProfileAsync(userId);
+
+            if (profile == null)
+                return NotFound(new { message = "Profile not found." });
+
+            return Ok(profile);
+        }
+
 
     }
 }
