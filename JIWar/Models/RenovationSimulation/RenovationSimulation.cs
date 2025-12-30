@@ -5,7 +5,7 @@ namespace GEWAR.Models
    
    public class RenovationSimulation : BaseModel
 {
-    public int PropertyID { get; set; }
+    public int? PropertyID { get; set; }
     public string UserID { get; set; }
 
     public decimal? BudgetMin { get; set; }

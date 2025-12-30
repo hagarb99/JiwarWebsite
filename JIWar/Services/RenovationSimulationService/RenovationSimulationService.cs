@@ -17,12 +17,12 @@
 //        _aiService = aiService;
 //    }
 
-//    // 1️⃣ Start
-//    public async Task<int> StartSimulationAsync(string userId, int propertyId)
-//    {
-//        var draft = await _repo.GetDraftByUserAsync(userId);
-//        if (draft != null)
-//            return draft.Id;
+    // 1️⃣ Start
+    public async Task<int> StartSimulationAsync(string userId, int propertyId, decimal budgetMin, decimal budgetMax, string goalsJson)
+    {
+        var draft = await _repo.GetDraftByUserAsync(userId);
+        if (draft != null)
+            return draft.Id;
 
 //        var simulation = new RenovationSimulation
 //        {
@@ -118,18 +118,24 @@
 //        // 1️⃣ Build AI Context
 //        var context = RenovationContextBuilder.Build(simulation);
 
-//        // 2️⃣ Build Prompt
-//        var prompt = RenovationSystemPrompt.Build(context);
+        // 2️⃣ Build Prompt
+        var prompt = RenovationSystemPrompt.Build; // Fix: Remove invocation, use property directly
 
-//        // 3️⃣ Call AI
-//        var aiResponse = await _aiService.SendAsync(
-//            prompt,
-//            AiModelEnum.Gpt4o
-//        );
+        // 3️⃣ Call AI
+        var aiResponse = await _aiService.SendAsync(
+            prompt,
+            new Jiwar.Services.AI.AiRequestContext
+            {
+                Purpose = context // or context.ToString() if 'context' is not a string
+                // Set other properties as needed
+            }
+        );
 
-//        // 4️⃣ Parse response
-//        var recommendations =
-//            RenovationRecommendationMapper.Map(aiResponse, simulationId);
+        // 4️⃣ Parse response
+        var recommendations =
+           Jiwar.Services.AI.Mappers.Renovation
+          .RenovationRecommendationMapper
+          .Map(aiResponse, simulationId);
 
 //        // 5️⃣ Save
 //        await _repo.AddRecommendationsAsync(recommendations);
@@ -151,9 +157,37 @@
     //    return await _repo.GetByIdAsync(simulationId);
     //}
 
-//    Task<SimulationRecommendationDto> IRenovationSimulationService.GetResultsAsync(int simulationId)
-//    {
-//        throw new NotImplementedException();
-//    }
-//}
+    //i will try tomorow to complete it
+    
+    public async Task<SimulationResultDto> GetResultsAsync(int simulationId)
+    {
+        var simulation = await _repo.GetByIdAsync(simulationId)
+        ?? throw new Exception("Simulation not found");
+
+        // Deserialize goals
+        var goals = string.IsNullOrWhiteSpace(simulation.RenovationGoalsJson)
+            ? new List<string>()
+            : JsonSerializer.Deserialize<List<string>>(simulation.RenovationGoalsJson)!;
+
+        // Map recommendations
+        var recommendations = simulation.Recommendations?
+            .Select(r => new SimulationRecommendationDto
+            {
+                Category = r.Category,
+                Title = r.Title,
+                Description = r.Description,
+                Severity = r.Severity
+            })
+            .ToList() ?? new List<SimulationRecommendationDto>();
+
+        return new SimulationResultDto
+        {
+            SimulationId = simulation.Id,
+            BudgetMin = simulation.BudgetMin,
+            BudgetMax = simulation.BudgetMax,
+            Goals = goals,
+            Recommendations = recommendations
+        };
+    }
+}
 

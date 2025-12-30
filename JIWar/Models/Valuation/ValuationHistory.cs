@@ -4,7 +4,7 @@ namespace Jiwar.Models.Valuation
 {
     public class ValuationHistory : BaseModel
     {
-        public int Id { get; set; }
+        //public int Id { get; set; }
         public string UserId { get; set; }
 
         // Inputs

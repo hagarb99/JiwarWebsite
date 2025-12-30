@@ -21,10 +21,6 @@ namespace GEWAR.Models
         public virtual ICollection<RenovationCost> RenovationCosts { get; set; } = new List<RenovationCost>();
 
         public ProjectStatusEnum? ProjectStatusEnum { get; set; }
-            //public static bool IsValidProjectStatus(string status)
-            //{
-            //    return Enum.TryParse<ProjectStatusEnum>(status, true, out var result) &&
-            //           Enum.IsDefined(typeof(ProjectStatusEnum), result);
-            //}
+            
         }
     }
