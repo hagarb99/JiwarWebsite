@@ -1,4 +1,6 @@
 ﻿using GEWAR.Models;
+using Jiwar.Models;
+using Microsoft.EntityFrameworkCore;
 
 public interface IRenovationSimulationRepository
 {
@@ -16,6 +18,10 @@ public interface IRenovationSimulationRepository
     Task AddMediaAsync(SimulationMedia media);
     Task AddRecommendationsAsync(List<SimulationRecommendation> recommendations);
     Task AddRenovationProjectAsync(RenovationProject project);
+
+    Task AddSimulationDetailsAsync(SimulationDetails details);
+    
+
 
     // 💾 Unit Of Work
     Task SaveChangesAsync();

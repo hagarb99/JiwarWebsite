@@ -142,6 +142,7 @@ namespace Jiwar
             builder.Services.AddScoped<IRenovationSimulationRepository, RenovationSimulationRepository>();
 
             // Services
+            builder.Services.AddHttpClient<IAiService, OpenAiService>();
             builder.Services.AddScoped<IAiService, OpenAiService>();
             builder.Services.AddHttpClient(); // Registers IHttpClientFactory
             builder.Services.AddScoped<IAccountService, AccountService>();

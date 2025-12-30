@@ -1,6 +1,7 @@
 ﻿using GEWAR;
 using GEWAR.Models;
 using GEWAR.Models.Jiwar.Enum;
+using Jiwar.Models;
 using Microsoft.EntityFrameworkCore;
 
 public class RenovationSimulationRepository : IRenovationSimulationRepository
@@ -70,6 +71,12 @@ public class RenovationSimulationRepository : IRenovationSimulationRepository
     {
         await _context.RenovationProjects.AddAsync(project);
     }
+
+    public async Task AddSimulationDetailsAsync(SimulationDetails details)
+    {
+        await _context.SimulationDetails.AddAsync(details);
+    }
+
 
     // 💾 Unit of Work
     public async Task SaveChangesAsync()

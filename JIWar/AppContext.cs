@@ -66,7 +66,7 @@ namespace GEWAR
         public DbSet<ValuationHistory> ValuationHistories { get; set; }
 
         public DbSet<DistrictPriceHistory> DistrictPriceHistories { get; set; }
-        public object DistrictPriceHistory { get; internal set; }
+        //public DbSet<DistrictPriceHistory> DistrictPriceHistory { get;  set; }
 
         public DbSet<RenovationSimulation> RenovationSimulations { get; set; }
         public DbSet<SimulationRecommendation> SimulationRecommendations { get; set; }

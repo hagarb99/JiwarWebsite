@@ -13,11 +13,14 @@ namespace Jiwar.Services.AI
         private const string ChatEndpoint = "https://api.openai.com/v1/chat/completions";
         private const string ImageEndpoint = "https://api.openai.com/v1/images/generations";
 
-        public OpenAiService(HttpClient httpClient)
+        public OpenAiService(HttpClient httpClient , IConfiguration configuration)
         {
             _httpClient = httpClient;
-            _apiKey = Environment.GetEnvironmentVariable("OPENAI_API_KEY")
+            configuration = configuration;
+            _apiKey = configuration["OpenAI:ApiKey"]
                 ?? throw new Exception("OpenAI API Key not found");
+
+
         }
 
         // ============================

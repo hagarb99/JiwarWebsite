@@ -1463,7 +1463,7 @@ namespace Jiwar.Migrations
 
                     b.HasIndex("DesignerID");
 
-                    b.ToTable("DesignerProposals", "Design");
+                    b.ToTable("DesignerProposals", "dbo");
                 });
 
             modelBuilder.Entity("Jiwar.Models.DistrictPriceHistory", b =>

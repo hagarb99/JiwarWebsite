@@ -1,118 +1,139 @@
-using GEWAR;
-using GEWAR.Models;
-using Jiwar.DTOs;
-using Jiwar.Models;
-using Jiwar.Services;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
+//using GEWAR;
+//using GEWAR.Models;
+//using GEWAR.Models.Jiwar.Enum;
+//using Jiwar.DTOs;
+//using Jiwar.Enum;
+//using Jiwar.Models;
+//using Jiwar.Services;
+//using Microsoft.AspNetCore.Authorization;
+//using Microsoft.AspNetCore.Mvc;
+//using Microsoft.EntityFrameworkCore;
+//using System.Security.Claims;
 
-[ApiController]
-[Route("api/renovation-simulations")]
-[Authorize]
-public class RenovationSimulationsController : ControllerBase
-{
-    private readonly IRenovationSimulationService _service;
-    private readonly GiwarContext _context;
+//[ApiController]
+//[Route("api/renovation-simulations")]
+//[Authorize]
+//public class RenovationSimulationsController : ControllerBase
+//{
+//    private readonly IRenovationSimulationService _service;
+    
 
-    public RenovationSimulationsController(IRenovationSimulationService service)
-    {
-        _service = service;
-    }
+//    public RenovationSimulationsController(IRenovationSimulationService service)
+//    {
+//        _service = service;
+        
 
-    private string UserId => User.FindFirstValue(ClaimTypes.NameIdentifier)!;
 
-    // 1️⃣ Start
-    [HttpPost("start")]
-    public async Task<int> StartSimulationAsync(string userId, int? propertyId, decimal budgetMin, decimal budgetMax, string goalsJson)
-    {
-        var simulation = new RenovationSimulation
-        {
-            UserID = userId,
-            PropertyID = propertyId,
-            BudgetMin = budgetMin,
-            BudgetMax = budgetMax,
-            RenovationGoalsJson = goalsJson
-        };
+//    }
 
-        _context.RenovationSimulations.Add(simulation);
-        await _context.SaveChangesAsync();
+//    private string UserId => User.FindFirstValue(ClaimTypes.NameIdentifier)!;
 
-        return simulation.Id;
-    }
+//    // 1️⃣ Start
+//    [HttpPost("start")]
+//    public async Task<int> StartSimulationAsync(StartSimulationDto dto)
+//    {
+//        var simulation = new RenovationSimulation
+//        {
+//            PropertyID = dto.PropertyId,
+//            BudgetMin = dto.BudgetMin,
+//            BudgetMax = dto.BudgetMax,
+//            RenovationGoalsJson = dto.GoalsJson,
+//            Status = SimulationStatusEnum.Draft
+//        };
 
-    // 2️⃣ Details
-    [HttpPut("{id:int}/details")]
-    public async Task UpdateDetailsAsync(int simulationId, decimal size, int rooms, int bathrooms, string condition)
-    {
-        var simulation = await _context.RenovationSimulations.FindAsync(simulationId);
+//        var source = dto.PropertyId.HasValue
+//            ? SimulationSourceEnum.ExistingProperty
+//            : SimulationSourceEnum.Standalone;
 
-        if (simulation.PropertyID == null)
-        {
-            // Standalone simulation → save details in SimulationDetails
-            var details = new SimulationDetails
-            {
-                RenovationSimulationID = simulationId,
-                Size = size,
-                Rooms = rooms,
-                Bathrooms = bathrooms,
-                Condition = condition
-            };
-            _context.SimulationDetails.Add(details);
-            await _context.SaveChangesAsync();
-        }
-        else
-        {
-            // Optional: override Property data or ignore
-        }
-    }
+//        _service.StartSimulationAsync.Add(simulation);
+//        //await _service.SaveChangesAsync();
 
-        // 3️⃣ Media
-     [HttpPost("{id:int}/media")]
-    public async Task<IActionResult> UploadMedia(int id, [FromBody] UploadSimulationMediaDto request)
-    {
-        await _service.UploadMediaAsync(
-            id,
-            request.MediaType,
-            request.FileUrl);
+//        if (source == SimulationSourceEnum.Standalone)
+//        {
+//            var details = new SimulationDetails
+//            {
+//                RenovationSimulationID = simulation.Id
+//            };
+//            _context.SimulationDetails.Add(details);
+//            await _context.SaveChangesAsync();
+//        }
 
-        return NoContent();
-    }
+//        return simulation.Id;
+//    }
 
-    // 4️⃣ Goals & Budget
-    [HttpPut("{id:int}/goals")]
-    public async Task<IActionResult> SetGoals(int id, [FromBody] SimulationGoalsDto request)
-    {
-        await _service.SetGoalsAndBudgetAsync(
-            id,
-            request.Goals,
-            request.BudgetMin,
-            request.BudgetMax);
 
-        return NoContent();
-    }
+//    // 2️⃣ Details
+//    [HttpPut("{id:int}/details")]
+//    public async Task UpdateDetailsAsync(int simulationId, decimal size, int rooms, int bathrooms, string condition)
+//    {
+//        var simulation = await _context.RenovationSimulations.FindAsync(simulationId);
 
-    // 5️⃣ Submit
-    [HttpPost("{id:int}/submit")]
-    public async Task<IActionResult> Submit(int id)
-    {
-        await _service.CompleteSimulationAsync(id);
-        return NoContent(); // Fixed missing parentheses
-    }
+//        if (simulation.PropertyID == null)
+//        {
+//            // Standalone simulation → save details in SimulationDetails
+//            var details = new SimulationDetails
+//            {
+//                RenovationSimulationID = simulationId,
+//                Size = size,
+//                Rooms = rooms,
+//                Bathrooms = bathrooms,
+//                Condition = condition
+//            };
+//            _context.SimulationDetails.Add(details);
+//            await _context.SaveChangesAsync();
+//        }
+//        else
+//        {
+//            // Optional: override Property data or ignore
+//        }
+//    }
 
-    // 6️⃣ AI Analyze
-    [HttpPost("{id:int}/analyze")]
-    public async Task<IActionResult> Analyze(int id)
-    {
-        await _service.GenerateRecommendationsAsync(id);
-        return Accepted(); // async AI job
-    }
+//        // 3️⃣ Media
+//     [HttpPost("{id:int}/media")]
+//    public async Task<IActionResult> UploadMedia(int id, [FromBody] UploadSimulationMediaDto request)
+//    {
+//        await _service.UploadMediaAsync(
+//            id,
+//            request.MediaType,
+//            request.FileUrl);
 
-    // 7️⃣ Results
-    [HttpGet("{id:int}/results")]
-    public async Task<IActionResult> Results(int id)
-    {
-        var result = await _service.GetResultsAsync(id);
-        return Ok(result);
-    }
-}
+//        return NoContent();
+//    }
+
+//    // 4️⃣ Goals & Budget
+//    [HttpPut("{id:int}/goals")]
+//    public async Task<IActionResult> SetGoals(int id, [FromBody] SimulationGoalsDto request)
+//    {
+//        await _service.SetGoalsAndBudgetAsync(
+//            id,
+//            request.Goals,
+//            request.BudgetMin,
+//            request.BudgetMax);
+
+//        return NoContent();
+//    }
+
+//    // 5️⃣ Submit
+//    [HttpPost("{id:int}/submit")]
+//    public async Task<IActionResult> Submit(int id)
+//    {
+//        await _service.CompleteSimulationAsync(id);
+//        return NoContent(); // Fixed missing parentheses
+//    }
+
+//    // 6️⃣ AI Analyze
+//    [HttpPost("{id:int}/analyze")]
+//    public async Task<IActionResult> Analyze(int id)
+//    {
+//        await _service.GenerateRecommendationsAsync(id);
+//        return Accepted(); // async AI job
+//    }
+
+//    // 7️⃣ Results
+//    [HttpGet("{id:int}/results")]
+//    public async Task<IActionResult> Results(int id)
+//    {
+//        var result = await _service.GetResultsAsync(id);
+//        return Ok(result);
+//    }
+//}
