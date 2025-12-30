@@ -1,12 +1,12 @@
 ﻿using GEWAR.Models;
+using Jiwar.Account.DTOs;
+using Jiwar.DTOs;
+using Jiwar.DTOs.AccountDTOs;
+using Jiwar.DTOs.AccountDTOs.EditProfileDtos;
 using Jiwar.DTOs.AccountDTOs.EditProfileDtos;
 using Jiwar.Helpers;
 using Jiwar.Models;
-using Jiwar.DTOs.AccountDTOs.EditProfileDtos;
-using Jiwar.DTOs.AccountDTOs;
-
 using System.Security.Claims;
-using Jiwar.Account.DTOs;
 
 namespace Jiwar.Account
 {
@@ -29,6 +29,8 @@ namespace Jiwar.Account
         Task UpdateInteriorDesignerProfileAsync(string userId,InteriorDesignerEditProfileDto dto);
         Task UpdateAdminProfileAsync(string userId, AdminEditProfileDto dto);
         Task<ResultViewModel<UserResponseDTO>> GoogleSignInAsync(string idToken);
+        Task<UserProfileDto> GetUserProfileAsync(string userId);
+
 
     }
 }

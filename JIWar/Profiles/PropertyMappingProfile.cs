@@ -12,7 +12,7 @@ namespace Jiwar.Profiles
             // Property → PropertyListBDTO (للـ GetAll و Browse)
             CreateMap<Property, PropertyListBDTO>()
                 .ForMember(dest => dest.ThumbnailUrl, opt => opt.MapFrom(src =>
-                    src.PropertyMedia.OrderBy(m => m.Id).Select(m => m.MediaURL).FirstOrDefault()));
+                    src.PropertyMedia.OrderBy(m => m.Order).Select(m => m.MediaURL).FirstOrDefault()));
 
             // Property → PropertyDetailsDTO (للـ Details و MyProperties)
             CreateMap<Property, PropertyDetailsDTO>()
