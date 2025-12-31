@@ -47,7 +47,7 @@ namespace GEWAR.Configurations
             builder.HasMany(u => u.InvestmentPortfolios)
                    .WithOne(ip => ip.User)
                    .HasForeignKey(ip => ip.UserID)
-                   .OnDelete(DeleteBehavior.Cascade);
+                   .OnDelete(DeleteBehavior.NoAction);
 
             //builder.HasMany(u => u.Offers)
             //       .WithOne(o => o.User)
@@ -57,17 +57,17 @@ namespace GEWAR.Configurations
             builder.HasMany(u => u.Notifications)
                    .WithOne(n => n.User)
                    .HasForeignKey(n => n.UserID)
-                   .OnDelete(DeleteBehavior.Cascade);
+                   .OnDelete(DeleteBehavior.NoAction);
 
             builder.HasMany(u => u.Payments)
                    .WithOne(p => p.User)
                    .HasForeignKey(p => p.UserID)
-                   .OnDelete(DeleteBehavior.Cascade);
+                   .OnDelete(DeleteBehavior.NoAction);
 
             builder.HasOne(u => u.InteriorDesigner)
          .WithOne(d => d.User)   // يشير للـ navigation property داخل InteriorDesigner
          .HasForeignKey<InteriorDesigner>(d => d.InteriorDesignerID) // يشير للـ FK داخل InteriorDesigner
-         .OnDelete(DeleteBehavior.Cascade);
+         .OnDelete(DeleteBehavior.NoAction);
 
         }
     }

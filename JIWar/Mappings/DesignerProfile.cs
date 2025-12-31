@@ -12,8 +12,8 @@ namespace Jiwar.Mappings
         public MappingProfile()
         {
             // Requests (لو مستخدمين)
-            CreateMap<Request, RequestDto>().ReverseMap();
-            CreateMap<Proposal, DTOs.DesignDto.ProposalDto>().ReverseMap();
+            CreateMap<DesignRequest, RequestDto>().ReverseMap();
+            CreateMap<DesignerProposal, DTOs.DesignDto.ProposalDto>().ReverseMap();
 
             // DesignRequest
             CreateMap<DesignRequest, DesignRequestDto>()

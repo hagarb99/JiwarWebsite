@@ -31,7 +31,7 @@ namespace Jiwar.Services.DesignService
 
             var design = _mapper.Map<Design>(dto);
             design.DesignerID = designerId;
-            design.OwnerID = proposal.DesignRequest.UserID;
+           
             design.CreationDate = DateTime.UtcNow;
 
             _context.Designs.Add(design);
@@ -52,23 +52,9 @@ namespace Jiwar.Services.DesignService
             return _mapper.Map<List<DesignDto>>(designs);
         }
 
-        public async Task<List<DesignDto>> GetDesignsByOwnerAsync(string ownerId)
-        {
-            var designs = await _context.Designs
-                .Where(d => d.OwnerID == ownerId)
-                .ToListAsync();
+      
 
-            return _mapper.Map<List<DesignDto>>(designs);
-        }
-
-        public async Task<List<DesignDto>> GetDesignsByPropertyAsync(int propertyId)
-        {
-            var designs = await _context.Designs
-                .Where(d => d.PropertyID == propertyId)
-                .ToListAsync(); 
-
-            return _mapper.Map<List<DesignDto>>(designs);
-        }
+     
 
         public async Task<DesignDto> GetDesignByIdAsync(int id)
         {

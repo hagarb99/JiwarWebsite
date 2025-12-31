@@ -23,7 +23,7 @@ namespace Jiwar.Models
             builder.HasOne(id => id.User)
                    .WithOne(u => u.InteriorDesigner)
                    .HasForeignKey<InteriorDesigner>(id => id.InteriorDesignerID)
-                   .OnDelete(DeleteBehavior.Restrict);
+                   .OnDelete(DeleteBehavior.NoAction);
 
             builder.Property(id => id.Specialization)
                    .HasMaxLength(200);
