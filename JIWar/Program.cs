@@ -19,6 +19,7 @@ using Jiwar.Services.ValuationService;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
@@ -27,21 +28,21 @@ namespace Jiwar
     public class Program
     {
 
-        public static async Task SeedRolesAsync(IApplicationBuilder app)
-        {
-            using var scope = app.ApplicationServices.CreateScope();
-            var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+        // public static async Task SeedRolesAsync(IApplicationBuilder app)
+        // {
+        //     using var scope = app.ApplicationServices.CreateScope();
+        //     var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
 
-            string[] roles = { "Customer", "PropertyOwner", "InteriorDesigner", "Admin" };
+        //     string[] roles = { "Customer", "PropertyOwner", "InteriorDesigner", "Admin" };
 
-            foreach (var role in roles)
-            {
-                if (!await roleManager.RoleExistsAsync(role))
-                {
-                    await roleManager.CreateAsync(new IdentityRole(role));
-                }
-            }
-        }
+        //     foreach (var role in roles)
+        //     {
+        //         if (!await roleManager.RoleExistsAsync(role))
+        //         {
+        //             await roleManager.CreateAsync(new IdentityRole(role));
+        //         }
+        //     }
+        // }
 
         public static async Task Main(string[] args)
         {
@@ -49,8 +50,36 @@ namespace Jiwar
 
             // Controllers & Swagger
             builder.Services.AddControllers();
+
             builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
+            builder.Services.AddSwaggerGen(c =>
+            {
+                c.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+                {
+                    Name = "Authorization",
+                    Type = Microsoft.OpenApi.Models.SecuritySchemeType.ApiKey,
+                    Scheme = "Bearer",
+                    BearerFormat = "JWT",
+                    In = Microsoft.OpenApi.Models.ParameterLocation.Header,
+                    Description = "Enter 'Bearer' followed by your token in the text box below."
+                });
+
+                c.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
+                 {
+                     {
+                         new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+                         {
+                             Reference = new Microsoft.OpenApi.Models.OpenApiReference
+                             {
+                                 Type = Microsoft.OpenApi.Models.ReferenceType.SecurityScheme,
+                                 Id = "Bearer"
+                             }
+                         },
+                         new string[] {}
+                     }
+                 });
+
+            });
 
             // CORS
             builder.Services.AddCors(options =>
@@ -76,9 +105,16 @@ namespace Jiwar
             // Authentication
 
             var key = builder.Configuration["Jwt:Key"];
-            builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            builder.Services.AddAuthentication(opt =>
+            {
+                opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                opt.DefaultSignInScheme = JwtBearerDefaults.AuthenticationScheme;
+                opt.DefaultSignOutScheme = JwtBearerDefaults.AuthenticationScheme;
+                opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
                 .AddJwtBearer(options =>
                 {
+                    options.SaveToken = true;
                     options.TokenValidationParameters = new TokenValidationParameters
                     {
                         IssuerSigningKey =
@@ -106,9 +142,9 @@ namespace Jiwar
             builder.Services.AddScoped<IRenovationSimulationRepository, RenovationSimulationRepository>();
 
             // Services
-            builder.Services.AddHttpClient(); // Registers IHttpClientFactory
             builder.Services.AddHttpClient<IAiService, OpenAiService>();
             builder.Services.AddScoped<IAiService, OpenAiService>();
+            builder.Services.AddHttpClient(); // Registers IHttpClientFactory
             builder.Services.AddScoped<IAccountService, AccountService>();
             builder.Services.AddScoped<IPropertyService, PropertyService>();
             builder.Services.AddScoped<IBookingService, BookingService>();
@@ -120,7 +156,7 @@ namespace Jiwar
             builder.Services.AddScoped<IPropertyAnalyticsService, PropertyAnalyticsService>();
             builder.Services.AddScoped<IDesignerProposalService, DesignerProposalService>();
 
-            builder.Services.AddScoped<IRenovationSimulationService, RenovationSimulationService>();
+            //builder.Services.AddScoped<IRenovationSimulationService, RenovationSimulationService>();
 
 
             // Other Services
@@ -128,16 +164,34 @@ namespace Jiwar
             builder.Services.AddScoped<GoogleAuthService>();
 
             // AutoMapper
-            builder.Services.AddAutoMapper(cfg =>
-            {
-                cfg.AddProfile<MappingProfile>();
-            });
+            //builder.Services.AddAutoMapper(cfg =>
+            //{
+            //    cfg.AddProfile<MappingProfile>();
+            //});
+            builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
             // Build App
             var app = builder.Build();
 
-            await SeedRolesAsync(app);
+            //await SeedRolesAsync(app);
+            // Apply pending EF Core migrations at startup to ensure database schema is up-to-date
+            using (var scope = app.Services.CreateScope())
+            {
+                try
+                {
+                    var context = scope.ServiceProvider.GetRequiredService<GiwarContext>();
+                    context.Database.Migrate();
+                }
+                catch (Exception ex)
+                {
+                    // Log or handle migration failures as needed. For brevity we rethrow here.
+                    throw;
+                }
+            }
 
+            // await SeedRolesAsync(app);
+            // Middleware Pipeline
+            // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
@@ -145,7 +199,7 @@ namespace Jiwar
             }
 
             app.UseHttpsRedirection();
-            app.UseCors("AllowAll");
+            app.UseCors();
             app.UseAuthentication();
             app.UseAuthorization();
             app.UseStaticFiles();
