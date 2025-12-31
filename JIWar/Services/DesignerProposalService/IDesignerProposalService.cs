@@ -4,10 +4,10 @@ namespace Jiwar.Services.DesignerProposalService
 {
     public interface IDesignerProposalService
     {
-        Task<DesignerProposalDto> SendProposalAsync(string designerId, DesignerProposalDto dto);
+        Task<ProposalDto> SendProposalAsync(string designerId, ProposalDto dto);
         Task<List<ProposalForOwnerDto>> GetProposalsForRequestAsync(int requestId);
-        Task<DesignerProposalDto> ChooseProposalAsync(int proposalId, string ownerId);
-        Task<IEnumerable<DesignerProposalDto>> GetProposalsForDesignerAsync(string designerId);
+        Task<ProposalDto> ChooseProposalAsync(int proposalId, string ownerId);
+        Task<IEnumerable<ProposalDto>> GetProposalsForDesignerAsync(string designerId);
 
     }
 

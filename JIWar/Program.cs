@@ -164,10 +164,6 @@ namespace Jiwar
             builder.Services.AddScoped<GoogleAuthService>();
 
             // AutoMapper
-            //builder.Services.AddAutoMapper(cfg =>
-            //{
-            //    cfg.AddProfile<MappingProfile>();
-            //});
             builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
             // Build App
@@ -189,9 +185,7 @@ namespace Jiwar
             //    }
             //}
 
-            // await SeedRolesAsync(app);
             // Middleware Pipeline
-            // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();

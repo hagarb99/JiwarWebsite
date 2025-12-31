@@ -47,6 +47,9 @@ namespace Jiwar.Models
                    .HasForeignKey(p => p.DesignerID)
                    .OnDelete(DeleteBehavior.Restrict);
 
+
+
+
         }
     }
 }

@@ -1,16 +1,22 @@
 ﻿using GEWAR.Models;
 namespace Jiwar.DTOs.DesignDto
 {
-    public class DesignerProposalDto
-    {
-        public string Name { get; set; }
-        public string InteriorDesignerEmail { get; set; }   // ناخد الإيميل من الـ navigation
-        public int DesignRequestID { get; set; }
-        public string Status { get; set; }
-        public decimal EstimatedCost { get; set; }
-        public int EstimatedDays { get; set; }
-        public string ProposalDescription { get; set; }
-        public string? SampleDesignURL { get; set; }
-    }
+  public class ProposalDto
+{
+    public int Id { get; set; }
+
+    public int RequestID { get; set; }
+
+    public string Status { get; set; }
+
+    public decimal? PriceEstimate { get; set; }
+
+    public string OfferDetails { get; set; }
+
+    public string DesignerName { get; set; }
+
+    public string DesignerEmail { get; set; }
+}
+
 
 }
