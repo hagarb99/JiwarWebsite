@@ -28,11 +28,23 @@ public class RenovationSimulationsController : ControllerBase
 
     // 1️⃣ Start Simulation
     [HttpPost("start")]
-    public async Task<ActionResult<int>> Start(
-        [FromBody] StartSimulationDto dto)
+    public async Task<ActionResult<int>> Start([FromBody] StartSimulationDto dto)
     {
-        var id = await _service.StartSimulationAsync(dto, UserId);
-        return Ok(id);
+        try
+        {
+            var ownerId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (ownerId == null)
+                return Unauthorized("User ID claim not found");
+
+            var id = await _service.StartSimulationAsync(dto, ownerId);
+            return Ok(id);
+        }
+        catch (Exception ex)
+        {
+            // سجل الخطأ عشان تعرف السبب
+            Console.WriteLine(ex);  // أو استخدم ILogger
+            return StatusCode(500, $"Error starting simulation: {ex.Message}");
+        }
     }
 
     // 2️⃣ Update Details
