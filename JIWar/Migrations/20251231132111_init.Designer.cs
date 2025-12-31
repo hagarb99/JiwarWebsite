@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Jiwar.Migrations
 {
     [DbContext(typeof(GiwarContext))]
-    [Migration("20251228161925_AddSimulationDetailsTablev5")]
-    partial class AddSimulationDetailsTablev5
+    [Migration("20251231132111_init")]
+    partial class init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

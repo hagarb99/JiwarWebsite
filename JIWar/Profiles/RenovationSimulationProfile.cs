@@ -13,7 +13,7 @@ namespace Jiwar.Profiles
         public RenovationSimulationProfile()
         {
              //1-Simulation Details
-            CreateMap<SimulationDetails, SimulationDetailsDto>()
+            CreateMap<SimulationDetails, UpdateSimulationDetailsDto>()
                 .ReverseMap();
 
             //2-Media
