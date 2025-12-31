@@ -100,17 +100,17 @@ public class RenovationSimulationService : IRenovationSimulationService
     {
         var simulation = await _repo.GetByIdAsync(simulationId)
             ?? throw new Exception("Simulation not found");
-
-        simulation.Status = SimulationStatusEnum.Submitted;
-
-        // 🔥 هنا مستقبلاً:
-        // AI Recommendation Engine
-        // ML Models
-        // Cost Estimation
-
-        await _repo.UpdateAsync(simulation);
-        await _repo.SaveChangesAsync();
     }
+
+//        await _repo.UpdateAsync(simulation);
+//        await _repo.SaveChangesAsync();
+//    }
+
+
+//    public async Task GenerateRecommendationsAsync(int simulationId)
+//    {
+//        var simulation = await _repo.GetByIdAsync(simulationId)
+//            ?? throw new Exception("Simulation not found");
 
 
 public async Task GenerateRecommendationsAsync(int simulationId)

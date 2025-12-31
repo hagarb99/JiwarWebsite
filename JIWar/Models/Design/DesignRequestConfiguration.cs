@@ -37,6 +37,17 @@ namespace Jiwar.Models
             builder.Property(d => d.CreatedAt)
                    .HasColumnType("datetime")
                    .IsRequired();
+
+            builder.HasOne(d => d.User).WithMany(u => u.DesignRequests)
+                   .HasForeignKey(d => d.UserID)
+                   .OnDelete(DeleteBehavior.NoAction);
+
+            builder.HasOne(d => d.Property).WithMany(u => u.DesignRequests)
+                 .HasForeignKey(d => d.PropertyID)
+                 .OnDelete(DeleteBehavior.NoAction);
+
+            
+
         }
     }
 }

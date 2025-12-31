@@ -8,9 +8,9 @@ namespace Jiwar.Profiles
     {
         public DesignerProposalProfile()
         {
-            CreateMap<DesignerProposal, DesignerProposalDto>();
+            CreateMap<DesignerProposal, ProposalDto>();
 
-            CreateMap<DesignerProposalDto, DesignerProposal>()
+            CreateMap<ProposalDto, DesignerProposal>()
                 .ForMember(dest => dest.Id, opt => opt.Ignore());
         }
 

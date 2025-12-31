@@ -40,19 +40,7 @@ namespace Jiwar.Controllers.DesignsController
         }
 
         [HttpGet("owner")]
-        public async Task<IActionResult> GetOwnerDesigns()
-        {
-            var ownerId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            var result = await _service.GetDesignsByOwnerAsync(ownerId);
-            return Ok(result);
-        }
 
-        [HttpGet("property/{propertyId}")]
-        public async Task<IActionResult> GetDesignsByProperty(int propertyId)
-        {
-            var result = await _service.GetDesignsByPropertyAsync(propertyId);
-            return Ok(result);
-        }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetDesignById(int id)

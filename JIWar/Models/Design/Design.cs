@@ -7,18 +7,16 @@ namespace Jiwar.Models
         public string DesignerID { get; set; }
         public virtual InteriorDesigner InteriorDesigner { get; set; }
 
-        public int PropertyID { get; set; }
-        public virtual Property Property { get; set; }
-
-        public int? ProposalID { get; set; }
-        public virtual DesignerProposal Proposal { get; set; }
+        public int? RequestID { get; set; }
+        public virtual DesignRequest Request { get; set; }
 
         public List<string> ImageURLs { get; set; } = new();
         public bool AI_Generated { get; set; }
         public string SelectedStyle { get; set; }
         public DateTime CreationDate { get; set; }
         public string Description { get; set; }
-        public string OwnerID { get; set; }
+
+        public double Progress { get; set; }
 
     }
 

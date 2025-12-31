@@ -1,6 +1,7 @@
 ﻿using System;
 using GEWAR;
 using GEWAR.Models;
+using Jiwar.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace Jiwar.Services.RequestService
@@ -14,14 +15,14 @@ namespace Jiwar.Services.RequestService
             _context = context;
         }
 
-        public async Task<IEnumerable<Request>> GetAvailableRequestsAsync()
+        public async Task<IEnumerable<DesignRequest>> GetAvailableRequestsAsync()
         {
             return await _context.Requests
                 .Where(r => r.Status == "Pending")
                 .ToListAsync();
         }
 
-        public async Task<Request> GetRequestByIdAsync(int requestId)
+        public async Task<DesignRequest> GetRequestByIdAsync(int requestId)
         {
             return await _context.Requests.FindAsync(requestId);
         }

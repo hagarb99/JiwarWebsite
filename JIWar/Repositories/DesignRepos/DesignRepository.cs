@@ -1,12 +1,13 @@
 ﻿using GEWAR;
 using Jiwar.Models;
 using Microsoft.EntityFrameworkCore;
+  
 
 
 
 namespace Jiwar.Repositories.Designs
 {
-    public class DesignRepository : GenericRepository<Design>, IDesignRepository
+    public class DesignRepository : GenericRepository<Design>
     { 
         private readonly GiwarContext _context;
         public DesignRepository(GiwarContext context) : base(context)
@@ -19,14 +20,9 @@ namespace Jiwar.Repositories.Designs
         }
         public async Task<IEnumerable<Design>> GetDesignsByPropertyAsync(int propertyId)
         { 
-            return await _context.Designs.Where(d => d.PropertyID == propertyId).ToListAsync(); 
+            return await _context.Designs.Where(d => d.Id == propertyId).ToListAsync(); 
         }
-        public async Task<Design> GetDesignWithProposalAsync(int designId) 
-        
-        {
-            return await _context.Designs.Include(d => d.Proposal).FirstOrDefaultAsync(d => d.Id == designId);
-        
-        }
+    
     
     }
 }

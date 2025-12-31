@@ -27,7 +27,7 @@ namespace Jiwar.Controllers.DesignerProposalController
         [Authorize(Roles = "InteriorDesigner")]
 
         [HttpPost("send")]
-        public async Task<IActionResult> SendProposal([FromBody] DesignerProposalDto dto)
+        public async Task<IActionResult> SendProposal([FromBody] ProposalDto dto)
         {
             var designerId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             var result = await _service.SendProposalAsync(designerId, dto);

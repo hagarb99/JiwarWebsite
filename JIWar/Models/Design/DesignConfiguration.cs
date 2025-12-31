@@ -16,9 +16,7 @@ namespace Jiwar.Models
             builder.Property(d => d.DesignerID)
                    .IsRequired();
 
-            builder.Property(d => d.PropertyID)
-                   .IsRequired();
-
+         
             builder.Property(d => d.AI_Generated)
                    .IsRequired();
 
@@ -30,8 +28,14 @@ namespace Jiwar.Models
                    .HasColumnType("datetime")
                    .IsRequired();
 
-            builder.Property(d => d.ProposalID)
+            builder.Property(d => d.RequestID)
                    .IsRequired(false);
+
+
+            builder.HasOne(d => d.Request).WithMany(u => u.Designs)
+                   .HasForeignKey(d => d.RequestID)
+                   .OnDelete(DeleteBehavior.NoAction);
+
         }
     }
 }
