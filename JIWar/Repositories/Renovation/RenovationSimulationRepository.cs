@@ -100,10 +100,9 @@ public class RenovationSimulationRepository : IRenovationSimulationRepository
         await _context.Database.RollbackTransactionAsync();
     }
 
-    public Task<SimulationDetails?> GetDetailsBySimulationIdAsync(int simulationId)
+    public async Task<SimulationDetails?> GetDetailsBySimulationIdAsync(int simulationId)
     {
-        throw new NotImplementedException();
+        return await _context.SimulationDetails
+         .FirstOrDefaultAsync(d => d.RenovationSimulationID == simulationId);
     }
-
-    
 }

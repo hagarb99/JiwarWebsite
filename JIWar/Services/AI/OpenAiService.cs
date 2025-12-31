@@ -160,7 +160,7 @@ namespace Jiwar.Services.AI
         {
             return model switch
             {
-                AiModelEnum.Gpt4o => "gpt-4o",
+                /*AiModelEnum.Gpt4o => "gpt-4o"*/
                 AiModelEnum.Gpt4oMini => "gpt-4o-mini",
                 AiModelEnum.DallE3 => "dall-e-3",
                 _ => throw new Exception("Unsupported AI Model")
