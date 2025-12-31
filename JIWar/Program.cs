@@ -139,6 +139,9 @@ namespace Jiwar
             builder.Services.AddScoped<IPropertyAnalyticsService, PropertyAnalyticsService>();
             builder.Services.AddScoped<IDesignerProposalService, DesignerProposalService>();
 
+            //builder.Services.AddScoped<IRenovationSimulationService, RenovationSimulationService>();
+
+
             // Other Services
             builder.Services.AddScoped<TokenService>();
             builder.Services.AddScoped<GoogleAuthService>();
@@ -149,6 +152,7 @@ namespace Jiwar
             // Build App
             var app = builder.Build();
 
+            //await SeedRolesAsync(app);
             // Apply pending EF Core migrations at startup to ensure database schema is up-to-date
             using (var scope = app.Services.CreateScope())
             {

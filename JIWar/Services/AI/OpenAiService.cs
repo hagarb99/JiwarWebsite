@@ -13,74 +13,70 @@ namespace Jiwar.Services.AI
         private const string ChatEndpoint = "https://api.openai.com/v1/chat/completions";
         private const string ImageEndpoint = "https://api.openai.com/v1/images/generations";
 
-        public OpenAiService(HttpClient httpClient , IConfiguration configuration)
-        {
-            _httpClient = httpClient;
-            configuration = configuration;
-            _apiKey = configuration["OpenAI:ApiKey"]
-                ?? throw new Exception("OpenAI API Key not found");
+        public OpenAiService(HttpClient httpClient, IConfiguration configuration)
+       {
+    _httpClient = httpClient;
+    _apiKey = configuration["OpenAI:ApiKey"]
+        ?? throw new Exception("OpenAI API Key not found");
+    }
 
-
-        }
 
         // ============================
         // TEXT (GPT-4o / GPT-4o-mini)
         // ============================
         public async Task<string> SendAsync(string prompt, AiRequestContext context)
+{
+    var request = new
+    {
+        model = ResolveModel(context.Model),
+        messages = new[]
         {
-            var request = new
-            {
-                model = ResolveModel(context.Model),
-                messages = new[]
-                {
-                    new { role = "system", content = context.Purpose },
-                    new { role = "user", content = prompt }
-                }
-            };
-
-            var json = await SendRawAsync(request, ChatEndpoint);
-
-            using var doc = JsonDocument.Parse(json);
-            return doc.RootElement
-                .GetProperty("choices")[0]
-                .GetProperty("message")
-                .GetProperty("content")
-                .GetString()!;
+            new { role = "system", content = context.Purpose },
+            new { role = "user", content = prompt }
         }
+    };
+
+    var json = await SendRawAsync(request, ChatEndpoint);
+
+    using var doc = JsonDocument.Parse(json);
+    return doc.RootElement
+        .GetProperty("choices")[0]
+        .GetProperty("message")
+        .GetProperty("content")
+        .GetString()!;
+}
 
         // ============================
         // VISION (GPT-4o)
         // ============================
-        public async Task<string> AnalyzeImagesAsync(string prompt,
-         List<string> imageUrls,
-           AiModelEnum model
-           )
-        {
-            // Combine prompt and image URLs into a single string
-            string fullContent = JsonSerializer.Serialize(prompt);
-
-
-            var messages = new List<Message>
+        public async Task<string> AnalyzeImagesAsync(
+    string prompt,
+    List<string> imageUrls,
+    AiModelEnum model)
+{
+    var request = new
     {
-        new Message { role = "system", content = "You are a professional renovation engineer." },
-        new Message { role = "user", content = fullContent }
+        model = ResolveModel(model),
+        messages = new[]
+        {
+            new
+            {
+                role = "user",
+                content = BuildVisionContent(prompt, imageUrls)
+            }
+        }
     };
 
-            var request = new
-            {
-                model = ResolveModel(model),
-                messages = messages
-            };
+    var json = await SendRawAsync(request, ChatEndpoint);
 
-            var json = await SendRawAsync(request, ChatEndpoint);
+    using var doc = JsonDocument.Parse(json);
+    return doc.RootElement
+        .GetProperty("choices")[0]
+        .GetProperty("message")
+        .GetProperty("content")
+        .GetString()!;
+}
 
-            using var doc = JsonDocument.Parse(json);
-            return doc.RootElement
-                .GetProperty("choices")[0]
-                .GetProperty("message")
-                .GetProperty("content")
-                .GetString()!;
-        }
 
         // ============================
         // IMAGE GENERATION (DALL·E-3)

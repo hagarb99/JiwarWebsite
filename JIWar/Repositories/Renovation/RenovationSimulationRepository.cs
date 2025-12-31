@@ -72,7 +72,7 @@ public class RenovationSimulationRepository : IRenovationSimulationRepository
         await _context.RenovationProjects.AddAsync(project);
     }
 
-    public async Task AddSimulationDetailsAsync(SimulationDetails details)
+    public async Task AddSimulationDetailsAsync(SimulationDetails details ,int simulationId)
     {
         await _context.SimulationDetails.AddAsync(details);
     }
@@ -99,4 +99,11 @@ public class RenovationSimulationRepository : IRenovationSimulationRepository
     {
         await _context.Database.RollbackTransactionAsync();
     }
+
+    public Task<SimulationDetails?> GetDetailsBySimulationIdAsync(int simulationId)
+    {
+        throw new NotImplementedException();
+    }
+
+    
 }
