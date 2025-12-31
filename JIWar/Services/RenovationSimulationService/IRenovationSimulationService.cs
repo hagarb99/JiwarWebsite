@@ -3,7 +3,7 @@ using Jiwar.DTOs;
 
 public interface IRenovationSimulationService
 {
-    Task<int> StartSimulationAsync(StartSimulationDto dto);
+    Task<int> StartSimulationAsync(StartSimulationDto dto ,string userId );
 
     Task UpdateDetailsAsync(int simulationId, UpdateSimulationDetailsDto dto);
 

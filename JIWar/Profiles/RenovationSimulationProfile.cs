@@ -12,33 +12,38 @@ namespace Jiwar.Profiles
     {
         public RenovationSimulationProfile()
         {
-            // mappings here 👇
-            //CreateMap<SimulationDetails, SimulationDetailsDto>()
-            //.ReverseMap();
+             //1-Simulation Details
+            CreateMap<SimulationDetails, SimulationDetailsDto>()
+                .ReverseMap();
 
-            //CreateMap<SimulationMedia, UploadSimulationMediaDto>();
+            //2-Media
+            CreateMap<SimulationMedia, UploadSimulationMediaDto>()
+                .ReverseMap();
 
-            //CreateMap<SimulationRecommendation, SimulationRecommendationDto>()
-            //    .ForMember(dest => dest.IsAIGenerated,
-            //        opt => opt.MapFrom(src => src.Source == RecommendationSourceEnum.AI));
+            //3-Recommendation (direct mapping)
+            CreateMap<SimulationRecommendation, SimulationRecommendationDto>();
 
-            //CreateMap<RenovationSimulation, SimulationResultDto>()
-            //    .ForMember(dest => dest.SimulationId,
-            //        opt => opt.MapFrom(src => src.Id))
-            //    .ForMember(dest => dest.Goals,
-            //        opt => opt.MapFrom(src =>
-            //            string.IsNullOrWhiteSpace(src.RenovationGoalsJson)
-            //                ? new List<string>()
-            //                : System.Text.Json.JsonSerializer.Deserialize<List<string>>(src.RenovationGoalsJson)!
-            //        ))
-            //    .ForMember(dest => dest.Medias,
-            //        opt => opt.MapFrom(src => src.Medias))
-            //    .ForMember(dest => dest.Recommendations,
-            //        opt => opt.MapFrom(src => src.Recommendations));
+            //4-RenovationSimulation → Result DTO
+            CreateMap<RenovationSimulation, SimulationResultDto>()
+                .ForMember(dest => dest.SimulationId,
+                    opt => opt.MapFrom(src => src.Id))
+                .ForMember(dest => dest.Goals,
+                    opt => opt.Ignore()) // ⚠️ handled in service
+                .ForMember(dest => dest.Medias,
+                    opt => opt.MapFrom(src => src.Medias))
+                .ForMember(dest => dest.Recommendations,
+                    opt => opt.MapFrom(src => src.Recommendations));
 
-            //CreateMap<RenovationSimulation, SimulationAnalysisResultDto>()
-            //    .ForMember(dest => dest.SimulationId,
-            //        opt => opt.MapFrom(src => src.Id));
+            //5-Analysis Result
+            CreateMap<RenovationSimulation, SimulationAnalysisResultDto>()
+                .ForMember(dest => dest.SimulationId,
+                    opt => opt.MapFrom(src => src.Id))
+                .ForMember(dest => dest.Condition,
+                    opt => opt.Ignore())
+                .ForMember(dest => dest.Issues,
+                    opt => opt.Ignore())
+                .ForMember(dest => dest.Recommendations,
+                    opt => opt.MapFrom(src => src.Recommendations));
 
 
 

@@ -18,8 +18,8 @@ public interface IRenovationSimulationRepository
     Task AddMediaAsync(SimulationMedia media);
     Task AddRecommendationsAsync(List<SimulationRecommendation> recommendations);
     Task AddRenovationProjectAsync(RenovationProject project);
-
-    Task AddSimulationDetailsAsync(SimulationDetails details);
+    Task <SimulationDetails?> GetDetailsBySimulationIdAsync(int simulationId);
+    Task AddSimulationDetailsAsync(SimulationDetails details , int simulationId);
     
 
 
