@@ -27,23 +27,6 @@ namespace Jiwar
 {
     public class Program
     {
-
-        // public static async Task SeedRolesAsync(IApplicationBuilder app)
-        // {
-        //     using var scope = app.ApplicationServices.CreateScope();
-        //     var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-
-        //     string[] roles = { "Customer", "PropertyOwner", "InteriorDesigner", "Admin" };
-
-        //     foreach (var role in roles)
-        //     {
-        //         if (!await roleManager.RoleExistsAsync(role))
-        //         {
-        //             await roleManager.CreateAsync(new IdentityRole(role));
-        //         }
-        //     }
-        // }
-
         public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
@@ -156,28 +139,32 @@ namespace Jiwar
             builder.Services.AddScoped<IPropertyAnalyticsService, PropertyAnalyticsService>();
             builder.Services.AddScoped<IDesignerProposalService, DesignerProposalService>();
 
-            builder.Services.AddScoped<IRenovationSimulationService, RenovationSimulationService>();
-
-
             // Other Services
             builder.Services.AddScoped<TokenService>();
             builder.Services.AddScoped<GoogleAuthService>();
 
             // AutoMapper
-            //builder.Services.AddAutoMapper(cfg =>
-            //{
-            //    cfg.AddProfile<MappingProfile>();
-            //});
             builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
             // Build App
             var app = builder.Build();
 
-            //await SeedRolesAsync(app);
+            // Apply pending EF Core migrations at startup to ensure database schema is up-to-date
+            using (var scope = app.Services.CreateScope())
+            {
+                try
+                {
+                    var context = scope.ServiceProvider.GetRequiredService<GiwarContext>();
+                    context.Database.Migrate();
+                }
+                catch (Exception ex)
+                {
+                    // Log or handle migration failures as needed. For brevity we rethrow here.
+                    throw;
+                }
+            }
 
-            // await SeedRolesAsync(app);
             // Middleware Pipeline
-            // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();

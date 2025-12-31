@@ -19,9 +19,9 @@ namespace Jiwar.Services.DesignerProposalService
             _mapper = mapper;
         }
 
-        public async Task<DesignerProposalDto> SendProposalAsync(string designerId, DesignerProposalDto dto)
+        public async Task<ProposalDto> SendProposalAsync(string designerId, ProposalDto dto)
         {
-            var request = await _context.DesignRequests.FindAsync(dto.DesignRequestID);
+            var request = await _context.DesignRequests.FindAsync(dto.RequestID);
             if (request == null)
                 throw new Exception("Design request not found");
 
@@ -29,7 +29,7 @@ namespace Jiwar.Services.DesignerProposalService
                 throw new Exception("This request is no longer accepting proposals");
 
             var alreadySubmitted = await _context.DesignerProposals
-                .AnyAsync(p => p.DesignRequestID == dto.DesignRequestID && p.DesignerID == designerId);
+                .AnyAsync(p => p.DesignRequestID == dto.RequestID && p.DesignerID == designerId);
 
             if (alreadySubmitted)
                 throw new Exception("You already submitted a proposal for this request");
@@ -45,7 +45,7 @@ namespace Jiwar.Services.DesignerProposalService
 
             await _context.SaveChangesAsync();
 
-            return _mapper.Map<DesignerProposalDto>(proposal);
+            return _mapper.Map<ProposalDto>(proposal);
         }
 
         public async Task<List<ProposalForOwnerDto>> GetProposalsForRequestAsync(int requestId)
@@ -68,17 +68,17 @@ namespace Jiwar.Services.DesignerProposalService
         }
 
 
-        public async Task<IEnumerable<DesignerProposalDto>> GetProposalsForDesignerAsync(string designerId)
+        public async Task<IEnumerable<ProposalDto>> GetProposalsForDesignerAsync(string designerId)
         {
             var proposals = await _context.DesignerProposals
                 .Where(p => p.DesignerID == designerId)
                 .ToListAsync();
 
-            return _mapper.Map<IEnumerable<DesignerProposalDto>>(proposals);
+            return _mapper.Map<IEnumerable<ProposalDto>>(proposals);
         }
 
 
-        public async Task<DesignerProposalDto> ChooseProposalAsync(int proposalId, string ownerId)
+        public async Task<ProposalDto> ChooseProposalAsync(int proposalId, string ownerId)
         {
             var selected = await _context.DesignerProposals
                 .Include(p => p.DesignRequest)
@@ -108,7 +108,7 @@ namespace Jiwar.Services.DesignerProposalService
 
             await _context.SaveChangesAsync();
 
-            return _mapper.Map<DesignerProposalDto>(selected);
+            return _mapper.Map<ProposalDto>(selected);
         }
     }
 
