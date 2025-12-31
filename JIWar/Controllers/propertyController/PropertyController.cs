@@ -84,12 +84,11 @@ public class PropertyController : ControllerBase
         return result ? Ok("Deleted Successfully") : NotFound("Property Not Found");
     }
 
-    [HttpGet("my/{ownerId}")]
-    public async Task<IActionResult> MyProperties(string ownerId)
+    [HttpGet("my")]
+    public async Task<IActionResult> MyProperties()
     {
-        var currentUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        if (currentUserId != ownerId)
-            return Forbid(); // عشان محدش يشوف عقارات غيرك
+        var ownerId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (ownerId == null) return Unauthorized();
 
         var list = await _propertyService.GetMyPropertiesAsync(ownerId);
         return Ok(list);
