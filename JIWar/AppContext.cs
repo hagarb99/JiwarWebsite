@@ -66,17 +66,22 @@ namespace GEWAR
         public DbSet<ValuationHistory> ValuationHistories { get; set; }
 
         public DbSet<DistrictPriceHistory> DistrictPriceHistories { get; set; }
-        public object DistrictPriceHistory { get; internal set; }
+        //public DbSet<DistrictPriceHistory> DistrictPriceHistory { get;  set; }
 
         public DbSet<RenovationSimulation> RenovationSimulations { get; set; }
         public DbSet<SimulationRecommendation> SimulationRecommendations { get; set; }
         public DbSet<SimulationMedia> SimulationMedias { get; set; }
 
-       
+        public DbSet<SimulationDetails> SimulationDetails { get; set;}
+
+
+
+
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+
             modelBuilder.Entity<Property>(entity =>
             {
                 entity.Property(e => e.EstimatedPrice).HasPrecision(18, 2);
@@ -146,7 +151,9 @@ namespace GEWAR
 
 
             base.OnModelCreating(modelBuilder);
-
+            modelBuilder.Entity<User>()
+        .Property(u => u.PasswordHash)
+        .IsRequired(false);
 
             modelBuilder.Entity<User>().ToTable("Users");
         }

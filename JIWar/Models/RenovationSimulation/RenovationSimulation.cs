@@ -5,14 +5,14 @@ namespace GEWAR.Models
    
    public class RenovationSimulation : BaseModel
 {
-    public int PropertyID { get; set; }
+    public int? PropertyID { get; set; }
     public string UserID { get; set; }
 
     public decimal? BudgetMin { get; set; }
     public decimal? BudgetMax { get; set; }
 
     // goals selected by user
-    public string RenovationGoalsJson { get; set; } // JSON
+    public string? RenovationGoalsJson { get; set; } // JSON
 
     public SimulationStatusEnum Status { get; set; } // Draft / Completed
 

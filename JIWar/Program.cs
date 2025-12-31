@@ -12,6 +12,7 @@ using Jiwar.Repositories.Interfaces;
 using Jiwar.Repositories.Valuation;
 using Jiwar.Service;
 using Jiwar.Services;
+using Jiwar.Services.AI;
 using Jiwar.Services.DesignerProposalService;
 using Jiwar.Services.GoogleService;
 using Jiwar.Services.ValuationService;
@@ -73,6 +74,7 @@ namespace Jiwar
                 .AddDefaultTokenProviders();
 
             // Authentication
+
             var key = builder.Configuration["Jwt:Key"];
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
@@ -101,8 +103,12 @@ namespace Jiwar
             builder.Services.AddScoped<IReportOrderRepository, ReportOrderRepository>();
             builder.Services.AddScoped<IValuationHistoryRepository, ValuationHistoryRepository>();
             builder.Services.AddScoped<IAnalyticsRepository, AnalyticsRepository>();
+            builder.Services.AddScoped<IRenovationSimulationRepository, RenovationSimulationRepository>();
 
             // Services
+            builder.Services.AddHttpClient(); // Registers IHttpClientFactory
+            builder.Services.AddHttpClient<IAiService, OpenAiService>();
+            builder.Services.AddScoped<IAiService, OpenAiService>();
             builder.Services.AddScoped<IAccountService, AccountService>();
             builder.Services.AddScoped<IPropertyService, PropertyService>();
             builder.Services.AddScoped<IBookingService, BookingService>();
@@ -113,6 +119,9 @@ namespace Jiwar
             builder.Services.AddScoped<IValuationHistoryService, ValuationHistoryService>();
             builder.Services.AddScoped<IPropertyAnalyticsService, PropertyAnalyticsService>();
             builder.Services.AddScoped<IDesignerProposalService, DesignerProposalService>();
+
+            builder.Services.AddScoped<IRenovationSimulationService, RenovationSimulationService>();
+
 
             // Other Services
             builder.Services.AddScoped<TokenService>();
@@ -139,6 +148,7 @@ namespace Jiwar
             app.UseCors("AllowAll");
             app.UseAuthentication();
             app.UseAuthorization();
+            app.UseStaticFiles();
             app.MapControllers();
             app.Run();
         }

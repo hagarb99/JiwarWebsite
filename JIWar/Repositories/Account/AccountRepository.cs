@@ -84,13 +84,37 @@ namespace Jiwar.Repositories
 
         public async Task<bool> PropertyOwnerExistsAsync(string userId)
         {
-            return await _context.PropertyOwners.AnyAsync(po => po.UserID == userId);
+            return await _context.PropertyOwners.AnyAsync(po =>
+       po.UserID == userId 
+       );
         }
 
         public Task<bool> InteriorDesignerExistsAsync(string userId)
         {
             return _context.InteriorDesigners.AnyAsync(id => id.InteriorDesignerID == userId);
         }
+        public async Task<User> GetUserByIdAsync(string userId)
+        {
+            return await _context.Users
+                .Include(u => u.propertyOwner)
+                    .ThenInclude(po => po.Properties)
+                .Include(u => u.InteriorDesigner)
+                .FirstOrDefaultAsync(u => u.Id == userId);
+        }
+        public async Task<PropertyOwner?> GetPropertyOwnerByUserIdAsync(string userId)
+        {
+            return await _context.PropertyOwners
+                .FirstOrDefaultAsync(po => po.UserID == userId);
+        }
+
+        public async Task UpdatePropertyOwnerAsync(PropertyOwner owner)
+        {
+            _context.PropertyOwners.Update(owner);
+            await _context.SaveChangesAsync();
+        }
+
+
+
     }
 
 

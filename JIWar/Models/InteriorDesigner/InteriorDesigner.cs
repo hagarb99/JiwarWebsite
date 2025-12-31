@@ -15,11 +15,8 @@ namespace GEWAR.Models
         // Navigation property
         public virtual User User { get; set; }
         public string InteriorDesignerID { get; set; }
-        //public virtual ICollection<Design> Designs { get; set; } = new List<Design>();
         public virtual ICollection<Proposal> Proposals { get; set; } = new List<Proposal>();
       
-        ///property owner table-is a user
-        //like his-subscription-
 
 
     }

@@ -65,7 +65,7 @@ namespace Jiwar.Services.DesignService
         {
             var designs = await _context.Designs
                 .Where(d => d.PropertyID == propertyId)
-                .ToListAsync();
+                .ToListAsync(); 
 
             return _mapper.Map<List<DesignDto>>(designs);
         }

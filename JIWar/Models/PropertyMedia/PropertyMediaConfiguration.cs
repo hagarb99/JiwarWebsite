@@ -24,7 +24,7 @@ namespace GEWAR.Models
                    .IsRequired();
 
             //  MediaType
-            builder.Property(pm => pm.MediaType)
+            builder.Property(pm => pm.mediaTypeEnum)
                    .HasMaxLength(50)
                    .IsRequired();
 

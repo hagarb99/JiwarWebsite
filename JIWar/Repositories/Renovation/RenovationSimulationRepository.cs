@@ -1,6 +1,7 @@
-using GEWAR;
+﻿using GEWAR;
 using GEWAR.Models;
 using GEWAR.Models.Jiwar.Enum;
+using Jiwar.Models;
 using Microsoft.EntityFrameworkCore;
 
 public class RenovationSimulationRepository : IRenovationSimulationRepository
@@ -12,7 +13,23 @@ public class RenovationSimulationRepository : IRenovationSimulationRepository
         _context = context;
     }
 
+    // 🔐 Ownership
+    public async Task<RenovationSimulation?> GetByIdForUserAsync(int id, string userId)
+    {
+        return await _context.RenovationSimulations
+            .Include(x => x.Medias)
+            .Include(x => x.Recommendations)
+            .FirstOrDefaultAsync(x => x.Id == id && x.UserID == userId);
+    }
+
+    // 📦 Reads
     public async Task<RenovationSimulation?> GetByIdAsync(int id)
+    {
+        return await _context.RenovationSimulations
+            .FirstOrDefaultAsync(x => x.Id == id);
+    }
+
+    public async Task<RenovationSimulation?> GetWithResultsAsync(int id)
     {
         return await _context.RenovationSimulations
             .Include(x => x.Medias)
@@ -28,6 +45,7 @@ public class RenovationSimulationRepository : IRenovationSimulationRepository
                 x.Status == SimulationStatusEnum.Draft);
     }
 
+    // ✍️ Writes
     public async Task AddAsync(RenovationSimulation simulation)
     {
         await _context.RenovationSimulations.AddAsync(simulation);
@@ -49,9 +67,43 @@ public class RenovationSimulationRepository : IRenovationSimulationRepository
         await _context.SimulationRecommendations.AddRangeAsync(recommendations);
     }
 
+    public async Task AddRenovationProjectAsync(RenovationProject project)
+    {
+        await _context.RenovationProjects.AddAsync(project);
+    }
+
+    public async Task AddSimulationDetailsAsync(SimulationDetails details ,int simulationId)
+    {
+        await _context.SimulationDetails.AddAsync(details);
+    }
+
+
+    // 💾 Unit of Work
     public async Task SaveChangesAsync()
     {
         await _context.SaveChangesAsync();
     }
-}
 
+    // 🔁 Transactions
+    public async Task BeginTransactionAsync()
+    {
+        await _context.Database.BeginTransactionAsync();
+    }
+
+    public async Task CommitTransactionAsync()
+    {
+        await _context.Database.CommitTransactionAsync();
+    }
+
+    public async Task RollbackTransactionAsync()
+    {
+        await _context.Database.RollbackTransactionAsync();
+    }
+
+    public Task<SimulationDetails?> GetDetailsBySimulationIdAsync(int simulationId)
+    {
+        throw new NotImplementedException();
+    }
+
+    
+}

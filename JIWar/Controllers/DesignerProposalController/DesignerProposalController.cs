@@ -23,6 +23,9 @@ namespace Jiwar.Controllers.DesignerProposalController
             _service = service;
         }
 
+
+        [Authorize(Roles = "InteriorDesigner")]
+
         [HttpPost("send")]
         public async Task<IActionResult> SendProposal([FromBody] DesignerProposalDto dto)
         {
@@ -31,6 +34,7 @@ namespace Jiwar.Controllers.DesignerProposalController
             return Ok(result);
         }
 
+        [Authorize(Roles = "PropertyOwner,Customer")]
         [HttpGet("request/{requestId}")]
         public async Task<IActionResult> GetProposalsForRequest(int requestId)
         {
@@ -38,6 +42,7 @@ namespace Jiwar.Controllers.DesignerProposalController
             return Ok(result);
         }
 
+        [Authorize(Roles = "InteriorDesigner")]
         [HttpGet("my")]
         public async Task<IActionResult> GetMyProposals()
         {
@@ -46,6 +51,7 @@ namespace Jiwar.Controllers.DesignerProposalController
             return Ok(result);
         }
 
+        [Authorize(Roles = "PropertyOwner,Customer")]
         [HttpPost("choose/{proposalId}")]
         public async Task<IActionResult> ChooseProposal(int proposalId)
         {
@@ -53,6 +59,15 @@ namespace Jiwar.Controllers.DesignerProposalController
             var result = await _service.ChooseProposalAsync(proposalId, ownerId);
             return Ok(result);
         }
+
+        [Authorize(Roles = "PropertyOwner,Customer")]
+        [HttpGet("request/{requestId}/proposals")]
+        public async Task<IActionResult> GetProposalsForOwner(int requestId)
+        {
+            var result = await _service.GetProposalsForRequestAsync(requestId);
+            return Ok(result);
+        }
+
     }
 
 }

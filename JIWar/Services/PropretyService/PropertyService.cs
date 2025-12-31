@@ -1,3 +1,4 @@
+using AutoMapper;
 using GEWAR;
 using GEWAR.Models;
 using Jiwar.DTOs;
@@ -15,23 +16,17 @@ namespace Jiwar.Service
     {
         private readonly IPropertyRepository _propertyRepo;
         private readonly IPropertyAnalyticsService propertyAnalyticsService;
-
+        private readonly IMapper mapper;
         public PropertyService(
             IPropertyRepository propertyRepo,
-            IPropertyAnalyticsService analyticsService
+            IPropertyAnalyticsService analyticsService,
+            IMapper mapper
             )
         {
             _propertyRepo = propertyRepo;
             propertyAnalyticsService = analyticsService;
+            this.mapper = mapper;
         }
-
-        //public async Task<Property> AddPropertyAsync(Property property)
-        //{
-        //    //_context.Properties.Add(property);
-        //    //await _context.SaveChangesAsync();
-        //    await _propertyRepo.AddAsync(property);
-        //    return property;
-        //}
         public async Task<PropertyWithAnalyticsDTO> AddPropertyAsync(PropertyCreateDTO dto, string ownerId)
         {
             var owner = await EnsureOwnerExistsAsync(ownerId);
@@ -52,6 +47,7 @@ namespace Jiwar.Service
                 LocationLat = dto.LocationLat,
                 LocationLang = dto.LocationLang,
                 OwnerID = owner.UserID,
+                ListingType = dto.ListingType,
                 IsAvaliable = true
             };
 
@@ -61,6 +57,39 @@ namespace Jiwar.Service
 
             //string priceStatus = property.Price > analytics.FairValue_Estimate ? "Overpriced" :
             //                     property.Price < analytics.FairValue_Estimate ? "Underpriced" : "Fair";
+            if (dto.Images != null && dto.Images.Any())
+            {
+                var uploadRoot = Path.Combine(
+    Directory.GetCurrentDirectory(),
+    "wwwroot",
+    "images",
+    "properties",
+    property.PropertyID.ToString()
+);
+
+                Directory.CreateDirectory(uploadRoot);
+
+                int order = 0;
+
+                foreach (var image in dto.Images)
+                {
+                    var fileName = $"{Guid.NewGuid()}{Path.GetExtension(image.FileName)}";
+                    var filePath = Path.Combine(uploadRoot, fileName);
+
+                    using var stream = new FileStream(filePath, FileMode.Create);
+                    await image.CopyToAsync(stream);
+
+                    await _propertyRepo.AddPropertyMediaAsync(new PropertyMedia
+                    {
+                        PropertyID = property.PropertyID,
+                        MediaURL = $"/images/properties/{property.PropertyID}/{fileName}",
+                        Order = order++,
+                        MediaType = "image",
+                        mediaTypeEnum = MediaTypeEnum.Image
+                    });
+                }
+            }
+
 
             return new PropertyWithAnalyticsDTO
             {
@@ -70,18 +99,26 @@ namespace Jiwar.Service
                 //PriceStatus = priceStatus,
                 Tour360Url = property.Tour360Url
             };
+           
+
+        }
+
+        public async Task<PagedResult<PropertyListBDTO>> GetAllPropertiesAsync(int page, int pageSize)
+        {
+            return await _propertyRepo.GetAllPropertiesPagedAsync(page, pageSize);
         }
 
 
-
         // 2. Update Property
-        public async Task<bool> UpdatePropertyAsync(Property property)
+        public async Task<bool> UpdatePropertyAsync(PropertyUpdateDTO dto)
         {
-            var existing = await _propertyRepo.GetByIdAsync(property.PropertyID);
+            var existing = await _propertyRepo.GetByIdAsync(dto.Id);
             if (existing == null) return false;
-
+            existing.Title = dto.Title;
+            existing.Description = dto.Description;
+            existing.Price = dto.Price;
             //_propertyRepo.Update(property);
-            await _propertyRepo.UpdateAsync(property);
+            await _propertyRepo.UpdateAsync(existing);
             return true;
         }
 
@@ -98,17 +135,12 @@ namespace Jiwar.Service
         }
 
         // 4. My Properties
-        public Task<IEnumerable<Property>> GetMyPropertiesAsync(string ownerId)
+        public async Task<IEnumerable<PropertyDetailsDTO>> GetMyPropertiesAsync(string ownerId)
         {
-            return _propertyRepo.GetMyPropertiesAsync(ownerId);
-        }
+            var properties = await _propertyRepo.GetMyPropertiesAsync(ownerId);
+            return mapper.Map<IEnumerable<PropertyDetailsDTO>>(properties);
 
-        // 5. Property Details
-        public Task<Property> GetPropertyDetailsAsync(int id)
-        {
-            return _propertyRepo.GetPropertyDetailsAsync(id);
         }
-
 
         public async Task AddPropertyMediaAsync(PropertyMedia media)
         {
@@ -136,9 +168,11 @@ namespace Jiwar.Service
             return await _propertyRepo.GetChatHistoryAsync(senderId, receiverId, propertyId);
         }
 
-        public async Task<IEnumerable<Property>> GetFilteredPropertiesAsync(PropertyFilterDTO filter)
+        public async Task<IEnumerable<PropertyListBDTO>> GetFilteredPropertiesAsync(PropertyFilterDTO filter)
         {
-            return await _propertyRepo.GetFilteredPropertiesAsync(filter);
+            var properties = await _propertyRepo.GetFilteredPropertiesAsync(filter);
+            return mapper.Map<IEnumerable<PropertyListBDTO>>(properties);
+
         }
 
         public async Task<IEnumerable<PropertyComparisonDTO>> GetPropertiesForComparisonAsync(List<int> propertyIds)
@@ -174,6 +208,13 @@ namespace Jiwar.Service
             return owner;
         }
 
-        
+        public async Task<PropertyDetailsDTO> GetPropertyDetailsDTOAsync(int id)
+        {
+            var property = await _propertyRepo.GetPropertyDetailsAsync(id);
+            if (property == null || property.IsDeleted) return null;
+
+            return mapper.Map<PropertyDetailsDTO>(property);
+        }
+
     }
 }

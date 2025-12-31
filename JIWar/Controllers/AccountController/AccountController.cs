@@ -1,6 +1,9 @@
-﻿using GEWAR.Models;
+﻿using AutoMapper;
+using GEWAR.Models;
 using Jiwar.Account.DTOs;
 using Jiwar.Account.Services;
+using Jiwar.DTOs;
+using Jiwar.DTOs.AccountDTOs.EditProfileDtos;
 using Jiwar.DTOs.AccountDTOs.EditProfileDtos;
 using Jiwar.DTOs.ChatDTOs;
 using Jiwar.Service;
@@ -13,8 +16,6 @@ using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using Jiwar.DTOs.AccountDTOs.EditProfileDtos;
-using AutoMapper;
 
 
 namespace Jiwar.Account
@@ -27,8 +28,6 @@ namespace Jiwar.Account
         private readonly IConfiguration _config;
         private readonly UserManager<User> userManager;
         private readonly IPropertyService _propertyService;
-        private readonly IMapper _mapper;
-
         public AccountController(
             IAccountService accountService,
             IConfiguration config,
@@ -57,12 +56,15 @@ namespace Jiwar.Account
                 if (!userResponse.Success)
                     return BadRequest(userResponse);
 
-                return Ok(userResponse); 
+                return Ok(userResponse);
             }
             catch (Exception ex)
             {
                 return BadRequest(new { message = ex.Message });
             }
+            //if (!ModelState.IsValid) return BadRequest(ModelState);
+            //var userResponse = await accountService.RegisterAsync(dto);
+            //return userResponse.Success ? Ok(userResponse) : BadRequest(userResponse);
         }
 
 
@@ -72,18 +74,35 @@ namespace Jiwar.Account
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            try
-            {
-                var userResponse = await accountService.LoginAsync(dto);
-                if (!userResponse.Success)
-                    return Unauthorized(userResponse);
+            var userResponse = await accountService.LoginAsync(dto);
 
-                return new JsonResult(userResponse.Data);
-            }
-            catch (Exception ex)
+            if (!userResponse.Success)
             {
-                return BadRequest(new { message = ex.Message });
+                // رجع 401 مع رسالة واضحة فقط (مش الكائن كله)
+                return Unauthorized(new { message = userResponse.Message ?? "Invalid email or password" });
             }
+
+            // رجع البيانات مع التوكن بشكل نظيف
+            return Ok(new
+            {
+                token = userResponse.Data.Token,
+                id = userResponse.Data.Id,
+                name = userResponse.Data.Name,
+                email = userResponse.Data.Email,
+                profilePicURL = userResponse.Data.ProfilePicURL,
+                role = userResponse.Data.Role,
+                isProfileCompleted = userResponse.Data.IsProfileCompleted
+            });
+            //if (!ModelState.IsValid)
+            //    return BadRequest(ModelState);
+            //    var userResponse = await accountService.LoginAsync(dto);
+
+            //    if (!userResponse.Success)
+            //{
+            //    return Unauthorized(userResponse);
+            //}
+
+            //return Ok(userResponse.Data);
         }
 
 
@@ -142,7 +161,7 @@ namespace Jiwar.Account
         }
 
         [HttpPost("{propertyId}/chat/send")]
-        public async Task<IActionResult> SendMessage(int propertyId, ChatMessageDTO dto)
+        public async Task<IActionResult> SendMessage(int propertyId, [FromBody] ChatMessageDTO dto)
         {
             var chat = new Chat
             {
@@ -167,13 +186,18 @@ namespace Jiwar.Account
 
 
         [Authorize(Roles = "PropertyOwner")]
-        [HttpPost("complete-profile/property-owner")]
+        [HttpPut("complete-profile/property-owner")]
         public async Task<IActionResult> CompletePropertyOwnerProfile([FromBody] PropertyOwnerEditProfileDto dto)
         {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (string.IsNullOrEmpty(userId)) return Unauthorized("User ID not found in token.");
+            if (string.IsNullOrEmpty(userId))
+                return Unauthorized("User ID not found in token.");
 
             await accountService.UpdatePropertyOwnerProfileAsync(userId, dto);
+
             return Ok("PropertyOwner profile completed successfully.");
         }
 
@@ -188,6 +212,36 @@ namespace Jiwar.Account
             return Ok("InteriorDesigner profile completed successfully.");
         }
 
+        [HttpPost("google-signin")]
+        public async Task<IActionResult> GoogleSignIn([FromBody] GoogleSignInRequest req)
+        {
+            if (string.IsNullOrEmpty(req?.IdToken))
+                return BadRequest("IdToken is required");
+
+            var result = await accountService.GoogleSignInAsync(req.IdToken);
+
+            return result.Success
+                ? Ok(result)
+                : BadRequest(result);
+        }
+
+        [Authorize]
+        [HttpGet("profile")]
+        public async Task<IActionResult> GetProfile()
+        {
+            // جلب الـ UserId من التوكن
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userId))
+                return Unauthorized(new { message = "User ID not found in token." });
+
+            // استدعاء الـ Service لجلب بيانات البروفايل
+            var profile = await accountService.GetUserProfileAsync(userId);
+
+            if (profile == null)
+                return NotFound(new { message = "Profile not found." });
+
+            return Ok(profile);
+        }
 
 
     }

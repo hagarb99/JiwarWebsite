@@ -1,21 +1,19 @@
 using GEWAR.Models;
+using Jiwar.DTOs;
 
 public interface IRenovationSimulationService
 {
-    Task<int> StartSimulationAsync(string userId, int propertyId);
+    Task<int> StartSimulationAsync(StartSimulationDto dto ,string userId );
 
-    Task UpdateDetailsAsync(int simulationId, decimal size, int rooms, int bathrooms, string condition);
+    Task UpdateDetailsAsync(int simulationId, UpdateSimulationDetailsDto dto);
 
-    Task UploadMediaAsync(int simulationId, SimulationMediaTypeEnum type, string fileUrl);
+    Task UploadMediaAsync(int simulationId, UploadSimulationMediaDto dto);
 
-    Task SetGoalsAndBudgetAsync(
-        int simulationId,
-        List<string> goals,
-        decimal? budgetMin,
-        decimal? budgetMax);
+    Task SetGoalsAndBudgetAsync(int simulationId, SimulationGoalsDto dto);
 
     Task CompleteSimulationAsync(int simulationId);
 
-    Task<RenovationSimulation?> GetResultsAsync(int simulationId);
-}
+    Task GenerateRecommendationsAsync(int simulationId);
 
+    Task<SimulationResultDto> GetResultsAsync(int simulationId);
+}

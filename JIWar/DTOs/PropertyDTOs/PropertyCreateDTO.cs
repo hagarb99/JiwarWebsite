@@ -1,3 +1,5 @@
+using Jiwar.Enum;
+
 namespace JIWar.PropertyOwner
 {
     
@@ -15,7 +17,9 @@ public class PropertyCreateDTO
         public decimal? Area { get; set; }           // optional
         public decimal? LocationLat { get; set; }    // optional
         public decimal? LocationLang { get; set; }   // optional
-        public string? District { get; set; }        // optional
+        public string? District { get; set; }
+        public List<IFormFile>? Images { get; set; }
+        public ListingTypeEnum ListingType { get; set; }
     }
 
 }

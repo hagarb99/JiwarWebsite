@@ -22,6 +22,9 @@ namespace Jiwar.Repositories
         Task AddInteriorDesignerAsync(InteriorDesigner designer);
         Task<bool> PropertyOwnerExistsAsync(string userId);
         Task<bool> InteriorDesignerExistsAsync(string userId);
+        Task<User> GetUserByIdAsync(string userId);
+        Task<PropertyOwner?> GetPropertyOwnerByUserIdAsync(string userId);
+        Task UpdatePropertyOwnerAsync(PropertyOwner owner);
 
     }
 }

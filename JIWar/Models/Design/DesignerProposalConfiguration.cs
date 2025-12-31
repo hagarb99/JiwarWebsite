@@ -8,7 +8,7 @@ namespace Jiwar.Models
     {
         public void Configure(EntityTypeBuilder<DesignerProposal> builder)
         {
-            builder.ToTable("DesignerProposals", "Design");
+            builder.ToTable("DesignerProposals", "dbo");
 
             builder.HasKey(p => p.Id);
 

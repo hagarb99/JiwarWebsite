@@ -419,6 +419,9 @@ namespace Jiwar.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
+                    b.Property<int>("ListingType")
+                        .HasColumnType("int");
+
                     b.Property<decimal?>("LocationLang")
                         .HasColumnType("decimal(10,6)");
 
@@ -528,8 +531,7 @@ namespace Jiwar.Migrations
 
                     b.Property<string>("MediaType")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("MediaURL")
                         .IsRequired()
@@ -548,6 +550,7 @@ namespace Jiwar.Migrations
                         .HasDefaultValueSql("GETUTCDATE()");
 
                     b.Property<int>("mediaTypeEnum")
+                        .HasMaxLength(50)
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -705,11 +708,10 @@ namespace Jiwar.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<int>("PropertyID")
+                    b.Property<int?>("PropertyID")
                         .HasColumnType("int");
 
                     b.Property<string>("RenovationGoalsJson")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Status")
@@ -1037,7 +1039,6 @@ namespace Jiwar.Migrations
                         .HasColumnType("nvarchar(256)");
 
                     b.Property<string>("PasswordHash")
-                        .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
@@ -1432,7 +1433,7 @@ namespace Jiwar.Migrations
 
                     b.Property<string>("DesignerID")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<decimal>("EstimatedCost")
                         .HasColumnType("decimal(18,2)");
@@ -1460,7 +1461,9 @@ namespace Jiwar.Migrations
 
                     b.HasIndex("DesignRequestID");
 
-                    b.ToTable("DesignerProposals", "Design");
+                    b.HasIndex("DesignerID");
+
+                    b.ToTable("DesignerProposals", "dbo");
                 });
 
             modelBuilder.Entity("Jiwar.Models.DistrictPriceHistory", b =>
@@ -1586,6 +1589,43 @@ namespace Jiwar.Migrations
                     b.HasIndex("UserID");
 
                     b.ToTable("ReportOrders", (string)null);
+                });
+
+            modelBuilder.Entity("Jiwar.Models.SimulationDetails", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("Bathrooms")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Condition")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("RenovationSimulationID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Rooms")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("Size")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int?>("YearBuilt")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RenovationSimulationID");
+
+                    b.ToTable("SimulationDetails");
                 });
 
             modelBuilder.Entity("Jiwar.Models.Valuation.ValuationHistory", b =>
@@ -2027,8 +2067,7 @@ namespace Jiwar.Migrations
                     b.HasOne("GEWAR.Models.Property", "Property")
                         .WithMany("RenovationSimulations")
                         .HasForeignKey("PropertyID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("Property");
                 });
@@ -2268,7 +2307,15 @@ namespace Jiwar.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("GEWAR.Models.InteriorDesigner", "Designer")
+                        .WithMany()
+                        .HasForeignKey("DesignerID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("DesignRequest");
+
+                    b.Navigation("Designer");
                 });
 
             modelBuilder.Entity("Jiwar.Models.PropertyOwner", b =>
@@ -2310,6 +2357,17 @@ namespace Jiwar.Migrations
                     b.Navigation("Report");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Jiwar.Models.SimulationDetails", b =>
+                {
+                    b.HasOne("GEWAR.Models.RenovationSimulation", "RenovationSimulation")
+                        .WithMany()
+                        .HasForeignKey("RenovationSimulationID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("RenovationSimulation");
                 });
 
             modelBuilder.Entity("Jiwar.Models.Valuation.ValuationHistory", b =>

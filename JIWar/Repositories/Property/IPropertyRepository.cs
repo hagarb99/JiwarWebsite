@@ -3,6 +3,7 @@ using Jiwar.DTOs.PropertyDTOs;
 using Jiwar.Enum;
 using Jiwar.Models;
 using Jiwar.Repositories;
+using JIWar.PropertyOwner;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -23,4 +24,5 @@ public interface IPropertyRepository : IGenericRepository<Property>
     Task UpdateAsync(Property property);
     Task<PropertyOwner> GetOwnerByIdAsync(string ownerId);
     Task<PropertyOwner> CreateOwnerAsync(string ownerId);
+    Task<PagedResult<PropertyListBDTO>> GetAllPropertiesPagedAsync(int page, int pageSize);
 }
