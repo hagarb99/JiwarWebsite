@@ -142,9 +142,9 @@ namespace Jiwar
             builder.Services.AddScoped<IRenovationSimulationRepository, RenovationSimulationRepository>();
 
             // Services
-            builder.Services.AddHttpClient(); // Registers IHttpClientFactory
             builder.Services.AddHttpClient<IAiService, OpenAiService>();
             builder.Services.AddScoped<IAiService, OpenAiService>();
+            builder.Services.AddHttpClient(); // Registers IHttpClientFactory
             builder.Services.AddScoped<IAccountService, AccountService>();
             builder.Services.AddScoped<IPropertyService, PropertyService>();
             builder.Services.AddScoped<IBookingService, BookingService>();
@@ -156,7 +156,7 @@ namespace Jiwar
             builder.Services.AddScoped<IPropertyAnalyticsService, PropertyAnalyticsService>();
             builder.Services.AddScoped<IDesignerProposalService, DesignerProposalService>();
 
-            builder.Services.AddScoped<IRenovationSimulationService, RenovationSimulationService>();
+            //builder.Services.AddScoped<IRenovationSimulationService, RenovationSimulationService>();
 
 
             // Other Services
@@ -174,6 +174,20 @@ namespace Jiwar
             var app = builder.Build();
 
             //await SeedRolesAsync(app);
+            // Apply pending EF Core migrations at startup to ensure database schema is up-to-date
+            using (var scope = app.Services.CreateScope())
+            {
+                try
+                {
+                    var context = scope.ServiceProvider.GetRequiredService<GiwarContext>();
+                    context.Database.Migrate();
+                }
+                catch (Exception ex)
+                {
+                    // Log or handle migration failures as needed. For brevity we rethrow here.
+                    throw;
+                }
+            }
 
             // await SeedRolesAsync(app);
             // Middleware Pipeline
