@@ -100,6 +100,7 @@ public class RenovationSimulationService : IRenovationSimulationService
     {
         var simulation = await _repo.GetByIdAsync(simulationId)
             ?? throw new Exception("Simulation not found");
+    }
 
 //        await _repo.UpdateAsync(simulation);
 //        await _repo.SaveChangesAsync();
