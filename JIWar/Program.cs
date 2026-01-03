@@ -155,7 +155,7 @@ namespace Jiwar
             builder.Services.AddScoped<IValuationHistoryService, ValuationHistoryService>();
             builder.Services.AddScoped<IPropertyAnalyticsService, PropertyAnalyticsService>();
             builder.Services.AddScoped<IDesignerProposalService, DesignerProposalService>();
-
+            builder.Services.AddScoped<IImgService, ImgService>();
             builder.Services.AddScoped<IRenovationSimulationService, RenovationSimulationService>();
 
 
