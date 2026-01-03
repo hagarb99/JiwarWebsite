@@ -21,6 +21,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using Jiwar.Services.DesignRequestService;
+
 using System.Text;
 
 namespace Jiwar
@@ -124,10 +126,8 @@ namespace Jiwar
                     };
                 });
 
-            // Generic Repository
             builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 
-            // Repositories
             builder.Services.AddScoped<IAccountRepository, AccountRepository>();
             builder.Services.AddScoped<IUserRepository, UserRepository>();
             builder.Services.AddScoped<IPropertyRepository, PropertyRepository>();
@@ -155,6 +155,8 @@ namespace Jiwar
             builder.Services.AddScoped<IValuationHistoryService, ValuationHistoryService>();
             builder.Services.AddScoped<IPropertyAnalyticsService, PropertyAnalyticsService>();
             builder.Services.AddScoped<IDesignerProposalService, DesignerProposalService>();
+            builder.Services.AddScoped<IDesignRequestService, DesignRequestService>();
+
 
             builder.Services.AddScoped<IRenovationSimulationService, RenovationSimulationService>();
 
