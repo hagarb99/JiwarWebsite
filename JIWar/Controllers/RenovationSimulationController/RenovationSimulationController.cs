@@ -100,5 +100,6 @@ public class RenovationSimulationsController : ControllerBase
         var result = await _service.GetResultsAsync(id);
         return Ok(result);
     }
+
 }
 
