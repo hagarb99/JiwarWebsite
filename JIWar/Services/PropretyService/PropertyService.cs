@@ -1,4 +1,4 @@
-using AutoMapper;
+﻿using AutoMapper;
 using GEWAR;
 using GEWAR.Models;
 using Jiwar.DTOs;
@@ -16,18 +16,24 @@ namespace Jiwar.Service
     {
         private readonly IPropertyRepository _propertyRepo;
         private readonly IPropertyAnalyticsService propertyAnalyticsService;
+        private readonly IImgService imgService;
         private readonly IMapper mapper;
         public PropertyService(
             IPropertyRepository propertyRepo,
             IPropertyAnalyticsService analyticsService,
-            IMapper mapper
+            IMapper mapper,
+            IImgService imgService
             )
         {
             _propertyRepo = propertyRepo;
             propertyAnalyticsService = analyticsService;
             this.mapper = mapper;
-        }
-        public async Task<PropertyWithAnalyticsDTO> AddPropertyAsync(PropertyCreateDTO dto, string ownerId)
+            this.imgService = imgService;
+                }
+        public async Task<PropertyWithAnalyticsDTO> AddPropertyAsync(
+           PropertyCreateDTO dto,
+           string ownerId
+       )
         {
             var owner = await EnsureOwnerExistsAsync(ownerId);
 
@@ -51,57 +57,30 @@ namespace Jiwar.Service
                 IsAvaliable = true
             };
 
+            // 1️⃣ Save property first (to get PropertyID)
             await _propertyRepo.AddAsync(property);
 
-            //var analytics = await propertyAnalyticsService.AnalyzePropertyAsync(property);
-
-            //string priceStatus = property.Price > analytics.FairValue_Estimate ? "Overpriced" :
-            //                     property.Price < analytics.FairValue_Estimate ? "Underpriced" : "Fair";
+            // 2️⃣ Save images using ImgService
             if (dto.Images != null && dto.Images.Any())
             {
-                var uploadRoot = Path.Combine(
-    Directory.GetCurrentDirectory(),
-    "wwwroot",
-    "images",
-    "properties",
-    property.PropertyID.ToString()
-);
+                var mediaList = await imgService
+                    .SavePropertyImagesAsync(property.PropertyID, dto.Images);
 
-                Directory.CreateDirectory(uploadRoot);
-
-                int order = 0;
-
-                foreach (var image in dto.Images)
+                foreach (var media in mediaList)
                 {
-                    var fileName = $"{Guid.NewGuid()}{Path.GetExtension(image.FileName)}";
-                    var filePath = Path.Combine(uploadRoot, fileName);
-
-                    using var stream = new FileStream(filePath, FileMode.Create);
-                    await image.CopyToAsync(stream);
-
-                    await _propertyRepo.AddPropertyMediaAsync(new PropertyMedia
-                    {
-                        PropertyID = property.PropertyID,
-                        MediaURL = $"/images/properties/{property.PropertyID}/{fileName}",
-                        Order = order++,
-                        MediaType = "image",
-                        mediaTypeEnum = MediaTypeEnum.Image
-                    });
+                    await _propertyRepo.AddPropertyMediaAsync(media);
                 }
             }
 
-
+            // 3️⃣ Return response
             return new PropertyWithAnalyticsDTO
             {
                 PropertyId = property.PropertyID,
                 OwnerPrice = property.Price,
-                //EstimatedPrice = (decimal)analytics.FairValue_Estimate,
-                //PriceStatus = priceStatus,
                 Tour360Url = property.Tour360Url
             };
-           
-
         }
+
 
         public async Task<PagedResult<PropertyListBDTO>> GetAllPropertiesAsync(int page, int pageSize)
         {
@@ -135,10 +114,10 @@ namespace Jiwar.Service
         }
 
         // 4. My Properties
-        public async Task<IEnumerable<PropertyDetailsDTO>> GetMyPropertiesAsync(string ownerId)
+        public async Task<IEnumerable<PropertyListBDTO>> GetMyPropertiesAsync(string ownerId)
         {
             var properties = await _propertyRepo.GetMyPropertiesAsync(ownerId);
-            return mapper.Map<IEnumerable<PropertyDetailsDTO>>(properties);
+            return mapper.Map<IEnumerable<PropertyListBDTO>>(properties);
 
         }
 

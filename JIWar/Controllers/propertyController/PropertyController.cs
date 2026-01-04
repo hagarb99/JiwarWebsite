@@ -133,7 +133,7 @@ public class PropertyController : ControllerBase
 
         return Ok(dto);
     }
-
+    /// ///////////search and filter properties
     [HttpGet("browse")]
     [AllowAnonymous]
     public async Task<IActionResult> Browse([FromQuery] PropertyFilterDTO filter)
@@ -141,6 +141,8 @@ public class PropertyController : ControllerBase
         var properties = await _propertyService.GetFilteredPropertiesAsync(filter);
         return Ok(properties);
     }
+
+
 
     [HttpPost("compare")]
     [AllowAnonymous]
