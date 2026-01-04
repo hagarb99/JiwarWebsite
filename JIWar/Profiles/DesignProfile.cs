@@ -12,8 +12,8 @@ namespace Jiwar.Profiles
 
             CreateMap<CreateDesignDto, Design>()
                 .ForMember(dest => dest.CreationDate, opt => opt.Ignore())
-                .ForMember(dest => dest.DesignerID, opt => opt.Ignore())
-                .ForMember(dest => dest.OwnerID, opt => opt.Ignore());    
+                .ForMember(dest => dest.DesignerID, opt => opt.Ignore());
+                 
         }
     }
 }

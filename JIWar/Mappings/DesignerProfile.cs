@@ -12,8 +12,8 @@ namespace Jiwar.Mappings
         public MappingProfile()
         {
             // Requests (لو مستخدمين)
-            CreateMap<Request, RequestDto>().ReverseMap();
-            CreateMap<Proposal, ProposalDto>().ReverseMap();
+            CreateMap<DesignRequest, RequestDto>().ReverseMap();
+            CreateMap<DesignerProposal, DTOs.DesignDto.ProposalDto>().ReverseMap();
 
             // DesignRequest
             CreateMap<DesignRequest, DesignRequestDto>()
@@ -22,9 +22,9 @@ namespace Jiwar.Mappings
 
             CreateMap<DesignRequestDto, DesignRequest>();
 
-            CreateMap<DesignerProposal, DesignerProposalDto>()
-     .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Designer.User.Name))
-     .ForMember(dest => dest.InteriorDesignerEmail, opt => opt.MapFrom(src => src.Designer.User.Email))
+            CreateMap<DesignerProposal, DTOs.DesignDto.ProposalDto>()
+     .ForMember(dest => dest.DesignerName, opt => opt.MapFrom(src => src.Designer.User.Name))
+     .ForMember(dest => dest.DesignerEmail, opt => opt.MapFrom(src => src.Designer.User.Email))
      .ReverseMap();
 
 

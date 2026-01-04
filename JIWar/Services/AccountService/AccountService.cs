@@ -3,12 +3,14 @@ using AutoMapper;
 using GEWAR.Models;
 using Jiwar.Account.DTOs;
 using Jiwar.Controllers;
+using Jiwar.DTOs;
 using Jiwar.DTOs.AccountDTOs.EditProfileDtos;
 using Jiwar.Helpers;
 using Jiwar.Models;
 using Jiwar.Repositories;
 using Jiwar.Services.GoogleService;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using System.Data;
 using System.Security.Claims;
 
@@ -280,12 +282,14 @@ namespace Jiwar.Account.Services
 
         public async Task UpdatePropertyOwnerProfileAsync(string userId, PropertyOwnerEditProfileDto dto)
         {
-            //var owner  = new PropertyOwner
-            //{
+            var owner = await repo.GetPropertyOwnerByUserIdAsync(userId);
 
-            //};
-            //await repo.AddPropertyOwnerAsync(owner);
-            throw new NotImplementedException();
+            if (owner == null)
+                throw new Exception("PropertyOwner not found.");
+
+            mapper.Map(dto, owner);
+
+            await repo.UpdatePropertyOwnerAsync(owner);
         }
 
         public async Task UpdateInteriorDesignerProfileAsync(string userId, InteriorDesignerEditProfileDto dto)
@@ -301,6 +305,14 @@ namespace Jiwar.Account.Services
         public Task UpdateAdminProfileAsync(string userId, AdminEditProfileDto dto)
         {
             throw new NotImplementedException();
+        }
+
+        public async Task<UserProfileDto> GetUserProfileAsync(string userId)
+        {
+            var user = await repo.GetUserByIdAsync(userId);
+            if (user == null) return null;
+
+            return mapper.Map<UserProfileDto>(user);
         }
 
     }

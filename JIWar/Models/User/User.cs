@@ -25,6 +25,7 @@ namespace GEWAR.Models
         public string? GoogleId { get; set; }
 
 
+        public virtual ICollection<DesignRequest> DesignRequests { get; set; } = new List<DesignRequest>();
         public virtual ICollection<InvestmentPortfolio> InvestmentPortfolios { get; set; } = new List<InvestmentPortfolio>();
         public virtual ICollection<Offer> Offers { get; set; } = new List<Offer>();
         public virtual ICollection<Notification> Notifications { get; set; } = new List<Notification>();

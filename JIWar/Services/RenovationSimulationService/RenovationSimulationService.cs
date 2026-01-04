@@ -1,109 +1,106 @@
-//using GEWAR.Models;
-//using GEWAR.Models.Jiwar.Enum;
-//using Jiwar.DTOs;
-//using Jiwar.Services.AI;
-//using Jiwar.Services.AI.Enums;
-//using Jiwar.Services.AI.Prompts.Renovations;
-//using System.Text.Json;
+using GEWAR.Models;
+using GEWAR.Models.Jiwar.Enum;
+using Jiwar.DTOs;
+using Jiwar.Services.AI;
+using Jiwar.Services.AI.Enums;
+using Jiwar.Services.AI.Prompts.Renovations;
+using System.Text.Json;
+using AutoMapper;
+using Jiwar.Models;
+using Jiwar.Services.AI.Mappers.Renovation;
+public class RenovationSimulationService : IRenovationSimulationService
+{
+    private readonly IRenovationSimulationRepository _repo;
+    private readonly IMapper _mapper;
+    private readonly IAiService _aiService;
 
-//public class RenovationSimulationService : IRenovationSimulationService
-//{
-//    private readonly IRenovationSimulationRepository _repo;
-//    private readonly IAiService _aiService;
+    public RenovationSimulationService(IRenovationSimulationRepository repo, IMapper mapper ,IAiService aiService)
+    {
+        _repo = repo;
+        _mapper = mapper;
+        _aiService = aiService;
+    } 
 
-//    public RenovationSimulationService(IRenovationSimulationRepository repo, IAiService aiService)
-//    {
-//        _repo = repo;
-//        _aiService = aiService;
-//    }
+    // 1️⃣ Start
+    public async Task<int> StartSimulationAsync(
+    StartSimulationDto dto,
+    string userId)
+{
+    // 1️⃣ check existing draft
+    var draft = await _repo.GetDraftByUserAsync(userId);
+    if (draft != null)
+        return draft.Id;
 
-//    // 1️⃣ Start
-//    public async Task<int> StartSimulationAsync(string userId, int propertyId)
-//    {
-//        var draft = await _repo.GetDraftByUserAsync(userId);
-//        if (draft != null)
-//            return draft.Id;
+    // 2️⃣ create entity
+    var simulation = new RenovationSimulation
+    {
+        UserID = userId,
+        PropertyID = dto.PropertyId,
+        BudgetMin = dto.BudgetMin,
+        BudgetMax = dto.BudgetMax,
+        RenovationGoalsJson = JsonSerializer.Serialize(dto.GoalsJson),
+        Status = SimulationStatusEnum.Draft
+    };
 
-//        var simulation = new RenovationSimulation
-//        {
-//            UserID = userId,
-//            PropertyID = propertyId,
-//            Status = SimulationStatusEnum.Draft,
-//            RenovationGoalsJson = "[]", // initialize to empty JSON array
-//        };
+    await _repo.AddAsync(simulation);
+    await _repo.SaveChangesAsync();
 
-//        await _repo.AddAsync(simulation);
-//        await _repo.SaveChangesAsync();
+    return simulation.Id;
+}
+    // 2️⃣ Details
+    public async Task UpdateDetailsAsync(
+    int simulationId,
+    UpdateSimulationDetailsDto dto)
+{
+    var simulation = await _repo.GetByIdAsync(simulationId)
+        ?? throw new Exception("Simulation not found");
 
-//        return simulation.Id;
-//    }
+    var details = _mapper.Map<SimulationDetails>(dto);
+    details.RenovationSimulationID = simulationId;
 
-//    // 2️⃣ Details
-//    public async Task UpdateDetailsAsync(
-//        int simulationId,
-//        decimal size,
-//        int rooms,
-//        int bathrooms,
-//        string condition)
-//    {
-//        var simulation = await _repo.GetByIdAsync(simulationId)
-//            ?? throw new Exception("Simulation not found");
+    await _repo.AddSimulationDetailsAsync(details , simulationId);
+    await _repo.SaveChangesAsync();
+}
 
-//        // (لو حابة تربطي ده بجدول Property)
-//        // simulation.Property.Size = size;
-//        // ...
 
-//        await _repo.UpdateAsync(simulation);
-//        await _repo.SaveChangesAsync();
-//    }
+    // 3️⃣ Media
+    public async Task UploadMediaAsync(
+    int simulationId,
+    UploadSimulationMediaDto dto)
+{
+    var media = _mapper.Map<SimulationMedia>(dto);
+    media.RenovationSimulationID = simulationId;
 
-//    // 3️⃣ Media
-//    public async Task UploadMediaAsync(
-//        int simulationId,
-//        SimulationMediaTypeEnum type,
-//        string fileUrl)
-//    {
-//        var media = new SimulationMedia
-//        {
-//            RenovationSimulationID = simulationId,
-//            MediaType = type,
-//            FileUrl = fileUrl
-//        };
+    await _repo.AddMediaAsync(media);
+    await _repo.SaveChangesAsync();
+}
 
-//        await _repo.AddMediaAsync(media);
-//        await _repo.SaveChangesAsync();
-//    }
 
-//    // 4️ Goals & Budget
-//    public async Task SetGoalsAndBudgetAsync(
-//        int simulationId,
-//        List<string> goals,
-//        decimal? budgetMin,
-//        decimal? budgetMax)
-//    {
-//        var simulation = await _repo.GetByIdAsync(simulationId)
-//            ?? throw new Exception("Simulation not found");
+    // 4️ Goals & Budget
+    public async Task SetGoalsAndBudgetAsync(
+    int simulationId,
+    SimulationGoalsDto dto)
+{
+    var simulation = await _repo.GetByIdAsync(simulationId)
+        ?? throw new Exception("Simulation not found");
 
-//        simulation.RenovationGoalsJson = JsonSerializer.Serialize(goals);
-//        simulation.BudgetMin = budgetMin;
-//        simulation.BudgetMax = budgetMax;
+    simulation.RenovationGoalsJson =
+        JsonSerializer.Serialize(dto.Goals);
 
-//        await _repo.UpdateAsync(simulation);
-//        await _repo.SaveChangesAsync();
-//    }
+    simulation.BudgetMin = dto.BudgetMin;
+    simulation.BudgetMax = dto.BudgetMax;
 
-//    // 5️ Results
-//    public async Task CompleteSimulationAsync(int simulationId)
-//    {
-//        var simulation = await _repo.GetByIdAsync(simulationId)
-//            ?? throw new Exception("Simulation not found");
+    await _repo.UpdateAsync(simulation);
+    await _repo.SaveChangesAsync();
+}
 
-//        simulation.Status = SimulationStatusEnum.Submitted;
 
-//        // 🔥 هنا مستقبلاً:
-//        // AI Recommendation Engine
-//        // ML Models
-//        // Cost Estimation
+    // 5️ Results
+    public async Task CompleteSimulationAsync(int simulationId)
+    {
+        var simulation = await _repo.GetByIdAsync(simulationId)
+            ?? throw new Exception("Simulation not found");
+    }
 
 //        await _repo.UpdateAsync(simulation);
 //        await _repo.SaveChangesAsync();
@@ -115,45 +112,46 @@
 //        var simulation = await _repo.GetByIdAsync(simulationId)
 //            ?? throw new Exception("Simulation not found");
 
-//        // 1️⃣ Build AI Context
-//        var context = RenovationContextBuilder.Build(simulation);
 
-//        // 2️⃣ Build Prompt
-//        var prompt = RenovationSystemPrompt.Build(context);
+public async Task GenerateRecommendationsAsync(int simulationId)
+{
+    var simulation = await _repo.GetWithResultsAsync(simulationId)
+        ?? throw new Exception("Simulation not found");
 
-//        // 3️⃣ Call AI
-//        var aiResponse = await _aiService.SendAsync(
-//            prompt,
-//            AiModelEnum.Gpt4o
-//        );
+    var details = await _repo.GetDetailsBySimulationIdAsync(simulationId)
+        ?? throw new Exception("Simulation details not found");
 
-//        // 4️⃣ Parse response
-//        var recommendations =
-//            RenovationRecommendationMapper.Map(aiResponse, simulationId);
+    var context = RenovationContextBuilder.Build(simulation, details);
 
-//        // 5️⃣ Save
-//        await _repo.AddRecommendationsAsync(recommendations);
+    var aiResponse = await _aiService.SendAsync(
+        RenovationSystemPrompt.Build,
+        new AiRequestContext { Purpose = context });
 
-//        simulation.Status = SimulationStatusEnum.Analyzed;
-//        await _repo.SaveChangesAsync();
-//    }
+    var recommendations =
+        RenovationRecommendationMapper
+            .Map(aiResponse, simulationId);
 
-    // 6️ Get Results
-    //1-this is right
-    //2-and i will try tomorow to complete it
-    //3-and handlr ai recommendation engine
-    //public Task<SimulationRecommendationDto> GetResultsAsync(int simulationId)
-    //{
+    await _repo.AddRecommendationsAsync(recommendations);
 
-    //}
-    //public async Task<RenovationSimulation?> GetResultsAsync(int simulationId)
-    //{
-    //    return await _repo.GetByIdAsync(simulationId);
-    //}
+    simulation.Status = SimulationStatusEnum.Analyzed;
+    await _repo.SaveChangesAsync();
+}
 
-//    Task<SimulationRecommendationDto> IRenovationSimulationService.GetResultsAsync(int simulationId)
-//    {
-//        throw new NotImplementedException();
-//    }
-//}
+    public async Task<SimulationResultDto> GetResultsAsync(int simulationId)
+{
+    var simulation = await _repo.GetWithResultsAsync(simulationId)
+        ?? throw new Exception("Simulation not found");
 
+    var result = _mapper.Map<SimulationResultDto>(simulation);
+
+    // Logic هنا مش في المابر
+    result.Goals = string.IsNullOrWhiteSpace(simulation.RenovationGoalsJson)
+        ? new List<string>()
+        : JsonSerializer.Deserialize<List<string>>(
+            simulation.RenovationGoalsJson)!;
+
+    return result;
+}
+
+   
+}

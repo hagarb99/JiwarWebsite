@@ -45,11 +45,11 @@ namespace GEWAR
         public DbSet<Property> Properties { get; set; }
         public DbSet<PropertyAnalytics> PropertyAnalytics { get; set; }
         public DbSet<PropertyMedia> propertyMedias { get; set; }
-        public DbSet<Proposal> Proposals { get; set; }
+        public DbSet<DesignerProposal> Proposals { get; set; }
         public DbSet<RenovationCost> RenovationCosts { get; set; }
         public DbSet<RenovationProject> RenovationProjects { get; set; }
         public DbSet<Report> Reports { get; set; }
-        public DbSet<Request> Requests { get; set; }
+        public DbSet<DesignRequest> Requests { get; set; }
 
         public DbSet<RequestRating> RequestRatings { get; set; }
         public DbSet<Subscription> Subscriptions { get; set; }
@@ -66,13 +66,17 @@ namespace GEWAR
         public DbSet<ValuationHistory> ValuationHistories { get; set; }
 
         public DbSet<DistrictPriceHistory> DistrictPriceHistories { get; set; }
-        public object DistrictPriceHistory { get; internal set; }
+        //public DbSet<DistrictPriceHistory> DistrictPriceHistory { get;  set; }
 
         public DbSet<RenovationSimulation> RenovationSimulations { get; set; }
         public DbSet<SimulationRecommendation> SimulationRecommendations { get; set; }
         public DbSet<SimulationMedia> SimulationMedias { get; set; }
 
-       
+        public DbSet<SimulationDetails> SimulationDetails { get; set;}
+
+
+
+
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -123,11 +127,11 @@ namespace GEWAR
             modelBuilder.ApplyConfiguration(new PropertyConfiguration());
             modelBuilder.ApplyConfiguration(new PropertyAnalyticsConfiguration());
             modelBuilder.ApplyConfiguration(new PropertyMediaConfiguration());
-            modelBuilder.ApplyConfiguration(new ProposalConfiguration());
+            modelBuilder.ApplyConfiguration(new DesignerProposalConfiguration());
             modelBuilder.ApplyConfiguration(new RenovationCostConfiguration());
             modelBuilder.ApplyConfiguration(new RenovationProjectConfiguration());
             modelBuilder.ApplyConfiguration(new ReportConfiguration());
-            modelBuilder.ApplyConfiguration(new RequestConfiguration());
+            modelBuilder.ApplyConfiguration(new DesignRequestConfiguration());
             modelBuilder.ApplyConfiguration(new RequestRatingConfiguration());
             modelBuilder.ApplyConfiguration(new SubscriptionConfiguration());
             modelBuilder.ApplyConfiguration(new UserConfiguration());

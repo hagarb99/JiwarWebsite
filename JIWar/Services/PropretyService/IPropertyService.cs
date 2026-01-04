@@ -18,7 +18,7 @@ namespace Jiwar.Service
        public Task<bool> DeletePropertyAsync(int id);
 
         // Get all properties of an owner
-       public Task<IEnumerable<PropertyDetailsDTO>> GetMyPropertiesAsync(string ownerId);
+       public Task<IEnumerable<PropertyListBDTO>> GetMyPropertiesAsync(string ownerId);
 
        public Task AddPropertyMediaAsync(PropertyMedia media);
 

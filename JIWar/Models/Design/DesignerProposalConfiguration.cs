@@ -8,7 +8,7 @@ namespace Jiwar.Models
     {
         public void Configure(EntityTypeBuilder<DesignerProposal> builder)
         {
-            builder.ToTable("DesignerProposals", "Design");
+            builder.ToTable("DesignerProposals", "dbo");
 
             builder.HasKey(p => p.Id);
 
@@ -33,9 +33,16 @@ namespace Jiwar.Models
                    .HasMaxLength(500)
                    .IsRequired(false);
 
-            builder.Property(p => p.Status)
-                   .HasMaxLength(50)
+            builder.Property(p => p.StatusEnumReq)
                    .IsRequired();
+
+            builder.HasOne(d => d.DesignRequest).WithMany(u => u.Proposals)
+               .HasForeignKey(d => d.DesignRequestID)
+               .OnDelete(DeleteBehavior.NoAction);
+
+            builder.HasOne(d => d.Designer).WithMany(u => u.Proposals)
+            .HasForeignKey(d => d.DesignerID)
+            .OnDelete(DeleteBehavior.NoAction);
         }
     }
 }

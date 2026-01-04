@@ -5,10 +5,6 @@ namespace Jiwar.Models
     public class DesignerProposal : BaseModel
     {
 
-
-
-
-
         public int DesignRequestID { get; set; }
         public virtual DesignRequest DesignRequest { get; set; } = null!;
 
@@ -23,7 +19,9 @@ namespace Jiwar.Models
 
         public string SampleDesignURL { get; set; }
 
-        public string Status { get; set; }
+        public StatusEnumReqPro StatusEnumReq { get; set; }
+
+        public DateTime CreatedDate { get; set; }
 
     }
 

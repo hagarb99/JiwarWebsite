@@ -12,6 +12,7 @@ using Jiwar.Repositories.Interfaces;
 using Jiwar.Repositories.Valuation;
 using Jiwar.Service;
 using Jiwar.Services;
+using Jiwar.Services.AI;
 using Jiwar.Services.DesignerProposalService;
 using Jiwar.Services.GoogleService;
 using Jiwar.Services.ValuationService;
@@ -20,6 +21,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using Jiwar.Services.DesignRequestService;
+
 using System.Text;
 
 namespace Jiwar
@@ -27,21 +30,21 @@ namespace Jiwar
     public class Program
     {
 
-        // public static async Task SeedRolesAsync(IApplicationBuilder app)
-        // {
-        //     using var scope = app.ApplicationServices.CreateScope();
-        //     var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+        //public static async Task SeedRolesAsync(IApplicationBuilder app)
+        //{
+        //    using var scope = app.ApplicationServices.CreateScope();
+        //    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
 
-        //     string[] roles = { "Customer", "PropertyOwner", "InteriorDesigner", "Admin" };
+        //    string[] roles = { "Customer", "PropertyOwner", "InteriorDesigner", "Admin" };
 
-        //     foreach (var role in roles)
-        //     {
-        //         if (!await roleManager.RoleExistsAsync(role))
-        //         {
-        //             await roleManager.CreateAsync(new IdentityRole(role));
-        //         }
-        //     }
-        // }
+        //    foreach (var role in roles)
+        //    {
+        //        if (!await roleManager.RoleExistsAsync(role))
+        //        {
+        //            await roleManager.CreateAsync(new IdentityRole(role));
+        //        }
+        //    }
+        //}
 
         public static async Task Main(string[] args)
         {
@@ -123,10 +126,8 @@ namespace Jiwar
                     };
                 });
 
-            // Generic Repository
             builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 
-            // Repositories
             builder.Services.AddScoped<IAccountRepository, AccountRepository>();
             builder.Services.AddScoped<IUserRepository, UserRepository>();
             builder.Services.AddScoped<IPropertyRepository, PropertyRepository>();
@@ -141,6 +142,9 @@ namespace Jiwar
             builder.Services.AddScoped<IRenovationSimulationRepository, RenovationSimulationRepository>();
 
             // Services
+            builder.Services.AddHttpClient<IAiService, OpenAiService>();
+            builder.Services.AddScoped<IAiService, OpenAiService>();
+            builder.Services.AddHttpClient(); // Registers IHttpClientFactory
             builder.Services.AddScoped<IAccountService, AccountService>();
             builder.Services.AddScoped<IPropertyService, PropertyService>();
             builder.Services.AddScoped<IBookingService, BookingService>();
@@ -154,26 +158,39 @@ namespace Jiwar
             //builder.Services.AddScoped<IRenovationSimulationService, RenovationSimulationService>();
             // Add this line in your Program.cs
             builder.Services.AddScoped<IWishlistService, WishlistService>();
+            builder.Services.AddScoped<IDesignRequestService, DesignRequestService>();
+
+
+            builder.Services.AddScoped<IRenovationSimulationService, RenovationSimulationService>();
+
 
             // Other Services
             builder.Services.AddScoped<TokenService>();
             builder.Services.AddScoped<GoogleAuthService>();
 
             // AutoMapper
-            //builder.Services.AddAutoMapper(cfg =>
-            //{
-            //    cfg.AddProfile<MappingProfile>();
-            //});
             builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
             // Build App
             var app = builder.Build();
 
             //await SeedRolesAsync(app);
+            // Apply pending EF Core migrations at startup to ensure database schema is up-to-date
+            //using (var scope = app.Services.CreateScope())
+            //{
+            //    try
+            //    {
+            //        var context = scope.ServiceProvider.GetRequiredService<GiwarContext>();
+            //        context.Database.Migrate();
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        // Log or handle migration failures as needed. For brevity we rethrow here.
+            //        throw;
+            //    }
+            //}
 
-            // await SeedRolesAsync(app);
             // Middleware Pipeline
-            // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();

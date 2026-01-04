@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Jiwar.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -17,7 +18,7 @@ namespace GEWAR.Models
         public DateTime CreatedDate { get; set; }    // When the rating was added
 
         // 🔗 Navigation Properties
-        public virtual Request Request { get; set; }
+        public virtual DesignRequest DesignRequest { get; set; }
         public virtual User User { get; set; }
         public virtual InteriorDesigner InteriorDesigner { get; set; }
     }
