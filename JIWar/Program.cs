@@ -152,7 +152,8 @@ namespace Jiwar
             builder.Services.AddScoped<IPropertyAnalyticsService, PropertyAnalyticsService>();
             builder.Services.AddScoped<IDesignerProposalService, DesignerProposalService>();
             //builder.Services.AddScoped<IRenovationSimulationService, RenovationSimulationService>();
-
+            // Add this line in your Program.cs
+            builder.Services.AddScoped<IWishlistService, WishlistService>();
 
             // Other Services
             builder.Services.AddScoped<TokenService>();
