@@ -27,6 +27,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Jiwar.Services.DesignRequestService;
+using Jiwar.Services.DesignService;
+using Jiwar.Services.ProposalService;
+using Jiwar.Services.RequestService;
 using Jiwar.Hubs;
 
 using System.Text;
@@ -188,6 +191,9 @@ namespace Jiwar
             // Add this line in your Program.cs
             builder.Services.AddScoped<IWishlistService, WishlistService>();
             builder.Services.AddScoped<IDesignRequestService, DesignRequestService>();
+            builder.Services.AddScoped<IDesignService, DesignService>();
+            builder.Services.AddScoped<IProposalService, ProposalService>();
+            builder.Services.AddScoped<IRequestService, RequestService>();
 
 
             builder.Services.AddScoped<IRenovationSimulationService, RenovationSimulationService>();
