@@ -2,6 +2,7 @@ using GEWAR;
 using GEWAR.Models;
 using Jiwar.DTOs;
 using Jiwar.DTOs.PropertyDTOs;
+using Jiwar.Helpers;
 using Jiwar.Models;
 using Jiwar.Service;
 using Jiwar.Services;
@@ -20,17 +21,17 @@ public class PropertyController : ControllerBase
     private readonly IPropertyService _propertyService;
     private readonly IPropertyAnalyticsService _analyticsService;
     private readonly IPropertyRepository propertyRepository;
-    private readonly GiwarContext _context;
+   
 
     public PropertyController(IPropertyService propertyService
-        , IPropertyAnalyticsService analyticsService
-        , GiwarContext context,
+        , IPropertyAnalyticsService analyticsService,
+
         IPropertyRepository propertyRepository
         )
     {
         _propertyService = propertyService;
         _analyticsService = analyticsService;
-        _context = context;
+      
         this.propertyRepository = propertyRepository;
     }
     
@@ -87,14 +88,25 @@ public class PropertyController : ControllerBase
     [HttpGet("my")]
     public async Task<IActionResult> MyProperties()
     {
-        var ownerId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        if (ownerId == null) return Unauthorized();
+        //var ownerId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        //if (ownerId == null) return Unauthorized();
 
-        var list = await _propertyService.GetMyPropertiesAsync(ownerId);
-        return Ok(list);
-        //var user = User.Claims;
         //var list = await _propertyService.GetMyPropertiesAsync(ownerId);
         //return Ok(list);
+        // جلب الـ ownerId من التوكن
+        var ownerId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (ownerId == null)
+            return Unauthorized("Invalid token - missing user id");
+
+        // جلب كل الـ properties الخاصة بالمستخدم
+        var properties = await _propertyService.GetMyPropertiesAsync(ownerId);
+
+        // إذا ما فيش properties، ممكن ترجع [] بدل Exception
+        if (properties == null || !properties.Any())
+            return Ok(new List<object>()); // أو Ok(properties) لو تحبي ترجعي null-safe
+
+        return Ok(properties);
+
     }
 
     [HttpGet("{id}")]
@@ -121,7 +133,7 @@ public class PropertyController : ControllerBase
 
         return Ok(dto);
     }
-
+    /// ///////////search and filter properties
     [HttpGet("browse")]
     [AllowAnonymous]
     public async Task<IActionResult> Browse([FromQuery] PropertyFilterDTO filter)
@@ -129,6 +141,8 @@ public class PropertyController : ControllerBase
         var properties = await _propertyService.GetFilteredPropertiesAsync(filter);
         return Ok(properties);
     }
+
+
 
     [HttpPost("compare")]
     [AllowAnonymous]

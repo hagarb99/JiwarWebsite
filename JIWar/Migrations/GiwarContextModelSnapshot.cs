@@ -393,6 +393,9 @@ namespace Jiwar.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<int?>("Condition")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("CreatedDate")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
@@ -1213,6 +1216,71 @@ namespace Jiwar.Migrations
                     b.ToTable("BookingPayments", (string)null);
                 });
 
+            modelBuilder.Entity("Jiwar.Models.ChatAi.SimulationChatMessage", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("MessageType")
+                        .HasColumnType("int");
+
+                    b.Property<int>("RenovationSimulationID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Sender")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("SimulationChatMessages");
+                });
+
+            modelBuilder.Entity("Jiwar.Models.ChatAi.UserChatQuota", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<DateTime>("LastReset")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("RemainingMessages")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId")
+                        .IsUnique();
+
+                    b.ToTable("UserChatQuotas", "AI");
+                });
+
             modelBuilder.Entity("Jiwar.Models.Design", b =>
                 {
                     b.Property<int>("Id")
@@ -1525,7 +1593,8 @@ namespace Jiwar.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("RenovationSimulationID");
+                    b.HasIndex("RenovationSimulationID")
+                        .IsUnique();
 
                     b.ToTable("SimulationDetails");
                 });
@@ -2234,8 +2303,8 @@ namespace Jiwar.Migrations
             modelBuilder.Entity("Jiwar.Models.SimulationDetails", b =>
                 {
                     b.HasOne("GEWAR.Models.RenovationSimulation", "RenovationSimulation")
-                        .WithMany()
-                        .HasForeignKey("RenovationSimulationID")
+                        .WithOne("Details")
+                        .HasForeignKey("Jiwar.Models.SimulationDetails", "RenovationSimulationID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -2349,6 +2418,9 @@ namespace Jiwar.Migrations
 
             modelBuilder.Entity("GEWAR.Models.RenovationSimulation", b =>
                 {
+                    b.Navigation("Details")
+                        .IsRequired();
+
                     b.Navigation("Medias");
 
                     b.Navigation("Recommendations");

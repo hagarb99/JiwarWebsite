@@ -1,24 +1,29 @@
+using AutoMapper;
 using GEWAR.Models;
 using GEWAR.Models.Jiwar.Enum;
 using Jiwar.DTOs;
+using Jiwar.Helpers;
+using Jiwar.Models;
+using Jiwar.Repositories;
 using Jiwar.Services.AI;
 using Jiwar.Services.AI.Enums;
-using Jiwar.Services.AI.Prompts.Renovations;
-using System.Text.Json;
-using AutoMapper;
-using Jiwar.Models;
 using Jiwar.Services.AI.Mappers.Renovation;
+using Jiwar.Services.AI.Prompts.Renovations;
+using JIWar.PropertyOwner;
+using System.Text.Json;
 public class RenovationSimulationService : IRenovationSimulationService
 {
     private readonly IRenovationSimulationRepository _repo;
     private readonly IMapper _mapper;
     private readonly IAiService _aiService;
+    private readonly IPropertyRepository _propertyRepository;
 
-    public RenovationSimulationService(IRenovationSimulationRepository repo, IMapper mapper ,IAiService aiService)
+    public RenovationSimulationService(IRenovationSimulationRepository repo, IMapper mapper ,IAiService aiService , IPropertyRepository propertyRepository)
     {
         _repo = repo;
         _mapper = mapper;
         _aiService = aiService;
+        _propertyRepository = propertyRepository;
     } 
 
     // 1️⃣ Start
@@ -26,8 +31,12 @@ public class RenovationSimulationService : IRenovationSimulationService
     StartSimulationDto dto,
     string userId)
 {
-    // 1️⃣ check existing draft
-    var draft = await _repo.GetDraftByUserAsync(userId);
+
+        //if (dto.PropertyId == null)
+        //    throw new Exception("You must select a property before starting the simulation");
+
+        // 1️⃣ check existing draft
+        var draft = await _repo.GetDraftByUserAsync(userId);
     if (draft != null)
         return draft.Id;
 
@@ -102,40 +111,59 @@ public class RenovationSimulationService : IRenovationSimulationService
             ?? throw new Exception("Simulation not found");
     }
 
-//        await _repo.UpdateAsync(simulation);
-//        await _repo.SaveChangesAsync();
-//    }
+    //        await _repo.UpdateAsync(simulation);
+    //        await _repo.SaveChangesAsync();
+    //    }
 
 
-//    public async Task GenerateRecommendationsAsync(int simulationId)
-//    {
-//        var simulation = await _repo.GetByIdAsync(simulationId)
-//            ?? throw new Exception("Simulation not found");
+    //    public async Task GenerateRecommendationsAsync(int simulationId)
+    //    {
+    //        var simulation = await _repo.GetByIdAsync(simulationId)
+    //            ?? throw new Exception("Simulation not found");
 
 
-public async Task GenerateRecommendationsAsync(int simulationId)
-{
-    var simulation = await _repo.GetWithResultsAsync(simulationId)
-        ?? throw new Exception("Simulation not found");
+    public async Task GenerateRecommendationsAsync(int simulationId , int? propertyId = null)
+    {
+       
+        var simulation = await _repo.GetWithResultsAsync(simulationId)
+                     ?? throw new Exception("Simulation not found");
 
-    var details = await _repo.GetDetailsBySimulationIdAsync(simulationId)
-        ?? throw new Exception("Simulation details not found");
+        // لو المستخدِم اختار property نربطه مباشرة بالsimulation
+        if (propertyId.HasValue)
+        {
+            simulation.PropertyID = propertyId.Value;
+            await _repo.UpdateAsync(simulation);
+        }
 
-    var context = RenovationContextBuilder.Build(simulation, details);
+        var details = await _repo.GetDetailsBySimulationIdAsync(simulationId);
 
-    var aiResponse = await _aiService.SendAsync(
-        RenovationSystemPrompt.Build,
-        new AiRequestContext { Purpose = context });
+        if (details == null)
+        {
+            if (simulation.PropertyID.HasValue)
+            {
+                var property = await _propertyRepository.GetByIdAsync(simulation.PropertyID.Value)
+                               ?? new Property();
+                details = SimulationDetailsMapper.FromProperty(property);
+            }
+            else
+            {
+                details = new SimulationDetails();
+            }
+        }
 
-    var recommendations =
-        RenovationRecommendationMapper
-            .Map(aiResponse, simulationId);
+        var context = RenovationContextBuilder.Build(simulation, details);
 
-    await _repo.AddRecommendationsAsync(recommendations);
+        var aiResponse = await _aiService.SendAsync(
+            RenovationSystemPrompt.Build,
+            new AiRequestContext { Purpose = context });
 
-    simulation.Status = SimulationStatusEnum.Analyzed;
-    await _repo.SaveChangesAsync();
-}
+        var recommendations = RenovationRecommendationMapper.Map(aiResponse, simulationId);
+
+        await _repo.AddRecommendationsAsync(recommendations);
+
+        simulation.Status = SimulationStatusEnum.Analyzed;
+        await _repo.SaveChangesAsync();
+    }
 
     public async Task<SimulationResultDto> GetResultsAsync(int simulationId)
 {
@@ -153,5 +181,4 @@ public async Task GenerateRecommendationsAsync(int simulationId)
     return result;
 }
 
-   
 }

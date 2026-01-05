@@ -7,12 +7,15 @@ using Jiwar.Controllers;
 using Jiwar.Mappings;
 using Jiwar.Models;
 using Jiwar.Repositories;
+using Jiwar.Repositories.ChatAi;
 using Jiwar.Repositories.DistrictAnalyticService;
 using Jiwar.Repositories.Interfaces;
+using Jiwar.Repositories.SimulationChatAI;
 using Jiwar.Repositories.Valuation;
 using Jiwar.Service;
 using Jiwar.Services;
 using Jiwar.Services.AI;
+using Jiwar.Services.AI.Chat;
 using Jiwar.Services.DesignerProposalService;
 using Jiwar.Services.GoogleService;
 using Jiwar.Services.ValuationService;
@@ -162,6 +165,10 @@ namespace Jiwar
             builder.Services.AddScoped<IValuationHistoryRepository, ValuationHistoryRepository>();
             builder.Services.AddScoped<IAnalyticsRepository, AnalyticsRepository>();
             builder.Services.AddScoped<IRenovationSimulationRepository, RenovationSimulationRepository>();
+            builder.Services.AddScoped<ISimulationChatRepository, SimulationChatRepository>();
+            builder.Services.AddScoped<IQuotaRepository, QuotaRepository>();
+
+
 
             // Services
             builder.Services.AddHttpClient<IAiService, OpenAiService>();
@@ -177,10 +184,20 @@ namespace Jiwar
             builder.Services.AddScoped<IValuationHistoryService, ValuationHistoryService>();
             builder.Services.AddScoped<IPropertyAnalyticsService, PropertyAnalyticsService>();
             builder.Services.AddScoped<IDesignerProposalService, DesignerProposalService>();
+            //builder.Services.AddScoped<IRenovationSimulationService, RenovationSimulationService>();
+            // Add this line in your Program.cs
+            builder.Services.AddScoped<IWishlistService, WishlistService>();
             builder.Services.AddScoped<IDesignRequestService, DesignRequestService>();
 
 
             builder.Services.AddScoped<IRenovationSimulationService, RenovationSimulationService>();
+            builder.Services.AddScoped<IAiChatService, AiChatService>();
+
+
+            builder.Services.AddControllers()
+    .AddJsonOptions(x =>
+        x.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.Preserve
+    );
 
 
             // Register image service implementation so DI can resolve IImgService
