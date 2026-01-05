@@ -18,16 +18,19 @@ namespace Jiwar.Profiles
 
             CreateMap<User, UserResponseDTO>();
             CreateMap<User, UserProfileDto>();
+            CreateMap<PropertyOwner, PropertyOwnerDto>();
+            CreateMap<InteriorDesigner, InteriorDesignerDto>();
+            CreateMap<Property, PropertyDto>();
 
 
-            CreateMap<EditProfileDto, User>().ForAllMembers(op => op.Condition((source, destination, sourceValue) => sourceValue != null));
             CreateMap<EditProfileBaseDto, User>()
-    .ForAllMembers(options =>
-        options.Condition((source, destination, sourceValue) => sourceValue != null));
+     .ForAllMembers(opt =>
+         opt.Condition((src, dest, srcValue) => srcValue != null));
 
             CreateMap<PropertyOwnerEditProfileDto, PropertyOwner>()
-    .ForAllMembers(opt =>
-        opt.Condition((src, dest, srcValue) => srcValue != null));
+                .ForAllMembers(opt =>
+                    opt.Condition((src, dest, srcValue) => srcValue != null));
+
 
 
         }

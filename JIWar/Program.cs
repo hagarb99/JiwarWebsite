@@ -4,6 +4,7 @@ using GEWAR.Models;
 using Jiwar.Account;
 using Jiwar.Account.Services;
 using Jiwar.Controllers;
+using Jiwar.Hubs;
 using Jiwar.Mappings;
 using Jiwar.Models;
 using Jiwar.Repositories;
@@ -15,6 +16,7 @@ using Jiwar.Services;
 using Jiwar.Services.AI;
 using Jiwar.Services.DesignerProposalService;
 using Jiwar.Services.GoogleService;
+using Jiwar.Services.MailService;
 using Jiwar.Services.ValuationService;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -157,6 +159,7 @@ namespace Jiwar
             builder.Services.AddScoped<IDesignerProposalService, DesignerProposalService>();
             builder.Services.AddScoped<IImgService, ImgService>();
             builder.Services.AddScoped<IRenovationSimulationService, RenovationSimulationService>();
+            builder.Services.AddScoped<IMailService, MailService>();
 
 
             // Other Services
@@ -165,6 +168,8 @@ namespace Jiwar
 
             // AutoMapper
             builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+            builder.Services.AddSignalR();
+            builder.Services.AddSingleton<Microsoft.AspNetCore.SignalR.IUserIdProvider, CustomUserIdProvider>();
 
             // Build App
             var app = builder.Build();
@@ -193,11 +198,19 @@ namespace Jiwar
             }
 
             app.UseHttpsRedirection();
+            app.UseRouting();
             app.UseCors();
             app.UseAuthentication();
             app.UseAuthorization();
             app.UseStaticFiles();
-            app.MapControllers();
+           
+
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+                endpoints.MapHub<ChatHub>("/chathub");
+            });
+            //app.MapControllers();
             app.Run();
         }
     }

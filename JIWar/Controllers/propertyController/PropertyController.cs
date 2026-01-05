@@ -62,8 +62,9 @@ public class PropertyController : ControllerBase
         return Ok(result);
     }
 
-    [HttpPut("update")]
-    public async Task<IActionResult> Update(PropertyUpdateDTO dto)
+    [HttpPut("update/{id}")]
+    [Consumes("multipart/form-data")]
+    public async Task<IActionResult> Update(int id ,PropertyUpdateDTO dto)
     {
         var ownerId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         if (ownerId == null) return Unauthorized();
@@ -74,14 +75,19 @@ public class PropertyController : ControllerBase
             return Forbid(); // أو NotFound
 
         var result = await _propertyService.UpdatePropertyAsync(dto);
-        return result ? Ok("Updated Successfully") : NotFound("Property Not Found");
+        return result
+        ? Ok(new { message = "Updated Successfully" })   // return JSON object
+        : NotFound(new { message = "Property Not Found" });
+
     }
 
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id)
     {
         var result = await _propertyService.DeletePropertyAsync(id);
-        return result ? Ok("Deleted Successfully") : NotFound("Property Not Found");
+        return result
+         ? Ok(new { message = "Deleted Successfully" })   // JSON object
+         : NotFound(new { message = "Property Not Found" });
     }
 
     [HttpGet("my")]

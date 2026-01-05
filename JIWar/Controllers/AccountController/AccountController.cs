@@ -106,7 +106,8 @@ namespace Jiwar.Account
         }
 
 
-        [HttpPost("forget-password")]
+        [HttpPost("forgot-password")]
+        [AllowAnonymous]
         public async Task<IActionResult> ForgetPassword([FromBody] ForgetPasswordDto dto)
         {
             var result = await accountService.ForgetPasswordAsync(dto);
@@ -242,6 +243,19 @@ namespace Jiwar.Account
 
             return Ok(profile);
         }
+
+        [HttpGet("property-owner/{userId}/public-profile")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetPropertyOwnerPublicProfile(string userId)
+        {
+            var profile = await accountService.GetPropertyOwnerPublicProfileAsync(userId);
+
+            if (profile == null)
+                return NotFound(new { message = "Property owner not found" });
+
+            return Ok(profile);
+        }
+
 
 
     }
