@@ -5,7 +5,6 @@ using Jiwar.DTOs.DesignDto;
 using Jiwar.Models;
 using Microsoft.EntityFrameworkCore;
 
-
 namespace Jiwar.Services.DesignerProposalService
 {
     public class DesignerProposalService : IDesignerProposalService
@@ -34,10 +33,16 @@ namespace Jiwar.Services.DesignerProposalService
             if (alreadySubmitted)
                 throw new Exception("You already submitted a proposal for this request");
 
-
             var proposal = _mapper.Map<DesignerProposal>(dto);
+
+           
+            proposal.DesignRequestID = dto.RequestID;
             proposal.DesignerID = designerId;
-            proposal.StatusEnumReq = GEWAR.Models.StatusEnumReqPro.Pending ;
+
+            proposal.Designer = null;
+            proposal.DesignRequest = null;
+
+            proposal.StatusEnumReq = GEWAR.Models.StatusEnumReqPro.Pending;
 
             _context.DesignerProposals.Add(proposal);
 
@@ -53,20 +58,19 @@ namespace Jiwar.Services.DesignerProposalService
             var proposals = await _context.DesignerProposals
                 .Include(p => p.Designer)
                 .Where(p => p.DesignRequestID == requestId)
-           .Select(p => new ProposalForOwnerDto
-           {
-               Id = p.Id,
-               EstimatedCost = p.EstimatedCost,
-               EstimatedDays = p.EstimatedDays,
-               ProposalDescription = p.ProposalDescription,
-               DesignerName = p.Designer.User.Name,
-               DesignerEmail = p.Designer.User.Email
-           })
+                .Select(p => new ProposalForOwnerDto
+                {
+                    Id = p.Id,
+                    EstimatedCost = p.EstimatedCost,
+                    EstimatedDays = p.EstimatedDays,
+                    ProposalDescription = p.ProposalDescription,
+                    DesignerName = p.Designer.User.Name,
+                    DesignerEmail = p.Designer.User.Email
+                })
                 .ToListAsync();
 
             return proposals;
         }
-
 
         public async Task<IEnumerable<ProposalDto>> GetProposalsForDesignerAsync(string designerId)
         {
@@ -76,7 +80,6 @@ namespace Jiwar.Services.DesignerProposalService
 
             return _mapper.Map<IEnumerable<ProposalDto>>(proposals);
         }
-
 
         public async Task<ProposalDto> ChooseProposalAsync(int proposalId, string ownerId)
         {
@@ -101,7 +104,7 @@ namespace Jiwar.Services.DesignerProposalService
             foreach (var p in allProposals)
             {
                 if (p.Id != proposalId)
-                    p.StatusEnumReq =GEWAR.Models.StatusEnumReqPro.Rejected;
+                    p.StatusEnumReq = GEWAR.Models.StatusEnumReqPro.Rejected;
             }
 
             selected.DesignRequest.Status = "InProgress";
@@ -111,5 +114,4 @@ namespace Jiwar.Services.DesignerProposalService
             return _mapper.Map<ProposalDto>(selected);
         }
     }
-
 }

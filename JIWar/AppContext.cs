@@ -3,6 +3,7 @@ using GEWAR.Data.Configurations;
 using GEWAR.Models;
 using GEWAR.Models.Configurations;
 using Jiwar.Models;
+using Jiwar.Models.ChatAi;
 using Jiwar.Models.Offers;
 using Jiwar.Models.Valuation;
 using JIWAR.Models;
@@ -74,9 +75,9 @@ namespace GEWAR
 
         public DbSet<SimulationDetails> SimulationDetails { get; set;}
 
+        public DbSet<SimulationChatMessage> SimulationChatMessages { get; set; }
 
-
-
+        public DbSet<UserChatQuota> UserChatQuotas { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -146,6 +147,7 @@ namespace GEWAR
             modelBuilder.ApplyConfiguration(new RenovationSimulationConfiguration());
             modelBuilder.ApplyConfiguration(new SimulationMediaConfiguration());
             modelBuilder.ApplyConfiguration(new SimulationRecommendationConfiguration());
+            modelBuilder.ApplyConfiguration(new UserChatQuotaConfiguration());
 
 
 

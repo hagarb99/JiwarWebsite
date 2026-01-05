@@ -1,4 +1,5 @@
-﻿using Jiwar.DTOs.WishlistDTOs;
+﻿using Jiwar.DTOs.AdminAnalytics;
+using Jiwar.DTOs.WishlistDTOs;
 
 namespace Jiwar.Repositories
 {
@@ -7,6 +8,8 @@ namespace Jiwar.Repositories
         Task AddAsync(string userId, int propertyId, string? notes = null);
         Task<List<WishlistDto>> GetUserWishlist(string userId);
         Task<bool> RemoveAsync(string userId, int propertyId);
+        Task<List<AdminWishlistDto>> GetAllWishlistsForAdminAsync();
+
     }
 }
 

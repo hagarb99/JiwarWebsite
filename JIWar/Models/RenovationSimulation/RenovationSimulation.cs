@@ -1,4 +1,5 @@
 using GEWAR.Models.Jiwar.Enum;
+using Jiwar.Models;
 
 namespace GEWAR.Models
 {
@@ -23,8 +24,8 @@ namespace GEWAR.Models
     public virtual ICollection<SimulationRecommendation> Recommendations { get; set; }
 
     public virtual ICollection<SimulationMedia> Medias { get; set; } = new List<SimulationMedia>();
-
-}
+    public virtual SimulationDetails Details { get; set; }
+    }
 
 
 }
