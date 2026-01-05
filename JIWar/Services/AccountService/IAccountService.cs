@@ -4,6 +4,7 @@ using Jiwar.DTOs;
 using Jiwar.DTOs.AccountDTOs;
 using Jiwar.DTOs.AccountDTOs.EditProfileDtos;
 using Jiwar.DTOs.AccountDTOs.EditProfileDtos;
+using Jiwar.DTOs.AccountDTOs.ProfileDTOs;
 using Jiwar.Helpers;
 using Jiwar.Models;
 using System.Security.Claims;
@@ -30,6 +31,7 @@ namespace Jiwar.Account
         Task UpdateAdminProfileAsync(string userId, AdminEditProfileDto dto);
         Task<ResultViewModel<UserResponseDTO>> GoogleSignInAsync(string idToken);
         Task<UserProfileDto> GetUserProfileAsync(string userId);
+        Task<PropertyOwnerPublicProfileDto?> GetPropertyOwnerPublicProfileAsync(string userId);
 
 
     }

@@ -1,4 +1,5 @@
 ﻿using GEWAR;
+using GEWAR.Models;
 using Google;
 using Microsoft.EntityFrameworkCore;
 
@@ -55,6 +56,24 @@ namespace Jiwar.Repositories
                 .Select(g => new { Role = g.Key, Count = g.Count() })
                 .ToDictionaryAsync(x => x.Role, x => x.Count);
         }
+
+
+        public async Task<List<User>> GetAllUsersForAdminAsync()
+        {
+            return await _context.Users
+                .OrderByDescending(u => u.RegistrationDate)
+                .ToListAsync();
+        }
+
+        public async Task DeleteUserAsync(string userId)
+        {
+            var user = await _context.Users.FindAsync(userId);
+            if (user == null) return;
+
+            _context.Users.Remove(user);
+            await _context.SaveChangesAsync();
+        }
+
     }
 
 }
