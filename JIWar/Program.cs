@@ -172,6 +172,7 @@ namespace Jiwar
 
             builder.Services.AddScoped<IRenovationSimulationService, RenovationSimulationService>();
             builder.Services.AddScoped<IMailService, MailService>();
+            builder.Services.AddScoped<IImgService, ImgService>();
             builder.Services.AddScoped<IAiChatService, AiChatService>();
 
 
