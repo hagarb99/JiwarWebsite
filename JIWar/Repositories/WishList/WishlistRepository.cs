@@ -18,8 +18,8 @@ namespace Jiwar.Repositories
         public async Task AddAsync(string userId, int propertyId, string? notes = null)
         {
             // Check if property exists in Properties table
-            var propertyExists = await _context.Properties.AnyAsync(p => p.Id == propertyId);
-            if (!propertyExists)
+            var propertyExists = _context.Properties.FirstOrDefault(p => p.PropertyID == propertyId);
+            if (propertyExists == null)
                 throw new Exception("Property does not exist.");
 
             // Check if already in wishlist
