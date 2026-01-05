@@ -126,6 +126,9 @@ namespace Jiwar.Services
                     SearchTrends = new Dictionary<string, int>()
                 }
             };
-        }
+
+      
+
     }
+}
 }

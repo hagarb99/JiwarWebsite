@@ -1,5 +1,6 @@
 ﻿using GEWAR;
 using GEWAR.Models;
+using Jiwar.DTOs.AdminAnalytics;
 using Jiwar.DTOs.PropertyDTOs;
 using Jiwar.Enum;
 using Jiwar.Models;
@@ -58,6 +59,22 @@ namespace Jiwar.Repositories
                 await _context.SaveChangesAsync();
             }
 
+        }
+
+
+        public async Task<List<AdminPropertyDTO>> GetAllPropertiesForAdminAsync()
+        {
+            return await _context.Properties
+                .AsNoTracking() // مهم لتجنب تتبع EF Core للحلقات
+                .Select(p => new AdminPropertyDTO
+                {
+                    Id = p.PropertyID,
+                    Title = p.Title,
+                    City = p.City,
+                  //  propEnum = p.statusEnum, // استخدمي الحقل الصحيح في Property
+                    OwnerName = p.PropertyOwner.Owneruser.Name // فقط الاسم
+                })
+                .ToListAsync();
         }
 
         public async Task UpdatePropertyStatusAsync(int id, PropEnum status)
@@ -184,6 +201,8 @@ namespace Jiwar.Repositories
             await _context.SaveChangesAsync();
         }
 
+
+    
         public async Task<PagedResult<PropertyListBDTO>> GetAllPropertiesPagedAsync(int page, int pageSize)
         {
             var query = _context.Properties

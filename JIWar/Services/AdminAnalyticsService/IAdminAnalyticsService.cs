@@ -1,4 +1,5 @@
 using Jiwar.DTOs;
+using Jiwar.DTOs.AccountDTOs.EditProfileDtos;
 
 namespace Jiwar.Services
 {
@@ -6,6 +7,8 @@ namespace Jiwar.Services
 {
  //   Task<AdminAnalyticsDTO> GetDashboardDataAsync();
         Task<AdminAnalyticsDTO> GetAnalyticsAsync();
+
+       
     }
 }
 

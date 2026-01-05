@@ -158,6 +158,11 @@ namespace Jiwar
 
             builder.Services.AddScoped<IRenovationSimulationService, RenovationSimulationService>();
 
+            builder.Services.AddControllers()
+    .AddJsonOptions(x =>
+        x.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.Preserve
+    );
+
 
             // Other Services
             builder.Services.AddScoped<TokenService>();
