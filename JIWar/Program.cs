@@ -16,12 +16,15 @@ using Jiwar.Services.AI;
 using Jiwar.Services.DesignerProposalService;
 using Jiwar.Services.GoogleService;
 using Jiwar.Services.ValuationService;
+using Jiwar.Services.NotificationService; // Ensure namespace is available
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Jiwar.Services.DesignRequestService;
+using Jiwar.Hubs;
 
 using System.Text;
 
@@ -88,9 +91,10 @@ namespace Jiwar
             {
                 options.AddDefaultPolicy(policy =>
                 {
-                    policy.AllowAnyOrigin()
+                    policy.WithOrigins("http://localhost:4200") // Angular frontend
                           .AllowAnyMethod()
-                          .AllowAnyHeader();
+                          .AllowAnyHeader()
+                          .AllowCredentials();
                 });
             });
 
@@ -123,6 +127,24 @@ namespace Jiwar
                             new SymmetricSecurityKey(Encoding.ASCII.GetBytes(key)),
                         ValidateIssuer = false,
                         ValidateAudience = false
+                    };
+                    
+                    options.Events = new JwtBearerEvents
+                    {
+                        OnMessageReceived = context =>
+                        {
+                            var accessToken = context.Request.Query["access_token"];
+
+                            // If the request is for our hub...
+                            var path = context.HttpContext.Request.Path;
+                            if (!string.IsNullOrEmpty(accessToken) &&
+                                (path.StartsWithSegments("/notificationHub")))
+                            {
+                                // Read the token out of the query string
+                                context.Token = accessToken;
+                            }
+                            return Task.CompletedTask;
+                        }
                     };
                 });
 
@@ -161,9 +183,17 @@ namespace Jiwar
             builder.Services.AddScoped<IRenovationSimulationService, RenovationSimulationService>();
 
 
+            // Register image service implementation so DI can resolve IImgService
+            builder.Services.AddScoped<IImgService, ImgService>();
+
+
             // Other Services
             builder.Services.AddScoped<TokenService>();
             builder.Services.AddScoped<GoogleAuthService>();
+            builder.Services.AddScoped<INotificationService, NotificationService>(); // Register service
+            
+            // SignalR
+            builder.Services.AddSignalR();
 
             // AutoMapper
             builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
@@ -200,6 +230,7 @@ namespace Jiwar
             app.UseAuthorization();
             app.UseStaticFiles();
             app.MapControllers();
+            app.MapHub<NotificationHub>("/notificationHub");
             app.Run();
         }
     }
