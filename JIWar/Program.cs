@@ -62,7 +62,7 @@ namespace Jiwar
             var builder = WebApplication.CreateBuilder(args);
 
             // Controllers & Swagger
-            builder.Services.AddControllers(); builder.Services.AddControllers().AddJsonOptions(options =>
+            builder.Services.AddControllers().AddJsonOptions(options =>
             {
                 options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
             });
@@ -206,19 +206,6 @@ namespace Jiwar
             builder.Services.AddScoped<IAiChatService, AiChatService>();
 
 
-<<<<<<< HEAD
-            builder.Services.AddControllers()
-    .AddJsonOptions(x =>
-        x.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.Preserve
-    );
-
-
-            // Register image service implementation so DI can resolve IImgService
-            builder.Services.AddScoped<IImgService, ImgService>();
-
-
-=======
->>>>>>> f517aef8546caa22ec8e8b39759bb92f1a1add45
             // Other Services
             builder.Services.AddScoped<TokenService>();
             builder.Services.AddScoped<GoogleAuthService>();
@@ -226,11 +213,10 @@ namespace Jiwar
             
             // SignalR
             builder.Services.AddSignalR();
+            builder.Services.AddSingleton<Microsoft.AspNetCore.SignalR.IUserIdProvider, CustomUserIdProvider>();
 
             // AutoMapper
             builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
-            builder.Services.AddSignalR();
-            builder.Services.AddSingleton<Microsoft.AspNetCore.SignalR.IUserIdProvider, CustomUserIdProvider>();
 
             // Build App
             var app = builder.Build();
@@ -264,19 +250,9 @@ namespace Jiwar
             app.UseAuthentication();
             app.UseAuthorization();
             app.UseStaticFiles();
-<<<<<<< HEAD
             app.MapControllers();
             app.MapHub<NotificationHub>("/notificationHub");
-=======
-           
-
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllers();
-                endpoints.MapHub<ChatHub>("/chathub");
-            });
-            //app.MapControllers();
->>>>>>> f517aef8546caa22ec8e8b39759bb92f1a1add45
+            app.MapHub<ChatHub>("/chathub");
             app.Run();
         }
     }
