@@ -112,6 +112,13 @@ namespace Jiwar.Repositories
             _context.PropertyOwners.Update(owner);
             await _context.SaveChangesAsync();
         }
+        public async Task<PropertyOwner?> GetPropertyOwnerPublicAsync(string userId)
+        {
+            return await _context.PropertyOwners
+        .Include(po => po.Owneruser)
+        .AsNoTracking()
+        .FirstOrDefaultAsync(po => po.UserID == userId);
+        }
 
 
 

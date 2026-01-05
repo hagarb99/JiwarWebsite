@@ -23,10 +23,14 @@
         public string Name { get; set; }
         public string Email { get; set; }
         public string Role { get; set; }
-        public string ProfilePicURL { get; set; }
+        public string? ProfilePicURL { get; set; }
         public DateTime RegistrationDate { get; set; }
         public PropertyOwnerDto PropertyOwner { get; set; }
         public InteriorDesignerDto InteriorDesigner { get; set; }
+        public string? PhoneNumber { get; set; }
+        public string? Location { get; set; }
+        public string? Bio { get; set; }
+
     }
 
 }

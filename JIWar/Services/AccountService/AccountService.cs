@@ -5,10 +5,12 @@ using Jiwar.Account.DTOs;
 using Jiwar.Controllers;
 using Jiwar.DTOs;
 using Jiwar.DTOs.AccountDTOs.EditProfileDtos;
+using Jiwar.DTOs.AccountDTOs.ProfileDTOs;
 using Jiwar.Helpers;
 using Jiwar.Models;
 using Jiwar.Repositories;
 using Jiwar.Services.GoogleService;
+using Jiwar.Services.MailService;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
@@ -23,18 +25,23 @@ namespace Jiwar.Account.Services
         private readonly GoogleAuthService _googleAuthService;
         private readonly UserManager<User> _userManager;
         private readonly IMapper mapper;
+        private readonly IMailService _mailService;
         public AccountService(
             IAccountRepository repo,
             TokenService tokenService ,
             GoogleAuthService _googleAuthService,
             UserManager<User> _userManager,
-            IMapper mapper)
+            IMapper mapper,
+            IMailService mailService
+            
+            )
         {
             this.repo = repo;
             _tokenService = tokenService;
             this._googleAuthService = _googleAuthService;
             this._userManager = _userManager;
             this.mapper = mapper;
+            _mailService = mailService;
         }
         public async Task<ResultViewModel<UserResponseDTO>> RegisterAsync(RegisterDto dto)
         {
@@ -119,11 +126,28 @@ namespace Jiwar.Account.Services
             var user = await repo.FindByEmailAsync(dto.Email);
 
             if (user == null)
-                return ResultViewModel<string>.Fail("Email not found.");
+            {
+                return ResultViewModel<string>.Ok(
+                    "If the email exists, a reset link has been sent.",
+                    ""
+                );
+            }
 
             var token = await repo.GenerateResetTokenAsync(user);
+            var resetLink = $"https://localhost:4200/reset-password?token={token}&email={user.Email}";
 
-            return ResultViewModel<string>.Ok("Reset token generated.", token);
+            // Send email via MailService
+            await _mailService.SendMailAsync(
+                user.Email,
+                "Reset Your Password",
+                $"Click here to reset your password: <a href='{resetLink}'>Reset Password</a>"
+            );
+
+            return ResultViewModel<string>.Ok(
+        "If the email exists, a reset link has been sent.",
+        ""
+    );
+
         }
         public async Task<ResultViewModel<string>> ResetPasswordAsync(ResetPasswordDto dto)
         {
@@ -314,6 +338,21 @@ namespace Jiwar.Account.Services
 
             return mapper.Map<UserProfileDto>(user);
         }
+        public async Task<PropertyOwnerPublicProfileDto?> GetPropertyOwnerPublicProfileAsync(string userId)
+        {
+            var owner = await repo.GetPropertyOwnerPublicAsync(userId);
+            if (owner == null) return null;
+
+            return new PropertyOwnerPublicProfileDto
+            {
+                UserId = owner.UserID,
+                Name = owner.Owneruser.Name,
+                ProfilePicURL = owner.Owneruser.ProfilePicURL,
+                Bio = owner.Owneruser.Bio,
+                PhoneNumber = owner.Owneruser.PhoneNumber
+            };
+        }
+
 
     }
 }

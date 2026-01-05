@@ -4,6 +4,7 @@ using GEWAR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Jiwar.Migrations
 {
     [DbContext(typeof(GiwarContext))]
-    partial class GiwarContextModelSnapshot : ModelSnapshot
+    [Migration("20260104095853_addcolumnbio")]
+    partial class addcolumnbio
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -392,9 +395,6 @@ namespace Jiwar.Migrations
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
-
-                    b.Property<int?>("Condition")
-                        .HasColumnType("int");
 
                     b.Property<DateTime>("CreatedDate")
                         .ValueGeneratedOnAdd()
@@ -1219,71 +1219,6 @@ namespace Jiwar.Migrations
                     b.ToTable("BookingPayments", (string)null);
                 });
 
-            modelBuilder.Entity("Jiwar.Models.ChatAi.SimulationChatMessage", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Content")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("MessageType")
-                        .HasColumnType("int");
-
-                    b.Property<int>("RenovationSimulationID")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Sender")
-                        .HasColumnType("int");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("SimulationChatMessages");
-                });
-
-            modelBuilder.Entity("Jiwar.Models.ChatAi.UserChatQuota", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false);
-
-                    b.Property<DateTime>("LastReset")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("RemainingMessages")
-                        .HasColumnType("int");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasMaxLength(450)
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId")
-                        .IsUnique();
-
-                    b.ToTable("UserChatQuotas", "AI");
-                });
-
             modelBuilder.Entity("Jiwar.Models.Design", b =>
                 {
                     b.Property<int>("Id")
@@ -1596,8 +1531,7 @@ namespace Jiwar.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("RenovationSimulationID")
-                        .IsUnique();
+                    b.HasIndex("RenovationSimulationID");
 
                     b.ToTable("SimulationDetails");
                 });
@@ -2306,8 +2240,8 @@ namespace Jiwar.Migrations
             modelBuilder.Entity("Jiwar.Models.SimulationDetails", b =>
                 {
                     b.HasOne("GEWAR.Models.RenovationSimulation", "RenovationSimulation")
-                        .WithOne("Details")
-                        .HasForeignKey("Jiwar.Models.SimulationDetails", "RenovationSimulationID")
+                        .WithMany()
+                        .HasForeignKey("RenovationSimulationID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -2421,9 +2355,6 @@ namespace Jiwar.Migrations
 
             modelBuilder.Entity("GEWAR.Models.RenovationSimulation", b =>
                 {
-                    b.Navigation("Details")
-                        .IsRequired();
-
                     b.Navigation("Medias");
 
                     b.Navigation("Recommendations");

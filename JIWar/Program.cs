@@ -4,6 +4,7 @@ using GEWAR.Models;
 using Jiwar.Account;
 using Jiwar.Account.Services;
 using Jiwar.Controllers;
+using Jiwar.Hubs;
 using Jiwar.Mappings;
 using Jiwar.Models;
 using Jiwar.Repositories;
@@ -18,6 +19,7 @@ using Jiwar.Services.AI;
 using Jiwar.Services.AI.Chat;
 using Jiwar.Services.DesignerProposalService;
 using Jiwar.Services.GoogleService;
+using Jiwar.Services.MailService;
 using Jiwar.Services.ValuationService;
 using Jiwar.Services.NotificationService; // Ensure namespace is available
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -60,8 +62,10 @@ namespace Jiwar
             var builder = WebApplication.CreateBuilder(args);
 
             // Controllers & Swagger
-            builder.Services.AddControllers();
-
+            builder.Services.AddControllers(); builder.Services.AddControllers().AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+            });
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen(c =>
             {
@@ -197,9 +201,12 @@ namespace Jiwar
 
 
             builder.Services.AddScoped<IRenovationSimulationService, RenovationSimulationService>();
+            builder.Services.AddScoped<IMailService, MailService>();
+            builder.Services.AddScoped<IImgService, ImgService>();
             builder.Services.AddScoped<IAiChatService, AiChatService>();
 
 
+<<<<<<< HEAD
             builder.Services.AddControllers()
     .AddJsonOptions(x =>
         x.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.Preserve
@@ -210,6 +217,8 @@ namespace Jiwar
             builder.Services.AddScoped<IImgService, ImgService>();
 
 
+=======
+>>>>>>> f517aef8546caa22ec8e8b39759bb92f1a1add45
             // Other Services
             builder.Services.AddScoped<TokenService>();
             builder.Services.AddScoped<GoogleAuthService>();
@@ -220,6 +229,8 @@ namespace Jiwar
 
             // AutoMapper
             builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+            builder.Services.AddSignalR();
+            builder.Services.AddSingleton<Microsoft.AspNetCore.SignalR.IUserIdProvider, CustomUserIdProvider>();
 
             // Build App
             var app = builder.Build();
@@ -248,12 +259,24 @@ namespace Jiwar
             }
 
             app.UseHttpsRedirection();
+            app.UseRouting();
             app.UseCors();
             app.UseAuthentication();
             app.UseAuthorization();
             app.UseStaticFiles();
+<<<<<<< HEAD
             app.MapControllers();
             app.MapHub<NotificationHub>("/notificationHub");
+=======
+           
+
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+                endpoints.MapHub<ChatHub>("/chathub");
+            });
+            //app.MapControllers();
+>>>>>>> f517aef8546caa22ec8e8b39759bb92f1a1add45
             app.Run();
         }
     }

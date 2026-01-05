@@ -23,6 +23,7 @@ namespace GEWAR.Models
         public virtual PropertyOwner propertyOwner { get; set; }
 
         public string? GoogleId { get; set; }
+        public string? Bio {  get; set; }
 
 
         public virtual ICollection<DesignRequest> DesignRequests { get; set; } = new List<DesignRequest>();

@@ -253,10 +253,15 @@ namespace Jiwar.Repositories
                 .Include(p => p.PropertyMedia
                     .Where(media => !media.IsDeleted)
                     .OrderBy(media => media.Order)
+<<<<<<< HEAD
                     .Take(1))
                 .OrderByDescending(p => p.PropertyID)
         
 
+=======
+                    .Take(1))  
+                .OrderByDescending(p => p.PropertyID)
+>>>>>>> f517aef8546caa22ec8e8b39759bb92f1a1add45
                 .Include(p => p.PropertyMedia.Where(m => !m.IsDeleted))
                 .OrderByDescending(p => p.PropertyID);  
 
