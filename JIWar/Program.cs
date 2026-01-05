@@ -154,6 +154,7 @@ namespace Jiwar
             builder.Services.AddHttpClient(); // Registers IHttpClientFactory
             builder.Services.AddScoped<IAccountService, AccountService>();
             builder.Services.AddScoped<IPropertyService, PropertyService>();
+            builder.Services.AddScoped<IImgService, ImgService>();
             builder.Services.AddScoped<IBookingService, BookingService>();
             builder.Services.AddScoped<IPaymentService, PaymobPaymentService>();
             builder.Services.AddScoped<ISubscriptionService, SubscriptionService>();

@@ -9,6 +9,9 @@ namespace Jiwar.Services
         Task HandlePaymobWebhookAsync(PaymobWebhookDto dto);
         Task<bool> HasUserPaidForBookingAsync(string userId, int bookingId);
         Task<bool> HasUserPaidForReportAsync(string userId, int reportId);
+        Task<string> CreateSubscriptionPaymentAsync(string userId, int subscriptionPlanId);
+
+
 
     }
 }
