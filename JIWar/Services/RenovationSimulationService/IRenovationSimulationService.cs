@@ -13,7 +13,8 @@ public interface IRenovationSimulationService
 
     Task CompleteSimulationAsync(int simulationId);
 
-    Task GenerateRecommendationsAsync(int simulationId);
+    Task GenerateRecommendationsAsync(int simulationId , int? propertyId = null);
 
     Task<SimulationResultDto> GetResultsAsync(int simulationId);
+
 }

@@ -22,7 +22,7 @@ namespace Jiwar.Controllers
         public SubscriptionController(ISubscriptionService subscriptionService)
         {
             _subscriptionService = subscriptionService;
-        }
+        } 
 
         [HttpGet]
         public async Task<IActionResult> GetAll()

@@ -201,13 +201,60 @@ namespace Jiwar.Repositories
             await _context.SaveChangesAsync();
         }
 
+        //public async Task<PagedResult<PropertyListBDTO>> GetAllPropertiesPagedAsync(int page, int pageSize)
+        //{
+        //    var query = _context.Properties
+        //        .AsNoTracking()  // مهم للأداء
+        //        .Where(p => !p.IsDeleted && p.IsAvaliable == true)
+        //        .Include(p => p.PropertyMedia.Where(media => !media.IsDeleted))
+        //        .OrderByDescending(p => p.PropertyID);  
 
-    
+        //    var totalCount = await query.CountAsync();
+
+        //    var items = await query
+        //        .Skip((page - 1) * pageSize)
+        //        .Take(pageSize)
+        //        .Select(static p => new PropertyListBDTO
+        //        {
+        //            PropertyID = p.PropertyID,
+        //            Title = p.Title,
+        //            Price = p.Price,
+        //            City = p.City,
+        //            District = p.District,
+        //            Area_sqm = p.Area_sqm,
+        //            NumBedrooms = p.NumBedrooms,
+        //            NumBathrooms = p.NumBathrooms,
+        //            //ThumbnailUrl = p.PropertyMedia
+        //            //    .OrderBy(m => m.Order)
+        //            //    .Select(m => m.MediaURL)
+        //            //    .FirstOrDefault()
+
+
+
+        //        })
+        //        .ToListAsync();
+
+
+
+        //    return new PagedResult<PropertyListBDTO>
+        //    {
+        //        Items = items,
+        //        TotalCount = totalCount,
+        //        Page = page,
+        //        PageSize = pageSize
+        //    };
+
+
         public async Task<PagedResult<PropertyListBDTO>> GetAllPropertiesPagedAsync(int page, int pageSize)
         {
             var query = _context.Properties
-                .AsNoTracking()  // مهم للأداء
+                .AsNoTracking()
                 .Where(p => !p.IsDeleted && p.IsAvaliable == true)
+                .Include(p => p.PropertyMedia
+                    .Where(media => !media.IsDeleted)
+                    .OrderBy(media => media.Order)
+                    .Take(1))  
+                .OrderByDescending(p => p.PropertyID);
                 .Include(p => p.PropertyMedia.Where(m => !m.IsDeleted))
                 .OrderByDescending(p => p.PropertyID);  
 
@@ -227,9 +274,9 @@ namespace Jiwar.Repositories
                     NumBedrooms = p.NumBedrooms,
                     NumBathrooms = p.NumBathrooms,
                     ThumbnailUrl = p.PropertyMedia
-                        .OrderBy(m => m.Order)
-                        .Select(m => m.MediaURL)
-                        .FirstOrDefault()
+                        .FirstOrDefault() != null
+                        ? p.PropertyMedia.FirstOrDefault().MediaURL
+                        : null
                 })
                 .ToListAsync();
 
@@ -240,7 +287,8 @@ namespace Jiwar.Repositories
                 Page = page,
                 PageSize = pageSize
             };
-        }
+        
+    }
 
     }
 }
