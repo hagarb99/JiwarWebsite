@@ -37,7 +37,7 @@ namespace Jiwar.Services.DesignerProposalService
 
             var proposal = _mapper.Map<DesignerProposal>(dto);
             proposal.DesignerID = designerId;
-            proposal.Status = "Pending";
+            proposal.StatusEnumReq = GEWAR.Models.StatusEnumReqPro.Pending ;
 
             _context.DesignerProposals.Add(proposal);
 
@@ -96,12 +96,12 @@ namespace Jiwar.Services.DesignerProposalService
                 .Where(p => p.DesignRequestID == selected.DesignRequestID)
                 .ToListAsync();
 
-            selected.Status = "Accepted";
+            selected.StatusEnumReq = GEWAR.Models.StatusEnumReqPro.Accepted;
 
             foreach (var p in allProposals)
             {
                 if (p.Id != proposalId)
-                    p.Status = "Rejected";
+                    p.StatusEnumReq =GEWAR.Models.StatusEnumReqPro.Rejected;
             }
 
             selected.DesignRequest.Status = "InProgress";

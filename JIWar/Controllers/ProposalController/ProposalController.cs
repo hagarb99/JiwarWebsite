@@ -1,4 +1,5 @@
 ﻿using GEWAR.Models;
+using Jiwar.Models;
 using Jiwar.Services.ProposalService;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,7 +17,7 @@ namespace Jiwar.Controllers.ProposalController
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(Proposal proposal)
+        public async Task<IActionResult> Create(DesignerProposal proposal)
         {
             return Ok(await _proposalService.CreateProposalAsync(proposal));
         }
