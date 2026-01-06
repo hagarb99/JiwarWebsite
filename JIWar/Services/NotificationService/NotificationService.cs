@@ -33,7 +33,8 @@ namespace Jiwar.Services.NotificationService
                 NotificationType = n.NotificationType.ToString(),
                 IsRead = n.IsRead,
                 SentDate = n.SentDate,
-                TimeAgo = GetTimeAgo(n.SentDate)
+                TimeAgo = GetTimeAgo(n.SentDate),
+                RelatedId = n.RelatedId
             });
         }
 

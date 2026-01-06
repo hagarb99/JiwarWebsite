@@ -1,4 +1,4 @@
-﻿using Jiwar.Enum;
+using Jiwar.Enum;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,8 +17,7 @@ using System.Threading.Tasks;
             public NotificationType NotificationType { get; set; } 
             public bool IsRead { get; set; } = false;
             public DateTime SentDate { get; set; }
+            public string? RelatedId { get; set; }
             public virtual User User { get; set; } = null!;
         }
     }
-
-

@@ -31,6 +31,8 @@ namespace Jiwar.Models
                 .WithMany(u => u.Notifications)
                 .HasForeignKey(n => n.UserID)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Ignore(n => n.RelatedId);
         }
     }
 }
