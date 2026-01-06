@@ -183,6 +183,7 @@ namespace Jiwar
             builder.Services.AddHttpClient(); // Registers IHttpClientFactory
             builder.Services.AddScoped<IAccountService, AccountService>();
             builder.Services.AddScoped<IPropertyService, PropertyService>();
+            builder.Services.AddScoped<IImgService, ImgService>();
             builder.Services.AddScoped<IBookingService, BookingService>();
             builder.Services.AddScoped<IPaymentService, PaymobPaymentService>();
             builder.Services.AddScoped<ISubscriptionService, SubscriptionService>();
@@ -205,6 +206,13 @@ namespace Jiwar
             builder.Services.AddScoped<IImgService, ImgService>();
             builder.Services.AddScoped<IAiChatService, AiChatService>();
 
+
+            builder.Services.AddControllers()
+                .AddJsonOptions(x =>
+                {
+                    x.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+                    x.JsonSerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase;
+                });
 
             // Other Services
             builder.Services.AddScoped<TokenService>();
@@ -245,14 +253,21 @@ namespace Jiwar
             }
 
             app.UseHttpsRedirection();
+            app.UseWebSockets();
             app.UseRouting();
             app.UseCors();
             app.UseAuthentication();
             app.UseAuthorization();
             app.UseStaticFiles();
-            app.MapControllers();
-            app.MapHub<NotificationHub>("/notificationHub");
-            app.MapHub<ChatHub>("/chathub");
+           
+
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+                endpoints.MapHub<ChatHub>("/chathub");
+                endpoints.MapHub<ChatHub>("/notificationHub");
+            });
+            //app.MapControllers();
             app.Run();
         }
     }

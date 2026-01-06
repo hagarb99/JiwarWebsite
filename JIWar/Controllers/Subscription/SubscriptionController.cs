@@ -1,3 +1,4 @@
+using GEWAR.Models;
 using Jiwar.Models;
 using Jiwar.Services;
 using JIWar.PropertyOwner;
@@ -22,14 +23,39 @@ namespace Jiwar.Controllers
         public SubscriptionController(ISubscriptionService subscriptionService)
         {
             _subscriptionService = subscriptionService;
-        } 
-
-        [HttpGet]
-        public async Task<IActionResult> GetAll()
-        {
-            var list = await _subscriptionService.GetAllAsync();
-            return Ok(list);
         }
+
+        [HttpGet("plans")]   
+        public IActionResult GetPlans()
+        {
+            var plans = new List<Subscription>
+    {
+        new Subscription
+        {
+            Name = "Basic",
+            Price = 10,
+            DurationInMonths = 1,
+            planTypeEnum = PlanTypeEnum.Basic
+        },
+        new Subscription
+        {
+            Name = "Golden",
+            Price = 25,
+            DurationInMonths = 3,
+            planTypeEnum = PlanTypeEnum.Golden
+        },
+        new Subscription
+        {
+            Name = "Premium",
+            Price = 50,
+            DurationInMonths = 6,
+            planTypeEnum = PlanTypeEnum.Premium
+        }
+    };
+
+            return Ok(plans);
+        }
+
 
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(int id)

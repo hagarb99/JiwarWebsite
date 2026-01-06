@@ -220,5 +220,32 @@ namespace Jiwar.Services
 
             return computedHmac == dto.Hmac.ToLower();
         }
+
+      //buy the plan 
+        private int GetPlanPrice(int subscriptionPlanId)
+        {
+            return subscriptionPlanId switch
+            {
+                1 => 100,   // Basic
+                2 => 250,   // Silver
+                3 => 500,   // Golden
+                _ => throw new Exception("Invalid subscription plan")
+            };
+        }
+
+        public async Task<string> CreateSubscriptionPaymentAsync(string userId, int subscriptionPlanId)
+        {
+            // هنا السعر ييجي من plan (static أو DB)
+            int amountCents = GetPlanPrice(subscriptionPlanId) * 100;
+
+            string authToken = await GetAuthToken();
+
+            long orderId = await CreateOrder(authToken, amountCents, $"SUB_{subscriptionPlanId}_{userId}");
+
+            string paymentKey = await CreatePaymentKey(authToken, amountCents, orderId, userId);
+
+            return $"{_iframeBaseUrl}?payment_token={paymentKey}";
+        }
+
     }
 }

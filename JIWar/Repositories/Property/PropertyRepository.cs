@@ -67,11 +67,13 @@ namespace Jiwar.Repositories
             return await _context.Properties
                 .AsNoTracking() // مهم لتجنب تتبع EF Core للحلقات
                 .Select(p => new AdminPropertyDTO
-                {
+                {  
                     Id = p.PropertyID,
                     Title = p.Title,
                     City = p.City,
-                  //  propEnum = p.statusEnum, // استخدمي الحقل الصحيح في Property
+                   status = p.statusEnum,  // استخدمي الحقل الصحيح في Property
+                    CreatedDate =p.CreatedDate,
+                    Price=p.Price,
                     OwnerName = p.PropertyOwner.Owneruser.Name // فقط الاسم
                 })
                 .ToListAsync();
@@ -253,8 +255,10 @@ namespace Jiwar.Repositories
                 .Include(p => p.PropertyMedia
                     .Where(media => !media.IsDeleted)
                     .OrderBy(media => media.Order)
-                    .Take(1))
-                .OrderByDescending(p => p.PropertyID); 
+                    .Take(1))  
+                .OrderByDescending(p => p.PropertyID)
+                .Include(p => p.PropertyMedia.Where(m => !m.IsDeleted))
+                .OrderByDescending(p => p.PropertyID);  
 
             var totalCount = await query.CountAsync();
 

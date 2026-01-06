@@ -1,4 +1,6 @@
+using AutoMapper;
 using Jiwar.DTOs.AccountDTOs.EditProfileDtos;
+using Jiwar.DTOs.AdminAnalytics;
 using Jiwar.Enum;
 using Jiwar.Repositories;
 using Jiwar.Services;
@@ -17,18 +19,21 @@ namespace Jiwar.Controllers.Admin
         private readonly IPropertyRepository _propertyRepo;
         private readonly IWishlistRepository _wishlistRepo;
         private readonly IAdminAnalyticsService _analyticsService;
+        private readonly IMapper _mapper;
       
 
         public AdminDashboardController(
             IUserRepository userRepo,
             IPropertyRepository propertyRepo,
             IWishlistRepository wishlistRepo,
-            IAdminAnalyticsService adminService)
+            IAdminAnalyticsService adminService,
+            IMapper mapper)
         {
             _userRepo = userRepo;
             _propertyRepo = propertyRepo;
             _wishlistRepo = wishlistRepo;
             _analyticsService = adminService;
+            _mapper = mapper;
         }
 
         //  USERS
@@ -36,7 +41,8 @@ namespace Jiwar.Controllers.Admin
         public async Task<IActionResult> GetAllUsers()
         {
             var users = await _userRepo.GetAllUsersForAdminAsync();
-            return Ok(users);
+            var dto = _mapper.Map<List<AdminUserDTO>>(users);
+            return Ok(dto);
         }
 
         [HttpDelete("users/{id}")]
