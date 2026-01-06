@@ -16,6 +16,20 @@
         - Do NOT invent costs or features not supported by data
 
         Your goal is to maximize property value within budget.
+
+        JSON SCHEMA:
+        {
+          "renovation_recommendations": [
+            {
+              "category": "Technical | Functional | Design",
+              "title": "Short descriptive title of the recommendation",
+              "description": "Detailed explanation of the recommendation",
+              "severity": "Low | Medium | High",
+              "IsAIGenerated": true,
+
+            }
+          ]
+        }
         """;
     }
 }

@@ -169,7 +169,7 @@ namespace Jiwar.Service
                 NumBedrooms = p.NumBedrooms,
                 NumBathrooms = p.NumBathrooms,
                 PropertyType = p.PropertyType.ToString(),
-                Status = p.statusEnum.ToString(),
+                Status = p.statusEnum,
                 ThumbnailUrl = p.PropertyMedia.FirstOrDefault()?.MediaURL,
                 Features = p.PropertyFeatures?
             .Where(pf => pf.Feature != null)

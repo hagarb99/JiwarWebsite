@@ -31,7 +31,7 @@ namespace Jiwar.Services.DesignService
 
             var design = _mapper.Map<Design>(dto);
             design.DesignerID = designerId;
-           
+            design.RequestID = proposal.DesignRequestID;
             design.CreationDate = DateTime.UtcNow;
 
             _context.Designs.Add(design);

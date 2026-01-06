@@ -4,6 +4,10 @@ using Google;
 using Jiwar.DTOs.DesignDto;
 using Jiwar.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.SignalR;
+using Jiwar.Hubs;
+using Jiwar.Enum;
+using GEWAR.Models; // For Notification model if likely in GEWAR namespace based on previous checks
 
 namespace Jiwar.Services.DesignerProposalService
 {
@@ -11,11 +15,13 @@ namespace Jiwar.Services.DesignerProposalService
     {
         private readonly GiwarContext _context;
         private readonly IMapper _mapper;
+        private readonly IHubContext<NotificationHub> _hubContext;
 
-        public DesignerProposalService(GiwarContext context, IMapper mapper)
+        public DesignerProposalService(GiwarContext context, IMapper mapper, IHubContext<NotificationHub> hubContext)
         {
             _context = context;
             _mapper = mapper;
+            _hubContext = hubContext;
         }
 
         public async Task<ProposalDto> SendProposalAsync(string designerId, ProposalDto dto)
@@ -48,7 +54,29 @@ namespace Jiwar.Services.DesignerProposalService
 
             request.Status = "HasProposals";
 
+
             await _context.SaveChangesAsync();
+
+            // Notify the owner
+            if (!string.IsNullOrEmpty(request.UserID))
+            {
+                // 1. Save to Database
+                var notification = new Notification
+                {
+                    UserID = request.UserID,
+                    Title = "New Proposal",
+                    Message = $"You have received a new proposal for your design request {request.Id}.",
+                    NotificationType = NotificationType.Request,
+                    SentDate = DateTime.Now,
+                    IsRead = false
+                };
+
+                _context.Notifications.Add(notification);
+                await _context.SaveChangesAsync();
+
+                // 2. Send Real-time Notification
+                await _hubContext.Clients.User(request.UserID).SendAsync("ReceiveNotification", notification.Title, notification.Message);
+            }
 
             return _mapper.Map<ProposalDto>(proposal);
         }

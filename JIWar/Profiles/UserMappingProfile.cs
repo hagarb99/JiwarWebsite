@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using GEWAR.Models;
 using Jiwar.DTOs;
+using Jiwar.DTOs.AdminAnalytics;
 using Jiwar.Models;
 
 namespace Jiwar.Profiles
@@ -24,6 +25,27 @@ namespace Jiwar.Profiles
 
             // InteriorDesigner -> InteriorDesignerDto
             CreateMap<InteriorDesigner, InteriorDesignerDto>();
+
+            CreateMap<User, AdminUserDTO>()
+                        .ForMember(dest => dest.Id,
+                            opt => opt.MapFrom(src => src.Id))
+
+                        .ForMember(dest => dest.UserName,
+                            opt => opt.MapFrom(src => src.UserName))
+
+                        .ForMember(dest => dest.Email,
+                            opt => opt.MapFrom(src => src.Email))
+
+                        .ForMember(dest => dest.Role,
+                            opt => opt.MapFrom(src => src.Role))
+
+                        .ForMember(dest => dest.RegistrationDate,
+                            opt => opt.MapFrom(src => src.RegistrationDate))
+
+                        .ForMember(dest => dest.IsActive,
+                            opt => opt.MapFrom(src =>
+                                src.LockoutEnd == null || src.LockoutEnd <= DateTimeOffset.UtcNow
+                            ));
         }
     }
 }
