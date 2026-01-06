@@ -41,6 +41,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <Folder Include="Controllers\NewFolder\" />
 	  <Folder Include="Repositories\BookingRating\" />
 	  <Folder Include="Repositories\Property\" />
 	  <Folder Include="Repositories\User\" />

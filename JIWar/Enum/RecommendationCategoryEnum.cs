@@ -1,5 +1,4 @@
 
-using GEWAR.Models;
 namespace Jiwar.Enum
 {
     public enum RecommendationCategoryEnum
@@ -7,7 +6,7 @@ namespace Jiwar.Enum
         Technical,
         Functional,
         Design,
-        General
+        
 
 
     }

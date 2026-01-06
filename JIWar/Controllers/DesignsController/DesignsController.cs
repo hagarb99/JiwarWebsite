@@ -39,8 +39,6 @@ namespace Jiwar.Controllers.DesignsController
             return Ok(result);
         }
 
-        [HttpGet("owner")]
-
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetDesignById(int id)

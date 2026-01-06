@@ -21,12 +21,18 @@ using Jiwar.Services.DesignerProposalService;
 using Jiwar.Services.GoogleService;
 using Jiwar.Services.MailService;
 using Jiwar.Services.ValuationService;
+using Jiwar.Services.NotificationService; // Ensure namespace is available
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Jiwar.Services.DesignRequestService;
+using Jiwar.Services.DesignService;
+using Jiwar.Services.ProposalService;
+using Jiwar.Services.RequestService;
+using Jiwar.Hubs;
 
 using System.Text;
 
@@ -56,8 +62,10 @@ namespace Jiwar
             var builder = WebApplication.CreateBuilder(args);
 
             // Controllers & Swagger
-            builder.Services.AddControllers();
-
+            builder.Services.AddControllers().AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+            });
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen(c =>
             {
@@ -93,9 +101,10 @@ namespace Jiwar
             {
                 options.AddDefaultPolicy(policy =>
                 {
-                    policy.AllowAnyOrigin()
+                    policy.WithOrigins("http://localhost:4200") // Angular frontend
                           .AllowAnyMethod()
-                          .AllowAnyHeader();
+                          .AllowAnyHeader()
+                          .AllowCredentials();
                 });
             });
 
@@ -129,6 +138,24 @@ namespace Jiwar
                         ValidateIssuer = false,
                         ValidateAudience = false
                     };
+                    
+                    options.Events = new JwtBearerEvents
+                    {
+                        OnMessageReceived = context =>
+                        {
+                            var accessToken = context.Request.Query["access_token"];
+
+                            // If the request is for our hub...
+                            var path = context.HttpContext.Request.Path;
+                            if (!string.IsNullOrEmpty(accessToken) &&
+                                (path.StartsWithSegments("/notificationHub")))
+                            {
+                                // Read the token out of the query string
+                                context.Token = accessToken;
+                            }
+                            return Task.CompletedTask;
+                        }
+                    };
                 });
 
             builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
@@ -156,6 +183,7 @@ namespace Jiwar
             builder.Services.AddHttpClient(); // Registers IHttpClientFactory
             builder.Services.AddScoped<IAccountService, AccountService>();
             builder.Services.AddScoped<IPropertyService, PropertyService>();
+            builder.Services.AddScoped<IImgService, ImgService>();
             builder.Services.AddScoped<IBookingService, BookingService>();
             builder.Services.AddScoped<IPaymentService, PaymobPaymentService>();
             builder.Services.AddScoped<ISubscriptionService, SubscriptionService>();
@@ -168,6 +196,9 @@ namespace Jiwar
             // Add this line in your Program.cs
             builder.Services.AddScoped<IWishlistService, WishlistService>();
             builder.Services.AddScoped<IDesignRequestService, DesignRequestService>();
+            builder.Services.AddScoped<IDesignService, DesignService>();
+            builder.Services.AddScoped<IProposalService, ProposalService>();
+            builder.Services.AddScoped<IRequestService, RequestService>();
 
 
             builder.Services.AddScoped<IRenovationSimulationService, RenovationSimulationService>();
@@ -183,15 +214,17 @@ namespace Jiwar
                     x.JsonSerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase;
                 });
 
-
             // Other Services
             builder.Services.AddScoped<TokenService>();
             builder.Services.AddScoped<GoogleAuthService>();
+            builder.Services.AddScoped<INotificationService, NotificationService>(); // Register service
+            
+            // SignalR
+            builder.Services.AddSignalR();
+            builder.Services.AddSingleton<Microsoft.AspNetCore.SignalR.IUserIdProvider, CustomUserIdProvider>();
 
             // AutoMapper
             builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
-            builder.Services.AddSignalR();
-            builder.Services.AddSingleton<Microsoft.AspNetCore.SignalR.IUserIdProvider, CustomUserIdProvider>();
 
             // Build App
             var app = builder.Build();
