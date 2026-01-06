@@ -177,9 +177,11 @@ namespace Jiwar
 
 
             builder.Services.AddControllers()
-    .AddJsonOptions(x =>
-        x.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.Preserve
-    );
+                .AddJsonOptions(x =>
+                {
+                    x.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+                    x.JsonSerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase;
+                });
 
 
             // Other Services
@@ -218,6 +220,7 @@ namespace Jiwar
             }
 
             app.UseHttpsRedirection();
+            app.UseWebSockets();
             app.UseRouting();
             app.UseCors();
             app.UseAuthentication();
@@ -229,6 +232,7 @@ namespace Jiwar
             {
                 endpoints.MapControllers();
                 endpoints.MapHub<ChatHub>("/chathub");
+                endpoints.MapHub<ChatHub>("/notificationHub");
             });
             //app.MapControllers();
             app.Run();
