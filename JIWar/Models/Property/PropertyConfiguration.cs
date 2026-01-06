@@ -60,7 +60,7 @@ namespace GEWAR.Models.Configurations
             builder.HasOne(p => p.PropertyOwner)
         .WithMany(po => po.Properties)
         .HasForeignKey(p => p.OwnerID)
-        .OnDelete(DeleteBehavior.Cascade);
+        .OnDelete(DeleteBehavior.Restrict);
 
             builder.Property(p => p.statusEnum)
        .HasConversion<string>()
@@ -80,6 +80,10 @@ namespace GEWAR.Models.Configurations
              .WithOne()
              .HasForeignKey(rp => rp.PropertyID)
              .OnDelete(DeleteBehavior.Restrict);
+            builder.HasMany(p => p.Bookings)
+       .WithOne(b => b.Property)
+       .HasForeignKey(b => b.PropertyID)
+       .OnDelete(DeleteBehavior.Restrict);
 
 
 
