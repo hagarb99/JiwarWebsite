@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using GEWAR.Models;
+using Jiwar.DTOs;
 using Jiwar.DTOs.BookingDTOs;
 using Jiwar.Models;
 using Jiwar.Repositories;
@@ -99,10 +100,21 @@ namespace Jiwar.Services
             var bookings = await _bookingRepo.GetBookingsByCustomer(customerId);
             return mapper.Map<List<BookingDto>>(bookings);
         }
-        public async Task<List<BookingDto>> GetBookingsForOwnerAsync(string ownerId)
+        public async Task<List<OwnerBookingDto>> GetBookingsForOwnerAsync(string ownerId)
         {
             var bookings = await _bookingRepo.GetBookingsForOwner(ownerId);
-            return mapper.Map<List<BookingDto>>(bookings);
+
+            return bookings.Select(b => new OwnerBookingDto
+            {
+                Id = b.Id,
+                PropertyID = b.PropertyID,
+                CustomerName = b.Customer != null ? b.Customer.Name : "Unknown",
+                PropertyTitle = b.Property != null ? b.Property.Title : "Unknown",
+                StartDate = b.StartDate,
+                EndDate = b.EndDate,
+                Cost = b.Cost,
+                Status = b.status
+            }).ToList();
         }
         public async Task<bool> UpdateBookingStatusAsync(int bookingId, StatusEnum status, string ownerId)
         {

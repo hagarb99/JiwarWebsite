@@ -96,15 +96,15 @@ namespace Jiwar
 
             });
 
+
             // CORS
             builder.Services.AddCors(options =>
             {
                 options.AddDefaultPolicy(policy =>
                 {
-                    policy.WithOrigins("http://localhost:4200") // Angular frontend
+                    policy.AllowAnyOrigin()
                           .AllowAnyMethod()
-                          .AllowAnyHeader()
-                          .AllowCredentials();
+                          .AllowAnyHeader();
                 });
             });
 
