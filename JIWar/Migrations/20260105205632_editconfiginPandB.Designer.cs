@@ -4,6 +4,7 @@ using GEWAR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Jiwar.Migrations
 {
     [DbContext(typeof(GiwarContext))]
-    partial class GiwarContextModelSnapshot : ModelSnapshot
+    [Migration("20260105205632_editconfiginPandB")]
+    partial class editconfiginPandB
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1247,13 +1250,9 @@ namespace Jiwar.Migrations
 
                     b.Property<string>("UserId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("RenovationSimulationID");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("SimulationChatMessages");
                 });
@@ -2213,25 +2212,6 @@ namespace Jiwar.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Jiwar.Models.ChatAi.SimulationChatMessage", b =>
-                {
-                    b.HasOne("GEWAR.Models.RenovationSimulation", "RenovationSimulation")
-                        .WithMany("SimulationChatMessages")
-                        .HasForeignKey("RenovationSimulationID")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("GEWAR.Models.User", "User")
-                        .WithMany("SimulationChatMessages")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("RenovationSimulation");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("Jiwar.Models.Design", b =>
                 {
                     b.HasOne("GEWAR.Models.InteriorDesigner", "InteriorDesigner")
@@ -2455,8 +2435,6 @@ namespace Jiwar.Migrations
                     b.Navigation("Medias");
 
                     b.Navigation("Recommendations");
-
-                    b.Navigation("SimulationChatMessages");
                 });
 
             modelBuilder.Entity("GEWAR.Models.User", b =>
@@ -2474,8 +2452,6 @@ namespace Jiwar.Migrations
                     b.Navigation("Offers");
 
                     b.Navigation("Payments");
-
-                    b.Navigation("SimulationChatMessages");
 
                     b.Navigation("Subscriptions");
 

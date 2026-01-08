@@ -98,15 +98,15 @@ namespace Jiwar
 
             });
 
+
             // CORS
             builder.Services.AddCors(options =>
             {
                 options.AddDefaultPolicy(policy =>
                 {
-                    policy.WithOrigins("http://localhost:4200") // Angular frontend
+                    policy.AllowAnyOrigin()
                           .AllowAnyMethod()
-                          .AllowAnyHeader()
-                          .AllowCredentials();
+                          .AllowAnyHeader();
                 });
             });
 
@@ -266,10 +266,10 @@ namespace Jiwar
            
 
             app.UseEndpoints(endpoints =>
-            {
+            { 
                 endpoints.MapControllers();
                 endpoints.MapHub<ChatHub>("/chathub");
-                endpoints.MapHub<ChatHub>("/notificationHub");
+                endpoints.MapHub<NotificationHub>("/notificationHub");
             });
             //app.MapControllers();
             app.Run();

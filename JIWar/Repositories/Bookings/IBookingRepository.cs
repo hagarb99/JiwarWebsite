@@ -17,5 +17,6 @@ namespace Jiwar.Repositories
         Task<IEnumerable<Booking>> GetBookingsByProperty(int PropertyID);
 
         Task<Booking> GetBookingWithRating(int id);
+        Task<IEnumerable<Booking>> GetBookingsForOwner(string ownerId);
     }
 }
