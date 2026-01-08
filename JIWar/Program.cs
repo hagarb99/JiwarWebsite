@@ -262,10 +262,10 @@ namespace Jiwar
            
 
             app.UseEndpoints(endpoints =>
-            {
+            { 
                 endpoints.MapControllers();
                 endpoints.MapHub<ChatHub>("/chathub");
-                endpoints.MapHub<ChatHub>("/notificationHub");
+                endpoints.MapHub<NotificationHub>("/notificationHub");
             });
             //app.MapControllers();
             app.Run();

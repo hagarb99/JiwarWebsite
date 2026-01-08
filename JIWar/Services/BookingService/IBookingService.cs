@@ -11,7 +11,7 @@ namespace Jiwar.Repositories
         Task<BookingDto> CreateAsync(CreateBookingDto dto, string customerId);
         Task<bool> UpdateAsync(int id, CreateBookingDto dto);
         Task<bool> DeleteAsync(int id);
-        Task<List<BookingDto>> GetBookingsByCustomerAsync(string customerId);
+        Task<List<CustomerBookingDto>> GetBookingsByCustomerAsync(string customerId);
         Task<List<OwnerBookingDto>> GetBookingsForOwnerAsync(string ownerId);
         Task<bool> UpdateBookingStatusAsync(int bookingId, StatusEnum status, string ownerId);
 
