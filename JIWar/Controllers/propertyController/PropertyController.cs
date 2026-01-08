@@ -1,11 +1,13 @@
 using GEWAR;
 using GEWAR.Models;
 using Jiwar.DTOs;
+using Jiwar.DTOs.PropertyComparisonDTO;
 using Jiwar.DTOs.PropertyDTOs;
 using Jiwar.Helpers;
 using Jiwar.Models;
 using Jiwar.Service;
 using Jiwar.Services;
+using Jiwar.Services.AI.Comparison;
 using JIWar.PropertyOwner;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -21,17 +23,17 @@ public class PropertyController : ControllerBase
     private readonly IPropertyService _propertyService;
     private readonly IPropertyAnalyticsService _analyticsService;
     private readonly IPropertyRepository propertyRepository;
-   
+    private readonly IPropertyComparisonAiService _propertyComparisonAiService;
 
-    public PropertyController(IPropertyService propertyService
-        , IPropertyAnalyticsService analyticsService,
-
+        public PropertyController(IPropertyService propertyService,
+        IPropertyAnalyticsService analyticsService,
+        IPropertyComparisonAiService propertyComparisonAiService,
         IPropertyRepository propertyRepository
         )
     {
         _propertyService = propertyService;
         _analyticsService = analyticsService;
-      
+        _propertyComparisonAiService = propertyComparisonAiService;
         this.propertyRepository = propertyRepository;
     }
     
@@ -152,14 +154,19 @@ public class PropertyController : ControllerBase
 
     [HttpPost("compare")]
     [AllowAnonymous]
-    public async Task<IActionResult> Compare([FromBody] List<int> propertyIds)
+    public async Task<IActionResult> Compare([FromBody] PropertyComparisonRequestDTO request)
     {
-        if (propertyIds == null || propertyIds.Count == 0 || propertyIds.Count > 5)
-            return BadRequest("You must provide between 1 and 5 property IDs.");
+        if (request.PropertyIds.Count < 2 || request.PropertyIds.Count > 5)
+            return BadRequest("Choose between 2 and 5 properties.");
 
-        var result = await _propertyService.GetPropertiesForComparisonAsync(propertyIds);
-        return Ok(result);
+        var comparisonDtos = (await _propertyService.GetPropertiesForComparisonAsync(request.PropertyIds))
+                             .ToList();
+
+        var aiResult = await _propertyComparisonAiService.CompareAsync(comparisonDtos, request.UserType);
+
+        return Ok(aiResult);
     }
+
 
     [HttpGet("district/{district}/price-history")]
     public async Task<IActionResult> GetDistrictPriceHistory(string district)

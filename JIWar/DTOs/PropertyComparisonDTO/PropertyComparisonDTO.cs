@@ -1,6 +1,6 @@
 ﻿using Jiwar.Enum;
 
-namespace Jiwar.DTOs.PropertyDTOs
+namespace Jiwar.DTOs.PropertyComparisonDTO
 {
     public class PropertyComparisonDTO
     {

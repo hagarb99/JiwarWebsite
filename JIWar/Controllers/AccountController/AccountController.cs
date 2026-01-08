@@ -4,7 +4,6 @@ using Jiwar.Account.DTOs;
 using Jiwar.Account.Services;
 using Jiwar.DTOs;
 using Jiwar.DTOs.AccountDTOs.EditProfileDtos;
-using Jiwar.DTOs.AccountDTOs.EditProfileDtos;
 using Jiwar.DTOs.ChatDTOs;
 using Jiwar.Service;
 using Microsoft.AspNetCore.Authorization;
