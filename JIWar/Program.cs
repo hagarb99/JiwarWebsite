@@ -35,6 +35,7 @@ using Jiwar.Services.RequestService;
 using Jiwar.Hubs;
 
 using System.Text;
+using Microsoft.AspNetCore.SignalR;
 
 namespace Jiwar
 {
@@ -221,7 +222,8 @@ namespace Jiwar
             
             // SignalR
             builder.Services.AddSignalR();
-            builder.Services.AddSingleton<Microsoft.AspNetCore.SignalR.IUserIdProvider, CustomUserIdProvider>();
+            builder.Services.AddSingleton<IUserIdProvider, CustomUserIdProvider>();
+
 
             // AutoMapper
             builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
@@ -261,8 +263,8 @@ namespace Jiwar
             app.UseStaticFiles();
            
 
-            app.UseEndpoints(endpoints =>
-            { 
+                        app.UseEndpoints(endpoints =>
+                        { 
                 endpoints.MapControllers();
                 endpoints.MapHub<ChatHub>("/chathub");
                 endpoints.MapHub<NotificationHub>("/notificationHub");

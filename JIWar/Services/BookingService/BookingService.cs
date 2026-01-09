@@ -83,6 +83,11 @@ namespace Jiwar.Services
             booking.PaymentMethod = PaymentMethod.Paymob;
 
             var created = await _bookingRepo.AddAsync(booking);
+            
+
+            if (string.IsNullOrEmpty(property.OwnerID))
+                throw new Exception("Property owner ID is missing.");
+
             await _hubContext.Clients.User(property.OwnerID)
     .SendAsync("ReceiveNotificationObject", new
     {
