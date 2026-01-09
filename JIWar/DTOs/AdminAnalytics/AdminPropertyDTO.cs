@@ -17,7 +17,7 @@ namespace Jiwar.DTOs.AdminAnalytics
 
         public PropEnum status { get; set; }
 
-        public virtual PropertyComparisonDTO PropertyComparisonDTO { get; set; }
+        //public virtual PropertyComparisonDTO PropertyComparisonDTO { get; set; }
 
         public virtual PropertyDetailsDTO PropertyDetailsDTO { get; set; }
 

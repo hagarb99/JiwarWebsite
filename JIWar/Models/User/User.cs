@@ -1,4 +1,5 @@
 ﻿using Jiwar.Models;
+using Jiwar.Models.ChatAi;
 using JIWAR.Models;
 using Microsoft.AspNetCore.Identity;
 using System;
@@ -35,6 +36,9 @@ namespace GEWAR.Models
         public virtual ICollection<BookingRating> BookingRatings { get; set; } = new List<BookingRating>();
         public virtual ICollection<Subscription> Subscriptions { get; set; } = new List<Subscription>();
         public virtual ICollection<WishList> WishLists { get; set; } = new List<WishList>();
+
+        public virtual ICollection<SimulationChatMessage> SimulationChatMessages { get; set; } = new List<SimulationChatMessage>();
+
 
     }
 }

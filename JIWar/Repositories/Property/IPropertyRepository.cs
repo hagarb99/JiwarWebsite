@@ -28,4 +28,5 @@ public interface IPropertyRepository : IGenericRepository<Property>
     Task<List<AdminPropertyDTO>> GetAllPropertiesForAdminAsync();
 
     Task<PagedResult<PropertyListBDTO>> GetAllPropertiesPagedAsync(int page, int pageSize);
+    Task<List<Property>> GetByIdsAsync(List<int> propertyIds);
 }

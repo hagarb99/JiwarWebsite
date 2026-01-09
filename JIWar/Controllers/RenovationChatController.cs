@@ -4,6 +4,7 @@ using Jiwar.Services.AI;
 using Jiwar.Services.AI.Chat;
 using Jiwar.Services.AI.Enums;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace Jiwar.Controllers
 {
@@ -51,25 +52,31 @@ namespace Jiwar.Controllers
         [HttpPost("upload-image")]
         public async Task<IActionResult> UploadImage(int simulationId, [FromForm] IFormFile image)
         {
+            var userId = User.Claims.FirstOrDefault(c=>c.Type ==ClaimTypes.NameIdentifier).Value; 
             if (image == null || image.Length == 0)
                 return BadRequest("No image uploaded.");
 
             var fileName = $"{Guid.NewGuid()}_{image.FileName}";
-            var path = Path.Combine("wwwroot/uploads", fileName);
+            var path = Path.Combine("wwwroot/uploads/renovation", fileName);
 
             using var stream = new FileStream(path, FileMode.Create);
             await image.CopyToAsync(stream);
 
             var chatMessage = new SimulationChatMessage
             {
+                UserId = userId,
                 RenovationSimulationID = simulationId,
                 Sender = ChatSenderEnum.User,
                 MessageType = ChatMessageTypeEnum.Image,
-                Content = $"/uploads/{fileName}"
+                Content = $"/uploads/renovation/{fileName}"
             };
 
             // نخزن الرسالة عبر service بدل repo مباشرة
             await _chatService.SaveMessageAsync(chatMessage);
+
+
+            // we will add logic here
+
 
             return Ok(new { fileUrl = chatMessage.Content });
         }

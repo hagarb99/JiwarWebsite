@@ -4,6 +4,7 @@ using GEWAR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Jiwar.Migrations
 {
     [DbContext(typeof(GiwarContext))]
-    partial class GiwarContextModelSnapshot : ModelSnapshot
+    [Migration("20260108140302_SimulationChatMessageConfiguration")]
+    partial class SimulationChatMessageConfiguration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1143,10 +1146,8 @@ namespace Jiwar.Migrations
                     b.Property<int?>("OfferID")
                         .HasColumnType("int");
 
-                    b.Property<string>("PaymentMethod")
-                        .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
+                    b.Property<int>("PaymentMethod")
+                        .HasColumnType("int");
 
                     b.Property<string>("PaymentStatus")
                         .HasMaxLength(50)
@@ -2173,18 +2174,17 @@ namespace Jiwar.Migrations
                     b.HasOne("GEWAR.Models.User", "Customer")
                         .WithMany()
                         .HasForeignKey("CustomerID")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("GEWAR.Models.Offer", "Offer")
                         .WithMany()
-                        .HasForeignKey("OfferID")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .HasForeignKey("OfferID");
 
                     b.HasOne("GEWAR.Models.Property", "Property")
-                        .WithMany("Bookings")
+                        .WithMany()
                         .HasForeignKey("PropertyID")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Customer");
@@ -2419,8 +2419,6 @@ namespace Jiwar.Migrations
 
             modelBuilder.Entity("GEWAR.Models.Property", b =>
                 {
-                    b.Navigation("Bookings");
-
                     b.Navigation("DesignRequests");
 
                     b.Navigation("Offers");

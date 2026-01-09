@@ -148,7 +148,7 @@ namespace GEWAR
             modelBuilder.ApplyConfiguration(new SimulationMediaConfiguration());
             modelBuilder.ApplyConfiguration(new SimulationRecommendationConfiguration());
             modelBuilder.ApplyConfiguration(new UserChatQuotaConfiguration());
-
+            modelBuilder.ApplyConfiguration(new SimulationChatMessageConfiguration());
 
 
 
