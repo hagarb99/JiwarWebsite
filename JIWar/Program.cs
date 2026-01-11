@@ -37,6 +37,7 @@ using System.Text;
 using System.Threading.Tasks;
 using static Jiwar.Services.AI.Comparison.IPropertyComparisonAiService;
 using IPropertyComparisonAiService = Jiwar.Services.AI.Comparison.IPropertyComparisonAiService;
+using Microsoft.AspNetCore.SignalR;
 
 namespace Jiwar
 {
@@ -225,7 +226,8 @@ namespace Jiwar
             
             // SignalR
             builder.Services.AddSignalR();
-            builder.Services.AddSingleton<Microsoft.AspNetCore.SignalR.IUserIdProvider, CustomUserIdProvider>();
+            builder.Services.AddSingleton<IUserIdProvider, CustomUserIdProvider>();
+
 
             // AutoMapper
             builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
@@ -265,8 +267,8 @@ namespace Jiwar
             app.UseStaticFiles();
            
 
-            app.UseEndpoints(endpoints =>
-            { 
+                        app.UseEndpoints(endpoints =>
+                        { 
                 endpoints.MapControllers();
                 endpoints.MapHub<ChatHub>("/chathub");
                 endpoints.MapHub<NotificationHub>("/notificationHub");
