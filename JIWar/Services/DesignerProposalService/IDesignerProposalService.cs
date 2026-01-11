@@ -6,7 +6,7 @@ namespace Jiwar.Services.DesignerProposalService
     {
         Task<ProposalDto> SendProposalAsync(string designerId, ProposalDto dto);
         Task<List<ProposalForOwnerDto>> GetProposalsForRequestAsync(int requestId);
-        Task<ProposalDto> ChooseProposalAsync(int proposalId, string ownerId);
+        Task<List<ProposalForOwnerDto>> ChooseProposalAsync(int proposalId, string ownerId);
         Task<IEnumerable<ProposalDto>> GetProposalsForDesignerAsync(string designerId);
 
     }

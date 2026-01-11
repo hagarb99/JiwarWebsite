@@ -1,10 +1,14 @@
 ﻿using Microsoft.AspNetCore.SignalR;
+using System.Security.Claims;
 
-public class CustomUserIdProvider : Microsoft.AspNetCore.SignalR.IUserIdProvider
+namespace Jiwar.Hubs
 {
-    public string GetUserId(HubConnectionContext connection)
+    public class CustomUserIdProvider : IUserIdProvider
     {
-        // افترضنا إن JWT فيه claim باسم NameIdentifier
-        return connection.User?.FindFirst("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")?.Value;
+        public string GetUserId(HubConnectionContext connection)
+        {
+            // Use the same claim as the original implementation to ensure compatibility
+            return connection.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        }
     }
 }

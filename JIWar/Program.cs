@@ -148,7 +148,7 @@ namespace Jiwar
                             // If the request is for our hub...
                             var path = context.HttpContext.Request.Path;
                             if (!string.IsNullOrEmpty(accessToken) &&
-                                (path.StartsWithSegments("/notificationHub")))
+                                (path.StartsWithSegments("/notificationHub", StringComparison.OrdinalIgnoreCase)))
                             {
                                 // Read the token out of the query string
                                 context.Token = accessToken;
@@ -265,7 +265,7 @@ namespace Jiwar
             {
                 endpoints.MapControllers();
                 endpoints.MapHub<ChatHub>("/chathub");
-                endpoints.MapHub<ChatHub>("/notificationHub");
+                endpoints.MapHub<NotificationHub>("/notificationHub");
             });
             //app.MapControllers();
             app.Run();
