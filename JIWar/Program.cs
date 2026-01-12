@@ -105,9 +105,10 @@ namespace Jiwar
             {
                 options.AddDefaultPolicy(policy =>
                 {
-                    policy.AllowAnyOrigin()
-                          .AllowAnyMethod()
-                          .AllowAnyHeader();
+                    policy.WithOrigins("http://localhost:4200")
+                           .AllowAnyMethod()
+                          .AllowAnyHeader()
+                     .AllowCredentials();
                 });
             });
 

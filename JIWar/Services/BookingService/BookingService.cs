@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
+using GEWAR;
 using GEWAR.Models;
 using Jiwar.DTOs;
 using Jiwar.DTOs.BookingDTOs;
+using Jiwar.Enum;
 using Jiwar.Hubs;
 using Jiwar.Models;
 using Jiwar.Repositories;
@@ -18,17 +20,20 @@ namespace Jiwar.Services
         private readonly IPropertyRepository _propertyRepo;
         private readonly IHubContext<NotificationHub> _hubContext; 
         private readonly IMapper mapper;
+        private readonly GiwarContext _context;
         public BookingService(
             IBookingRepository bookingRepo ,  
             IPropertyRepository _propertyRepo,
             IMapper mapper,
-            IHubContext<NotificationHub> hubContext
+            IHubContext<NotificationHub> hubContext,
+            GiwarContext context
             )
         {
             _bookingRepo = bookingRepo;
             this._propertyRepo = _propertyRepo;
             this.mapper = mapper;
             _hubContext = hubContext;
+            _context = context;
         }
 
         public async Task<BookingDto> GetByIdAsync(int id)
@@ -88,14 +93,24 @@ namespace Jiwar.Services
             if (string.IsNullOrEmpty(property.OwnerID))
                 throw new Exception("Property owner ID is missing.");
 
+            // Create & persist Notification so it appears in user's notification list
+            var notification = new Notification
+            {
+                UserID = property.OwnerID,
+                Title = "New Booking Request",
+                Message = $"You have a new booking request for {booking.Property?.Title ?? "your property"}",
+                NotificationType = NotificationType.Booking,
+                SentDate = DateTime.UtcNow,
+                IsRead = false,
+                RelatedId = booking.Id.ToString()
+            };
+
+            _context.Notifications.Add(notification);
+            await _context.SaveChangesAsync();
+
+            // Send real-time notification using the same event & args as proposals
             await _hubContext.Clients.User(property.OwnerID)
-    .SendAsync("ReceiveNotificationObject", new
-    {
-        title = "New Booking Request",
-        message = $"You have a new booking request for {booking.Property.Title}",
-        type = "proposal",
-        link = $"/owner/bookings"
-    });
+                .SendAsync("ReceiveNotification", notification.Title, notification.Message);
 
             return mapper.Map<BookingDto>(created);
         }
@@ -155,15 +170,26 @@ namespace Jiwar.Services
 
             if (updated)
             {
-                // Notify customer
+                var notifTitle = status == StatusEnum.Confirmed ? "Booking Accepted" : "Booking Rejected";
+                var notifMessage = $"Your booking for {booking.Property?.Title ?? "the property"} was {status.ToString().ToLower()}";
+
+                var notification = new Notification
+                {
+                    UserID = booking.CustomerID,
+                    Title = notifTitle,
+                    Message = notifMessage,
+                    NotificationType = NotificationType.Booking,
+                    SentDate = DateTime.UtcNow,
+                    IsRead = false,
+                    RelatedId = booking.Id.ToString()
+                };
+
+                _context.Notifications.Add(notification);
+                await _context.SaveChangesAsync();
+
+                // Send real-time notification using same event as proposals
                 await _hubContext.Clients.User(booking.CustomerID)
-                    .SendAsync("ReceiveNotificationObject", new
-                    {
-                        title = status == StatusEnum.Confirmed ? "Booking Accepted" : "Booking Rejected",
-                        message = $"Your booking for {booking.Property.Title} was {status.ToString().ToLower()}",
-                        type = status == StatusEnum.Confirmed ? "acceptance" : "proposal",
-                        link = $"/my-bookings"
-                    });
+                    .SendAsync("ReceiveNotification", notification.Title, notification.Message);
             }
 
             return updated;
