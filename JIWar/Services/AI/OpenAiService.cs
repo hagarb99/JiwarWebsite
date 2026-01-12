@@ -1,4 +1,5 @@
-﻿using Jiwar.Models;
+﻿using Azure;
+using Jiwar.Models;
 using Jiwar.Services.AI.Enums;
 using System.Text;
 using System.Text.Json;
@@ -130,6 +131,7 @@ namespace Jiwar.Services.AI
             }
 
             return await response.Content.ReadAsStringAsync();
+
         }
 
         // ============================
@@ -160,8 +162,8 @@ namespace Jiwar.Services.AI
         {
             return model switch
             {
-                /*AiModelEnum.Gpt4o => "gpt-4o"*/
-                AiModelEnum.Gpt4oMini => "gpt-4o-mini",
+                AiModelEnum.Gpt4o => "gpt-4o",
+                //AiModelEnum.Gpt4oMini => "gpt-4o-mini",
                 AiModelEnum.DallE3 => "dall-e-3",
                 _ => throw new Exception("Unsupported AI Model")
             };

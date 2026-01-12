@@ -14,26 +14,35 @@
         "type": "object",
         "properties": {
           "propertyId": { "type": "number" },
-          "priceValue": { "type": "number" },
-          "location": { "type": "number" },
-          "space": { "type": "number" },
-          "investmentPotential": { "type": "number" },
-          "comfort": { "type": "number" },
-          "totalScore": { "type": "number" }
+          "categoryScores": {
+            "type": "object",
+            "properties": {
+              "priceValue": { "$ref": "#/definitions/score" },
+              "location": { "$ref": "#/definitions/score" },
+              "spaceAndLayout": { "$ref": "#/definitions/score" },
+              "features": { "$ref": "#/definitions/score" },
+              "investmentPotential": { "$ref": "#/definitions/score" }
+            },
+            "required": ["priceValue","location","spaceAndLayout","features","investmentPotential"]
+          },
+          "totalScore": { "type": "number" },
+          "overallReason": { "type": "string" }
         },
-        "required": [
-          "propertyId",
-          "priceValue",
-          "location",
-          "space",
-          "investmentPotential",
-          "comfort",
-          "totalScore"
-        ]
+        "required": ["propertyId","categoryScores","totalScore","overallReason"]
       }
     }
   },
-  "required": ["bestPropertyId", "summary", "scores"]
+  "required": ["bestPropertyId","summary","scores"],
+  "definitions": {
+    "score": {
+      "type": "object",
+      "properties": {
+        "score": { "type": "number" },
+        "description": { "type": "string" }
+      },
+      "required": ["score","description"]
+    }
+  }
 }
 """;
     }
