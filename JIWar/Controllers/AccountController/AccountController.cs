@@ -255,6 +255,19 @@ namespace Jiwar.Account
             return Ok(profile);
         }
 
+        [Authorize]
+        [HttpPost("profile/upload-image")]
+        public async Task<IActionResult> UploadProfileImage([FromForm] IFormFile image) // الحقل يجب أن يسمى image
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userId)) return Unauthorized("User ID not found in token.");
+
+            var result = await accountService.UploadProfileImageAsync(userId, image);
+
+            if (!result.Success) return BadRequest(result);
+
+            return Ok(result);
+        }
 
 
     }

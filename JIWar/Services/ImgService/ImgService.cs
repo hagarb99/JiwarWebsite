@@ -52,4 +52,22 @@ public class ImgService : IImgService
         return mediaList;
     }
 
+    public async Task<string> SaveUserProfileImageAsync(string userId, IFormFile image)
+    {
+        if (image == null || image.Length == 0) return null;
+
+        // تنظيم الصور في فولدر خاص بالبروفايلات
+        var folderPath = Path.Combine(webHostEnvironment.WebRootPath, "images", "profiles");
+        Directory.CreateDirectory(folderPath);
+
+        var fileName = $"{userId}_{Guid.NewGuid()}{Path.GetExtension(image.FileName)}";
+        var fullPath = Path.Combine(folderPath, fileName);
+
+        using var stream = new FileStream(fullPath, FileMode.Create);
+        await image.CopyToAsync(stream);
+
+        // نرجع المسار الذي سيخزن في الداتابيز
+        return $"/images/profiles/{fileName}";
+    }
+
 }

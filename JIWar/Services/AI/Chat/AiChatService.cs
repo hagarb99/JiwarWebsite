@@ -52,7 +52,9 @@ namespace Jiwar.Services.AI.Chat
                 RenovationSimulationID = simulationId,
                 Sender = ChatSenderEnum.AI,
                 MessageType = ChatMessageTypeEnum.Text,
-                Content = aiResponse
+                Content = aiResponse,
+                UserId = simulation.UserID
+          
             });
 
             return aiResponse;

@@ -9,6 +9,7 @@ using Jiwar.DTOs.AccountDTOs.ProfileDTOs;
 using Jiwar.Helpers;
 using Jiwar.Models;
 using Jiwar.Repositories;
+using Jiwar.Services;
 using Jiwar.Services.GoogleService;
 using Jiwar.Services.MailService;
 using Microsoft.AspNetCore.Identity;
@@ -26,13 +27,15 @@ namespace Jiwar.Account.Services
         private readonly UserManager<User> _userManager;
         private readonly IMapper mapper;
         private readonly IMailService _mailService;
+        private readonly IImgService imgService;
         public AccountService(
             IAccountRepository repo,
             TokenService tokenService ,
             GoogleAuthService _googleAuthService,
             UserManager<User> _userManager,
             IMapper mapper,
-            IMailService mailService
+            IMailService mailService,
+            IImgService imgService
             
             )
         {
@@ -42,6 +45,7 @@ namespace Jiwar.Account.Services
             this._userManager = _userManager;
             this.mapper = mapper;
             _mailService = mailService;
+            this.imgService = imgService;
         }
         public async Task<ResultViewModel<UserResponseDTO>> RegisterAsync(RegisterDto dto)
         {
@@ -352,7 +356,21 @@ namespace Jiwar.Account.Services
                 PhoneNumber = owner.Owneruser.PhoneNumber
             };
         }
+        public async Task<ResultViewModel<string>> UploadProfileImageAsync(string userId, IFormFile image)
+        {
+            // استخدام السيرفس المتخصصة في الصور
+            var imageUrl = await imgService.SaveUserProfileImageAsync(userId, image);
 
+            if (string.IsNullOrEmpty(imageUrl))
+                return ResultViewModel<string>.Fail("Failed to save image.");
+
+            var user = await repo.FindByIdAsync(userId);
+            user.ProfilePicURL = imageUrl;
+
+            await repo.UpdateUserAsync(user);
+
+            return ResultViewModel<string>.Ok("Success", imageUrl);
+        }
 
     }
 }
