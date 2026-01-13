@@ -5,6 +5,7 @@ using Jiwar.Account;
 using Jiwar.Account.Services;
 using Jiwar.Controllers;
 using Jiwar.Hubs;
+using Jiwar.Hubs;
 using Jiwar.Mappings;
 using Jiwar.Models;
 using Jiwar.Repositories;
@@ -17,24 +18,26 @@ using Jiwar.Service;
 using Jiwar.Services;
 using Jiwar.Services.AI;
 using Jiwar.Services.AI.Chat;
+using Jiwar.Services.AI.Comparison;
 using Jiwar.Services.DesignerProposalService;
+using Jiwar.Services.DesignRequestService;
+using Jiwar.Services.DesignService;
 using Jiwar.Services.GoogleService;
 using Jiwar.Services.MailService;
-using Jiwar.Services.ValuationService;
 using Jiwar.Services.NotificationService; // Ensure namespace is available
+using Jiwar.Services.ProposalService;
+using Jiwar.Services.RequestService;
+using Jiwar.Services.ValuationService;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
-using Jiwar.Services.DesignRequestService;
-using Jiwar.Services.DesignService;
-using Jiwar.Services.ProposalService;
-using Jiwar.Services.RequestService;
-using Jiwar.Hubs;
-
 using System.Text;
+using System.Threading.Tasks;
+using static Jiwar.Services.AI.Comparison.IPropertyComparisonAiService;
+using IPropertyComparisonAiService = Jiwar.Services.AI.Comparison.IPropertyComparisonAiService;
+using Microsoft.AspNetCore.SignalR;
 
 namespace Jiwar
 {
@@ -99,15 +102,16 @@ namespace Jiwar
 
             });
 
+
             // CORS
             builder.Services.AddCors(options =>
             {
                 options.AddDefaultPolicy(policy =>
                 {
-                    policy.WithOrigins("http://localhost:4200", "https://localhost:5000")
-                          .AllowAnyMethod()
+                    policy.WithOrigins("http://localhost:4200")
+                           .AllowAnyMethod()
                           .AllowAnyHeader()
-                          .AllowCredentials();
+                     .AllowCredentials();
                 });
             });
 
@@ -210,9 +214,16 @@ namespace Jiwar
             builder.Services.AddScoped<IMailService, MailService>();
             builder.Services.AddScoped<IImgService, ImgService>();
             builder.Services.AddScoped<IAiChatService, AiChatService>();
+            builder.Services.AddScoped<IPropertyComparisonAiService, PropertyComparisonAiService>();
 
 
 
+            builder.Services.AddControllers()
+                .AddJsonOptions(x =>
+                {
+                    x.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+                    x.JsonSerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase;
+                });
 
             // Other Services
             builder.Services.AddScoped<TokenService>();
@@ -221,7 +232,8 @@ namespace Jiwar
             
             // SignalR
             builder.Services.AddSignalR();
-            builder.Services.AddSingleton<Microsoft.AspNetCore.SignalR.IUserIdProvider, CustomUserIdProvider>();
+            builder.Services.AddSingleton<IUserIdProvider, CustomUserIdProvider>();
+
 
             // AutoMapper
             builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
@@ -261,8 +273,8 @@ namespace Jiwar
             app.UseStaticFiles();
            
 
-            app.UseEndpoints(endpoints =>
-            {
+                        app.UseEndpoints(endpoints =>
+                        { 
                 endpoints.MapControllers();
                 endpoints.MapHub<ChatHub>("/chathub");
                 endpoints.MapHub<NotificationHub>("/notificationHub");

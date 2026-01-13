@@ -10,12 +10,23 @@ namespace Jiwar.Profiles
         public BookingProfile()
         {
             CreateMap<Booking, BookingDto>()
-                .ForMember(dest => dest.PaymentStatus,
-                           opt => opt.MapFrom(src => src.PaymentStatus ?? PaymentStatusEnum.Pending));
+    .ForMember(
+        destination => destination.Status,
+        options => options.MapFrom(source => source.status)
+    )
+    .ForMember(
+        destination => destination.PaymentStatus,
+        options => options.MapFrom(
+            source => source.PaymentStatus ?? PaymentStatusEnum.Pending
+        )
+    );
 
             CreateMap<CreateBookingDto, Booking>()
                 .ForMember(dest => dest.OfferID,
                            opt => opt.Condition(src => src.OfferID != 0));
+
+
+
         }
     }
 }

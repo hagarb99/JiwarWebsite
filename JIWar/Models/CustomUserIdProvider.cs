@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.SignalR;
 using System.Security.Claims;
+using System.Security.Claims;
 
 namespace Jiwar.Hubs
 {

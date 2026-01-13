@@ -56,6 +56,22 @@ namespace Jiwar.Models
             builder.Property(b => b.Cost)
        .HasColumnType("decimal(18,2)")
        .IsRequired();
+           
+
+            builder.HasOne(b => b.Customer)
+                   .WithMany()
+                   .HasForeignKey(b => b.CustomerID)
+                   .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasOne(b => b.Offer)
+                   .WithMany()
+                   .HasForeignKey(b => b.OfferID)
+                   .OnDelete(DeleteBehavior.SetNull);
+            builder.Property(b => b.PaymentMethod)
+       .HasConversion<string>()
+       .HasMaxLength(30)
+       .IsRequired();
+
 
         }
 

@@ -1,4 +1,5 @@
-﻿using Jiwar.Services.AI.Enums;
+﻿using GEWAR.Models;
+using Jiwar.Services.AI.Enums;
 
 namespace Jiwar.Models.ChatAi
 {
@@ -7,8 +8,10 @@ namespace Jiwar.Models.ChatAi
         public int Id { get; set; }
 
         public int RenovationSimulationID { get; set; }
+        public virtual RenovationSimulation RenovationSimulation { get; set; }
 
-        public string UserId { get; set; } = string.Empty; // ربط الرسالة بالمستخدم
+        public string UserId { get; set; }
+        public virtual User User { get; set; }
 
         public ChatSenderEnum Sender { get; set; } // User | AI
         public ChatMessageTypeEnum MessageType { get; set; } // Text, Image, Voice

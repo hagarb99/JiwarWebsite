@@ -1,4 +1,5 @@
 ﻿using GEWAR.Models;
+using Jiwar.Enum;
 
 namespace Jiwar.DTOs.PropertyDTOs
 {
@@ -11,6 +12,7 @@ namespace Jiwar.DTOs.PropertyDTOs
         public decimal? MaxArea { get; set; }
         public int? NumBedrooms { get; set; }
         public int? NumBathrooms { get; set; }
+        public ListingTypeEnum? ListingType { get; set; }
         public PropertyType? PropertyType { get; set; } 
     }
 

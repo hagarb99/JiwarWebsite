@@ -45,6 +45,7 @@
 	  <Folder Include="Repositories\Property\" />
 	  <Folder Include="Repositories\User\" />
 	  <Folder Include="Services\WishlistService\" />
+	  <Folder Include="wwwroot\uploads\renovation\" />
 	</ItemGroup>
 
 </Project>

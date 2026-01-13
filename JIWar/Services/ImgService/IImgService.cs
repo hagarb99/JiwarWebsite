@@ -8,5 +8,5 @@ public interface IImgService
            int propertyId,
            List<IFormFile> images
        );
-    Task<string> SaveChatFileAsync(IFormFile file);
+    Task<string> SaveUserProfileImageAsync(string userId, IFormFile image);
 }

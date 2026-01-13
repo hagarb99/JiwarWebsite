@@ -33,6 +33,6 @@ namespace Jiwar.Account
         Task<UserProfileDto> GetUserProfileAsync(string userId);
         Task<PropertyOwnerPublicProfileDto?> GetPropertyOwnerPublicProfileAsync(string userId);
 
-
+        Task<ResultViewModel<string>> UploadProfileImageAsync(string userId, IFormFile image);
     }
 }

@@ -52,19 +52,22 @@ public class ImgService : IImgService
         return mediaList;
     }
 
-    public async Task<string> SaveChatFileAsync(IFormFile file)
+    public async Task<string> SaveUserProfileImageAsync(string userId, IFormFile image)
     {
-        if (file == null || file.Length == 0) return null;
+        if (image == null || image.Length == 0) return null;
 
-        var folderPath = Path.Combine(webHostEnvironment.WebRootPath, "uploads", "chat");
+        // تنظيم الصور في فولدر خاص بالبروفايلات
+        var folderPath = Path.Combine(webHostEnvironment.WebRootPath, "images", "profiles");
         Directory.CreateDirectory(folderPath);
 
-        var fileName = $"{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
+        var fileName = $"{userId}_{Guid.NewGuid()}{Path.GetExtension(image.FileName)}";
         var fullPath = Path.Combine(folderPath, fileName);
 
         using var stream = new FileStream(fullPath, FileMode.Create);
-        await file.CopyToAsync(stream);
+        await image.CopyToAsync(stream);
 
-        return $"/uploads/chat/{fileName}";
+        // نرجع المسار الذي سيخزن في الداتابيز
+        return $"/images/profiles/{fileName}";
     }
+
 }

@@ -8,9 +8,9 @@ using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 namespace Jiwar.Controllers
 {
-   
 
-    [Route("api/[controller]")]
+
+    [Route("api/[controller]")] 
     [ApiController]
     public class BookingController : ControllerBase
     {
@@ -38,6 +38,27 @@ namespace Jiwar.Controllers
         {
             return Ok(await _service.GetAllAsync());
         }
+        //[Authorize]
+        //[HttpGet("PropertyOwner")]
+        //public async Task<IActionResult> GetOwnerBookings()
+        //{
+        //    var ownerId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        //    var bookings = await _service.GetBookingsForOwnerAsync(ownerId);
+        //    return Ok(bookings);
+        //}
+        //[Authorize]
+        //[HttpPut("{id}/status")]
+        //public async Task<IActionResult> UpdateBookingStatus(int id, [FromBody] UpdateBookingStatusDto dto)
+        //{
+        //    var ownerId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        //    var success = await _service.UpdateBookingStatusAsync(id, dto.Status, ownerId);
+
+        //    if (!success)
+        //        return Forbid();
+
+        //    return NoContent();
+        //}
+
 
         [Authorize]
         [HttpPost]
@@ -70,6 +91,7 @@ namespace Jiwar.Controllers
         }
 
         //payment for booking
+        [Authorize]
         [HttpPost("pay")]
         public async Task<IActionResult> PayForBooking([FromBody] BuyBookingDto dto)
         {
@@ -97,6 +119,39 @@ namespace Jiwar.Controllers
             var booking = await _service.GetByIdAsync(id);
             return Ok(booking);
         }
+        [Authorize]
+        [HttpGet("customer")]
+        public async Task<IActionResult> GetCustomerBookings()
+        {
+            var customerId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            return Ok(await _service.GetBookingsByCustomerAsync(customerId));
+        }
+
+        [Authorize]
+        [HttpGet("owner")]
+        public async Task<IActionResult> GetOwnerBookings()
+        {
+            var ownerId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            return Ok(await _service.GetBookingsForOwnerAsync(ownerId));
+        }
+
+        [Authorize]
+        [HttpPut("{id}/status")]
+        public async Task<IActionResult> UpdateBookingStatus(int id, UpdateBookingStatusDto dto)
+        {
+            if (dto == null)
+                return BadRequest("Request body is missing");
+
+            var ownerId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var success = await _service.UpdateBookingStatusAsync(id, dto.Status, ownerId);
+
+            if (!success) return Forbid();
+            return NoContent();
+        }
+
+
+
     }
 
 }
+ 

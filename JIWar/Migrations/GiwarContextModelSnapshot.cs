@@ -1158,8 +1158,10 @@ namespace Jiwar.Migrations
                     b.Property<int?>("OfferID")
                         .HasColumnType("int");
 
-                    b.Property<int>("PaymentMethod")
-                        .HasColumnType("int");
+                    b.Property<string>("PaymentMethod")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
 
                     b.Property<string>("PaymentStatus")
                         .HasMaxLength(50)
@@ -1260,9 +1262,13 @@ namespace Jiwar.Migrations
 
                     b.Property<string>("UserId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("RenovationSimulationID");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("SimulationChatMessages");
                 });
@@ -2237,17 +2243,18 @@ namespace Jiwar.Migrations
                     b.HasOne("GEWAR.Models.User", "Customer")
                         .WithMany()
                         .HasForeignKey("CustomerID")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("GEWAR.Models.Offer", "Offer")
                         .WithMany()
-                        .HasForeignKey("OfferID");
+                        .HasForeignKey("OfferID")
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.HasOne("GEWAR.Models.Property", "Property")
-                        .WithMany()
+                        .WithMany("Bookings")
                         .HasForeignKey("PropertyID")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Customer");
@@ -2272,6 +2279,25 @@ namespace Jiwar.Migrations
                         .IsRequired();
 
                     b.Navigation("Booking");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Jiwar.Models.ChatAi.SimulationChatMessage", b =>
+                {
+                    b.HasOne("GEWAR.Models.RenovationSimulation", "RenovationSimulation")
+                        .WithMany("SimulationChatMessages")
+                        .HasForeignKey("RenovationSimulationID")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("GEWAR.Models.User", "User")
+                        .WithMany("SimulationChatMessages")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("RenovationSimulation");
 
                     b.Navigation("User");
                 });
@@ -2498,6 +2524,8 @@ namespace Jiwar.Migrations
 
             modelBuilder.Entity("GEWAR.Models.Property", b =>
                 {
+                    b.Navigation("Bookings");
+
                     b.Navigation("DesignRequests");
 
                     b.Navigation("Offers");
@@ -2532,6 +2560,8 @@ namespace Jiwar.Migrations
                     b.Navigation("Medias");
 
                     b.Navigation("Recommendations");
+
+                    b.Navigation("SimulationChatMessages");
                 });
 
             modelBuilder.Entity("GEWAR.Models.User", b =>
@@ -2549,6 +2579,8 @@ namespace Jiwar.Migrations
                     b.Navigation("Offers");
 
                     b.Navigation("Payments");
+
+                    b.Navigation("SimulationChatMessages");
 
                     b.Navigation("Subscriptions");
 
