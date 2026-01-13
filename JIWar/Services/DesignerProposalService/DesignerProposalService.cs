@@ -74,8 +74,15 @@ namespace Jiwar.Services.DesignerProposalService
                 _context.Notifications.Add(notification);
                 await _context.SaveChangesAsync();
 
-                // 2. Send Real-time Notification
-                await _hubContext.Clients.User(request.UserID).SendAsync("ReceiveNotification", notification.Title, notification.Message);
+                // 2. Send Real-time Notification WITH SOUND trigger
+                await _hubContext.Clients.User(request.UserID).SendAsync("ReceiveNotification", new 
+                {
+                    title = notification.Title,
+                    message = notification.Message,
+                    type = notification.NotificationType.ToString(),
+                    sentDate = notification.SentDate,
+                    playSound = true
+                });
             }
 
             return _mapper.Map<ProposalDto>(proposal);
@@ -170,6 +177,55 @@ namespace Jiwar.Services.DesignerProposalService
             }
 
             return await GetProposalsForRequestAsync(selected.DesignRequestID);
+        }
+
+        public async Task<bool> DeliverProposalAsync(int proposalId, string designerId, string notes)
+        {
+            var proposal = await _context.DesignerProposals
+                .Include(p => p.DesignRequest)
+                .FirstOrDefaultAsync(p => p.Id == proposalId && p.DesignerID == designerId);
+
+            if (proposal == null)
+                throw new Exception("Proposal not found or you are not the designer of this proposal.");
+
+            if (proposal.StatusEnumReq != GEWAR.Models.StatusEnumReqPro.Accepted)
+                throw new Exception("Only accepted proposals can be delivered.");
+
+            proposal.StatusEnumReq = GEWAR.Models.StatusEnumReqPro.Delivered;
+            proposal.DeliveredAt = DateTime.UtcNow;
+            proposal.DeliveryNotes = notes;
+            proposal.DesignRequest.Status = "Completed";
+
+            await _context.SaveChangesAsync();
+
+            // Notify the Property Owner
+            if (!string.IsNullOrEmpty(proposal.DesignRequest.UserID))
+            {
+                var notification = new Notification
+                {
+                    UserID = proposal.DesignRequest.UserID,
+                    Title = "Project Delivered! 🎉",
+                    Message = $"Designer has completed your project (Request #{proposal.DesignRequestID}). Please review the final designs.",
+                    NotificationType = NotificationType.Request,
+                    SentDate = DateTime.Now,
+                    IsRead = false,
+                    RelatedId = proposalId.ToString()
+                };
+
+                _context.Notifications.Add(notification);
+                await _context.SaveChangesAsync();
+
+                await _hubContext.Clients.User(proposal.DesignRequest.UserID).SendAsync("ReceiveNotification", new
+                {
+                    title = notification.Title,
+                    message = notification.Message,
+                    type = "Success",
+                    relatedId = proposalId,
+                    playSound = true
+                });
+            }
+
+            return true;
         }
     }
 }

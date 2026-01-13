@@ -36,5 +36,9 @@ namespace GEWAR.Models
         public virtual ICollection<Subscription> Subscriptions { get; set; } = new List<Subscription>();
         public virtual ICollection<WishList> WishLists { get; set; } = new List<WishList>();
 
+        // For Designers
+        public double? AverageRating { get; set; }
+        public int? TotalReviews { get; set; }
+
     }
 }

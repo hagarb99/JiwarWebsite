@@ -10,6 +10,8 @@ namespace GEWAR.Models
     public class InteriorDesigner : BaseModel
     {
         public string? Specialization { get; set; }
+        public string? Specializations { get; set; } // Comma separated or multi-line
+        public string? Certifications { get; set; }  // Comma separated or multi-line
         public int? ExperienceYears { get; set; }
         public string? PortfolioURL { get; set; }
 

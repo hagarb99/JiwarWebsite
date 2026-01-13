@@ -5,16 +5,28 @@ namespace Jiwar.Hubs
 {
     public class ChatHub : Hub
     {
-        // Send message to a specific user
+        // Join a specific property chat room
+        public async Task JoinChat(string propertyId)
+        {
+            await Groups.AddToGroupAsync(Context.ConnectionId, propertyId);
+        }
+
+        // Leave a specific property chat room
+        public async Task LeaveChat(string propertyId)
+        {
+            await Groups.RemoveFromGroupAsync(Context.ConnectionId, propertyId);
+        }
+
+        // Send message to a specific user (fallback)
         public async Task SendMessage(string receiverId, string senderId, string message)
         {
             await Clients.User(receiverId).SendAsync("ReceiveMessage", senderId, message);
         }
 
-        // Optional: broadcast to all users
-        public async Task BroadcastMessage(string senderId, string message)
+        // Send message to the property group
+        public async Task SendToRoom(string propertyId, string senderId, string message)
         {
-            await Clients.All.SendAsync("ReceiveMessage", senderId, message);
+            await Clients.Group(propertyId).SendAsync("ReceiveMessage", senderId, message);
         }
     }
 }

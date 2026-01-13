@@ -26,6 +26,8 @@ namespace Jiwar.Repositories
         Task<PropertyOwner?> GetPropertyOwnerByUserIdAsync(string userId);
         Task UpdatePropertyOwnerAsync(PropertyOwner owner);
         Task<PropertyOwner?> GetPropertyOwnerPublicAsync(string userId);
+        Task<InteriorDesigner?> GetInteriorDesignerByUserIdAsync(string userId);
+        Task UpdateInteriorDesignerAsync(InteriorDesigner designer);
 
     }
 }

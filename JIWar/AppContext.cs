@@ -57,6 +57,7 @@ namespace GEWAR
         public DbSet<VirtualTour> VirtualTours { get; set; }
         public DbSet<WishList> WishLists { get; set; }
         public DbSet<PropertyOwner> PropertyOwners { get; set; }
+        public DbSet<DesignerReview> DesignerReviews { get; set; }
 
         public DbSet<PropertyFeature> PropertyFeatures{get;set;}
 
@@ -139,6 +140,7 @@ namespace GEWAR
             modelBuilder.ApplyConfiguration(new VirtualTourConfiguration());
             modelBuilder.ApplyConfiguration(new WishListConfiguration());
             modelBuilder.ApplyConfiguration(new PropertyOwnerConfiguration());
+            modelBuilder.ApplyConfiguration(new DesignerReviewConfiguration());
             modelBuilder.ApplyConfiguration(new FeatureConfiguration());
             modelBuilder.ApplyConfiguration(new PropertyFeatureConfiguration());
             modelBuilder.ApplyConfiguration(new ReportOrderConfiguration());

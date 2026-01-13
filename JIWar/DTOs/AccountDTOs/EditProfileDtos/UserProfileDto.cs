@@ -16,6 +16,10 @@
     public class InteriorDesignerDto
     {
         public string Specialty { get; set; }
+        public List<string> Specializations { get; set; } = new List<string>();
+        public List<string> Certifications { get; set; } = new List<string>();
+        public int? YearsOfExperience { get; set; }
+        public string PortfolioUrl { get; set; }
     }
     public class UserProfileDto
     {
@@ -31,6 +35,17 @@
         public string? Location { get; set; }
         public string? Bio { get; set; }
 
+        public void Normalize()
+        {
+            Bio ??= "No bio information provided yet.";
+            
+            if (InteriorDesigner != null)
+            {
+                InteriorDesigner.Specializations ??= new List<string>();
+                InteriorDesigner.Certifications ??= new List<string>();
+                InteriorDesigner.Specialty ??= "Not specified";
+            }
+        }
     }
 
 }

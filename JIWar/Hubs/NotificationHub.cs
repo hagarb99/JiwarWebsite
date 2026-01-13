@@ -11,7 +11,13 @@ namespace Jiwar.Hubs
         // For now, we primarily push notifications from the server
         public async Task SendNotification(string user, string message)
         {
-            await Clients.All.SendAsync("ReceiveNotification", user, message);
+            await Clients.All.SendAsync("ReceiveNotification", new 
+            {
+                title = user, 
+                message = message,
+                sentDate = System.DateTime.Now,
+                playSound = true
+            });
         }
     }
 }

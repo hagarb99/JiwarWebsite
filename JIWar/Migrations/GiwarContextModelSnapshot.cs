@@ -36,6 +36,9 @@ namespace Jiwar.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
+                    b.Property<bool>("IsRead")
+                        .HasColumnType("bit");
+
                     b.Property<string>("MessageText")
                         .IsRequired()
                         .HasColumnType("text");
@@ -142,6 +145,9 @@ namespace Jiwar.Migrations
                     b.Property<string>("InteriorDesignerID")
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<string>("Certifications")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int?>("ExperienceYears")
                         .HasColumnType("int");
 
@@ -158,6 +164,9 @@ namespace Jiwar.Migrations
                     b.Property<string>("Specialization")
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("Specializations")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("InteriorDesignerID");
 
@@ -912,6 +921,9 @@ namespace Jiwar.Migrations
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
 
+                    b.Property<double?>("AverageRating")
+                        .HasColumnType("float");
+
                     b.Property<string>("Bio")
                         .HasColumnType("nvarchar(max)");
 
@@ -973,6 +985,9 @@ namespace Jiwar.Migrations
 
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("TotalReviews")
+                        .HasColumnType("int");
 
                     b.Property<bool>("TwoFactorEnabled")
                         .HasColumnType("bit");
@@ -1403,6 +1418,12 @@ namespace Jiwar.Migrations
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<DateTime?>("DeliveredAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("DeliveryNotes")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("DesignRequestID")
                         .HasColumnType("int");
 
@@ -1437,6 +1458,55 @@ namespace Jiwar.Migrations
                     b.HasIndex("DesignerID");
 
                     b.ToTable("DesignerProposals", "dbo");
+                });
+
+            modelBuilder.Entity("Jiwar.Models.DesignerReview", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Comment")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("DesignRequestID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("DesignerID")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("PropertyOwnerID")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("ProposalID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Rating")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DesignRequestID");
+
+                    b.HasIndex("DesignerID");
+
+                    b.HasIndex("PropertyOwnerID");
+
+                    b.HasIndex("ProposalID");
+
+                    b.ToTable("DesignerReviews", (string)null);
                 });
 
             modelBuilder.Entity("Jiwar.Models.DistrictPriceHistory", b =>
@@ -2262,6 +2332,41 @@ namespace Jiwar.Migrations
                     b.Navigation("Designer");
                 });
 
+            modelBuilder.Entity("Jiwar.Models.DesignerReview", b =>
+                {
+                    b.HasOne("Jiwar.Models.DesignRequest", "DesignRequest")
+                        .WithMany()
+                        .HasForeignKey("DesignRequestID")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("GEWAR.Models.User", "Designer")
+                        .WithMany()
+                        .HasForeignKey("DesignerID")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("GEWAR.Models.User", "PropertyOwner")
+                        .WithMany()
+                        .HasForeignKey("PropertyOwnerID")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("Jiwar.Models.DesignerProposal", "Proposal")
+                        .WithMany()
+                        .HasForeignKey("ProposalID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("DesignRequest");
+
+                    b.Navigation("Designer");
+
+                    b.Navigation("PropertyOwner");
+
+                    b.Navigation("Proposal");
+                });
+
             modelBuilder.Entity("Jiwar.Models.PropertyOwner", b =>
                 {
                     b.HasOne("GEWAR.Models.User", "Owneruser")
@@ -2455,8 +2560,7 @@ namespace Jiwar.Migrations
 
             modelBuilder.Entity("Jiwar.Models.Booking", b =>
                 {
-                    b.Navigation("BookingRating")
-                        .IsRequired();
+                    b.Navigation("BookingRating");
                 });
 
             modelBuilder.Entity("Jiwar.Models.DesignRequest", b =>
@@ -2465,8 +2569,7 @@ namespace Jiwar.Migrations
 
                     b.Navigation("Proposals");
 
-                    b.Navigation("RequestRating")
-                        .IsRequired();
+                    b.Navigation("RequestRating");
                 });
 
             modelBuilder.Entity("Jiwar.Models.PropertyOwner", b =>

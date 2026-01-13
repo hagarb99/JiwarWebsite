@@ -120,6 +120,18 @@ namespace Jiwar.Repositories
         .FirstOrDefaultAsync(po => po.UserID == userId);
         }
 
+        public async Task<InteriorDesigner?> GetInteriorDesignerByUserIdAsync(string userId)
+        {
+            return await _context.InteriorDesigners
+                .FirstOrDefaultAsync(id => id.InteriorDesignerID == userId);
+        }
+
+        public async Task UpdateInteriorDesignerAsync(InteriorDesigner designer)
+        {
+            _context.InteriorDesigners.Update(designer);
+            await _context.SaveChangesAsync();
+        }
+
 
 
     }
