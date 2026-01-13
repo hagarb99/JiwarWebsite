@@ -62,10 +62,13 @@ namespace Jiwar
             var builder = WebApplication.CreateBuilder(args);
 
             // Controllers & Swagger
-            builder.Services.AddControllers().AddJsonOptions(options =>
-            {
-                options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
-            });
+            builder.Services.AddControllers()
+                .AddJsonOptions(options =>
+                {
+                    options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+                    options.JsonSerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase;
+                    options.JsonSerializerOptions.DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull;
+                });
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen(c =>
             {
@@ -101,7 +104,7 @@ namespace Jiwar
             {
                 options.AddDefaultPolicy(policy =>
                 {
-                    policy.WithOrigins("http://localhost:4200") // Angular frontend
+                    policy.WithOrigins("http://localhost:4200", "https://localhost:5000")
                           .AllowAnyMethod()
                           .AllowAnyHeader()
                           .AllowCredentials();
@@ -120,7 +123,7 @@ namespace Jiwar
 
             // Authentication
 
-            var key = builder.Configuration["Jwt:Key"];
+            var key = builder.Configuration["Jwt:Key"] ?? "vY7fG9pQ2zR5xW8mK3nB1vC4xZ6mN9bV"; // Default fallback for development
             builder.Services.AddAuthentication(opt =>
             {
                 opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -148,7 +151,8 @@ namespace Jiwar
                             // If the request is for our hub...
                             var path = context.HttpContext.Request.Path;
                             if (!string.IsNullOrEmpty(accessToken) &&
-                                (path.StartsWithSegments("/notificationHub", StringComparison.OrdinalIgnoreCase)))
+                                (path.StartsWithSegments("/notificationHub", StringComparison.OrdinalIgnoreCase) ||
+                                 path.StartsWithSegments("/chathub", StringComparison.OrdinalIgnoreCase)))
                             {
                                 // Read the token out of the query string
                                 context.Token = accessToken;
@@ -199,6 +203,7 @@ namespace Jiwar
             builder.Services.AddScoped<IDesignService, DesignService>();
             builder.Services.AddScoped<IProposalService, ProposalService>();
             builder.Services.AddScoped<IRequestService, RequestService>();
+            builder.Services.AddScoped<Jiwar.Services.ReviewService.IReviewService, Jiwar.Services.ReviewService.ReviewService>();
 
 
             builder.Services.AddScoped<IRenovationSimulationService, RenovationSimulationService>();
@@ -207,12 +212,7 @@ namespace Jiwar
             builder.Services.AddScoped<IAiChatService, AiChatService>();
 
 
-            builder.Services.AddControllers()
-                .AddJsonOptions(x =>
-                {
-                    x.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
-                    x.JsonSerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase;
-                });
+
 
             // Other Services
             builder.Services.AddScoped<TokenService>();

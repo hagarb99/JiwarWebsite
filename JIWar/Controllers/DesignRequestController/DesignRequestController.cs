@@ -106,98 +106,157 @@ namespace Jiwar.Controllers
             try
             {
                 var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                Console.WriteLine($"🔍 GET WORKSPACE DEBUG:");
+                Console.WriteLine($"   RequestID: {id}");
+                Console.WriteLine($"   UserID: {userId}");
+                
                 var result = await _service.GetWorkspaceAsync(id, userId);
+                
+                Console.WriteLine($"   PropertyID: {result?.DesignRequest?.PropertyID}");
+                Console.WriteLine($"   Chat History Count: {result?.ChatHistory?.Count ?? 0}");
+                Console.WriteLine($"   Designer: {result?.AcceptedProposal?.DesignerName} (ID: {result?.AcceptedProposal?.DesignerId})");
+                Console.WriteLine($"   Owner: {result?.DesignRequest?.UserID}");
+                
                 return Ok(result);
             }
             catch (System.Exception ex)
             {
+                Console.WriteLine($"❌ GET WORKSPACE ERROR: {ex.Message}");
                 return BadRequest(new { message = ex.Message });
             }
         }
 
+        [Authorize(Roles = "PropertyOwner,Customer,InteriorDesigner")]
         [HttpPost("{requestId}/chat/send")]
         public async Task<IActionResult> SendWorkspaceMessage(int requestId, [FromBody] ChatMessageDTO dto)
         {
             var senderId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (string.IsNullOrEmpty(senderId)) return Unauthorized();
-
-            var workspace = await _service.GetWorkspaceAsync(requestId);
-            if (workspace == null || workspace.AcceptedProposal == null) 
-                return BadRequest("No active workspace found for this request.");
-
-            var propertyId = workspace.DesignRequest.PropertyID;
-            var messageContent = dto.MessageText ?? dto.Message;
-
-            if (string.IsNullOrEmpty(messageContent)) return BadRequest("Message cannot be empty");
-
-            // Define receiver based on who is sending
-            string receiverId = (senderId == workspace.AcceptedProposal.DesignerId) 
-                ? workspace.DesignRequest.UserID // Actual UserID of the Property Owner
-                : workspace.AcceptedProposal.DesignerId;
-
-            if (string.IsNullOrEmpty(receiverId)) 
-                return BadRequest("Could not determine message receiver.");
-
-            var chat = new Chat
+            if (string.IsNullOrEmpty(senderId))
             {
-                PropertyID = propertyId,
-                SenderID = senderId,
-                ReceiverID = receiverId, 
-                MessageText = messageContent,
-                MessageType = dto.MessageType,
-                SentDate = DateTime.UtcNow
-            };
+                Console.WriteLine("❌ SEND MESSAGE ERROR: User not authenticated");
+                return Unauthorized(new { error = "User not authenticated. Please login again." });
+            }
 
-            await _propertyService.SendMessageAsync(chat);
+            Console.WriteLine($"📨 SEND MESSAGE REQUEST:");
+            Console.WriteLine($"   RequestID: {requestId}");
+            Console.WriteLine($"   SenderID: {senderId}");
+            Console.WriteLine($"   Message: {dto.MessageText ?? dto.Message}");
 
-            var sender = await _userManager.FindByIdAsync(senderId);
-
-            // Broadcast to the Room (Chat history/update)
-            var responseData = new ChatMessageDTO
+            try
             {
-                PropertyID = propertyId,
-                SenderID = senderId,
-                ReceiverID = receiverId,
-                SenderName = sender?.Name,
-                SenderPhoto = sender?.ProfilePicURL,
-                Message = messageContent,
-                MessageText = messageContent,
-                MessageType = chat.MessageType,
-                SentDate = chat.SentDate
-            };
-
-            await _chatHubContext.Clients.Group(propertyId.ToString()).SendAsync("ReceiveMessage", responseData);
-
-            // Send Notification to the Receiver (Realtime + Persistence)
-            // Fix: Send only to receiverId, not broadcast.
-            try 
-            {
-                string notTitle = sender?.Name ?? "New Message";
-                string notMessage = messageContent.Length > 30 ? messageContent.Substring(0, 30) + "..." : messageContent;
-
-                // 1. Create DB Notification
-                // We use requestId as RelatedId so frontend knows which workspace to open
-                await _notificationService.CreateNotificationAsync(receiverId, notTitle, notMessage, requestId.ToString(), "Chat");
-
-                // 2. Send Realtime Notification
-                int totalUnread = await _service.GetTotalUnreadMessagesCountAsync(receiverId);
-                await _notificationHubContext.Clients.User(receiverId).SendAsync("ReceiveChatNotification", new 
+                var workspace = await _service.GetWorkspaceAsync(requestId);
+                
+                if (workspace == null)
                 {
-                    title = notTitle,
-                    message = notMessage,
-                    sentDate = DateTime.Now,
-                    relatedId = requestId.ToString(),
-                    type = "Chat",
-                    unreadCount = totalUnread
-                });
+                    Console.WriteLine($"❌ ERROR: Workspace not found for request {requestId}");
+                    return BadRequest(new { error = $"Workspace not found for request {requestId}" });
+                }
+                
+                if (workspace.AcceptedProposal == null)
+                {
+                    Console.WriteLine($"❌ ERROR: No accepted proposal for request {requestId}");
+                    return BadRequest(new { error = "Cannot send message. No accepted proposal found. The property owner must accept a proposal first." });
+                }
+
+                var propertyId = workspace.DesignRequest.PropertyID;
+                var messageContent = dto.MessageText ?? dto.Message;
+
+                if (string.IsNullOrEmpty(messageContent))
+                {
+                    Console.WriteLine("❌ ERROR: Message is empty");
+                    return BadRequest(new { error = "Message cannot be empty" });
+                }
+
+                // Define receiver based on who is sending
+                string receiverId = (senderId == workspace.AcceptedProposal.DesignerId) 
+                    ? workspace.DesignRequest.UserID // Actual UserID of the Property Owner
+                    : workspace.AcceptedProposal.DesignerId;
+
+                if (string.IsNullOrEmpty(receiverId))
+                {
+                    Console.WriteLine("❌ ERROR: Could not determine receiver");
+                    return BadRequest(new { error = "Could not determine message receiver" });
+                }
+
+                // 🔍 LOG: Chat Details
+                Console.WriteLine($"✅ CHAT MESSAGE DEBUG:");
+                Console.WriteLine($"   RequestID: {requestId}");
+                Console.WriteLine($"   PropertyID: {propertyId}");
+                Console.WriteLine($"   SenderID: {senderId}");
+                Console.WriteLine($"   ReceiverID: {receiverId}");
+                Console.WriteLine($"   DesignerID: {workspace.AcceptedProposal.DesignerId}");
+                Console.WriteLine($"   OwnerID: {workspace.DesignRequest.UserID}");
+                Console.WriteLine($"   SignalR Room: {propertyId}");
+
+                var chat = new Chat
+                {
+                    PropertyID = propertyId,
+                    SenderID = senderId,
+                    ReceiverID = receiverId, 
+                    MessageText = messageContent,
+                    MessageType = dto.MessageType,
+                    SentDate = DateTime.UtcNow
+                };
+
+                await _propertyService.SendMessageAsync(chat);
+                Console.WriteLine("✅ Message saved to database");
+
+                var sender = await _userManager.FindByIdAsync(senderId);
+
+                // Broadcast to the Room (Chat history/update)
+                var responseData = new ChatMessageDTO
+                {
+                    PropertyID = propertyId,
+                    SenderID = senderId,
+                    ReceiverID = receiverId,
+                    SenderName = sender?.Name,
+                    SenderPhoto = sender?.ProfilePicURL,
+                    Message = messageContent,
+                    MessageText = messageContent,
+                    MessageType = chat.MessageType,
+                    SentDate = chat.SentDate
+                };
+
+                Console.WriteLine($"📡 Broadcasting to SignalR Group: {propertyId}");
+                await _chatHubContext.Clients.Group(propertyId.ToString()).SendAsync("ReceiveMessage", responseData);
+
+                // Send Notification to the Receiver (Realtime + Persistence)
+                try 
+                {
+                    string notTitle = sender?.Name ?? "New Message";
+                    string notMessage = messageContent.Length > 30 ? messageContent.Substring(0, 30) + "..." : messageContent;
+
+                    // 1. Create DB Notification
+                    await _notificationService.CreateNotificationAsync(receiverId, notTitle, notMessage, requestId.ToString(), "Chat");
+
+                    // 2. Send Realtime Notification
+                    int totalUnread = await _service.GetTotalUnreadMessagesCountAsync(receiverId);
+                    Console.WriteLine($"🔔 Sending notification to User: {receiverId}, Unread Count: {totalUnread}");
+                    await _notificationHubContext.Clients.User(receiverId).SendAsync("ReceiveChatNotification", new 
+                    {
+                        title = notTitle,
+                        message = notMessage,
+                        sentDate = DateTime.Now,
+                        relatedId = requestId.ToString(),
+                        type = "Chat",
+                        unreadCount = totalUnread
+                    });
+                }
+                catch (Exception ex)
+                {
+                     Console.WriteLine($"❌ Error sending notification: {ex.Message}");
+                }
+
+                Console.WriteLine($"✅ Message sent successfully");
+                return Ok(new { message = "Message sent successfully", data = responseData });
             }
             catch (Exception ex)
             {
-                 // Log error but don't fail the message sending
-                 Console.WriteLine($"Error sending notification: {ex.Message}");
+                Console.WriteLine($"❌ FATAL ERROR in SendWorkspaceMessage:");
+                Console.WriteLine($"   Message: {ex.Message}");
+                Console.WriteLine($"   StackTrace: {ex.StackTrace}");
+                return StatusCode(500, new { error = "Internal server error", details = ex.Message });
             }
-
-            return Ok(new { message = "Message sent successfully", data = responseData });
         }
 
         [HttpGet("chat/unread-count")]
@@ -227,6 +286,67 @@ namespace Jiwar.Controllers
 
             await _service.MarkMessagesAsReadAsync(userId, propertyId);
             return Ok(new { message = "Messages marked as read" });
+        }
+
+        // 🔍 DEBUG ENDPOINT - Remove this in production
+        [HttpGet("{requestId}/debug")]
+        public async Task<IActionResult> DebugWorkspace(int requestId)
+        {
+            try
+            {
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                var workspace = await _service.GetWorkspaceAsync(requestId, userId);
+
+                if (workspace == null)
+                {
+                    return Ok(new { error = "Workspace is null" });
+                }
+
+                var debugInfo = new
+                {
+                    currentUserId = userId,
+                    designRequest = new
+                    {
+                        id = workspace.DesignRequest?.Id,
+                        propertyID = workspace.DesignRequest?.PropertyID,
+                        userID = workspace.DesignRequest?.UserID,
+                        status = workspace.DesignRequest?.Status
+                    },
+                    acceptedProposal = workspace.AcceptedProposal == null ? null : new
+                    {
+                        id = workspace.AcceptedProposal.Id,
+                        designerId = workspace.AcceptedProposal.DesignerId,
+                        designerName = workspace.AcceptedProposal.DesignerName,
+                        status = workspace.AcceptedProposal.Status
+                    },
+                    chatHistory = workspace.ChatHistory?.Select(c => new
+                    {
+                        propertyID = c.PropertyID,
+                        senderID = c.SenderID,
+                        receiverID = c.ReceiverID,
+                        senderName = c.SenderName,
+                        message = c.MessageText,
+                        sentDate = c.SentDate
+                    }).ToList(),
+                    chatHistoryCount = workspace.ChatHistory?.Count ?? 0,
+                    hasDelivered = workspace.HasDelivered,
+                    hasReviewed = workspace.HasReviewed
+                };
+
+                Console.WriteLine($"🐛 DEBUG ENDPOINT CALLED:");
+                Console.WriteLine($"   RequestID: {requestId}");
+                Console.WriteLine($"   CurrentUserID: {userId}");
+                Console.WriteLine($"   PropertyID: {workspace.DesignRequest?.PropertyID}");
+                Console.WriteLine($"   OwnerID: {workspace.DesignRequest?.UserID}");
+                Console.WriteLine($"   DesignerID: {workspace.AcceptedProposal?.DesignerId}");
+                Console.WriteLine($"   Chat Count: {workspace.ChatHistory?.Count ?? 0}");
+
+                return Ok(debugInfo);
+            }
+            catch (Exception ex)
+            {
+                return Ok(new { error = ex.Message, stackTrace = ex.StackTrace });
+            }
         }
     }
 }

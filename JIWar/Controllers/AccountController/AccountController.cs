@@ -2,11 +2,12 @@
 using GEWAR.Models;
 using Jiwar.Account.DTOs;
 using Jiwar.Account.Services;
+using Jiwar.Service;
+using Microsoft.AspNetCore.SignalR;
+using Jiwar.Hubs;
+using Jiwar.DTOs.ChatDTOs;
 using Jiwar.DTOs;
 using Jiwar.DTOs.AccountDTOs.EditProfileDtos;
-using Jiwar.DTOs.AccountDTOs.EditProfileDtos;
-using Jiwar.DTOs.ChatDTOs;
-using Jiwar.Service;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -16,8 +17,6 @@ using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using Microsoft.AspNetCore.SignalR;
-using Jiwar.Hubs;
 
 
 namespace Jiwar.Account
@@ -29,6 +28,7 @@ namespace Jiwar.Account
         private readonly IAccountService accountService;
         private readonly IConfiguration _config;
         private readonly UserManager<User> userManager;
+
         private readonly IPropertyService _propertyService;
         private readonly IHubContext<ChatHub> _chatHubContext;
         private readonly IHubContext<NotificationHub> _notificationHubContext;
@@ -170,68 +170,9 @@ namespace Jiwar.Account
             return NoContent();
         }
 
-        [HttpPost("{propertyId}/chat/send")]
-        public async Task<IActionResult> SendMessage(int propertyId, [FromBody] ChatMessageDTO dto)
-        {
-            var senderId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (string.IsNullOrEmpty(senderId)) return Unauthorized();
-
-            // Handle both messageText (backend naming) and message (frontend naming)
-            var messageContent = dto.MessageText ?? dto.Message;
-            if (string.IsNullOrEmpty(messageContent)) return BadRequest("Message cannot be empty");
-
-            var chat = new Chat
-            {
-                PropertyID = propertyId,
-                SenderID = senderId,
-                ReceiverID = dto.ReceiverID ?? "", // Can be empty if broadcasting to room
-                MessageText = messageContent,
-                MessageType = dto.MessageType,
-                SentDate = DateTime.UtcNow
-            };
-
-            await _propertyService.SendMessageAsync(chat);
-
-            // 1. Send to the specific Receiver (if provided)
-            if (!string.IsNullOrEmpty(dto.ReceiverID))
-            {
-                await _chatHubContext.Clients.User(dto.ReceiverID).SendAsync("ReceiveMessage", new
-                {
-                    senderId = senderId,
-                    message = messageContent,
-                    sentDate = chat.SentDate,
-                    propertyId = propertyId
-                });
-
-                // Optional: Send a notification
-                await _notificationHubContext.Clients.User(dto.ReceiverID).SendAsync("ReceiveNotification", new
-                {
-                    title = "New Message",
-                    message = $"You have a new message regarding property #{propertyId}",
-                    type = "Info",
-                    sentDate = chat.SentDate,
-                    playSound = true
-                });
-            }
-
-            // 2. Also send to the SignalR Group (Room) for this property
-            await _chatHubContext.Clients.Group(propertyId.ToString()).SendAsync("ReceiveMessage", new
-            {
-                senderId = senderId,
-                message = messageContent,
-                sentDate = chat.SentDate,
-                propertyId = propertyId
-            });
-
-            return Ok(new { message = "Message sent successfully", data = chat });
-        }
-
-        [HttpGet("{propertyId}/chat/{senderId}/{receiverId}")]
-        public async Task<IActionResult> GetChatHistory(int propertyId, string senderId, string receiverId)
-        {
-            var history = await _propertyService.GetChatHistoryAsync(senderId, receiverId, propertyId);
-            return Ok(history);
-        }
+        // ❌ REMOVED: Chat endpoints moved to DesignRequestController
+        // Chat is part of the DesignRequest Workspace business logic
+        // and should NOT be in AccountController
 
 
         [Authorize(Roles = "PropertyOwner")]
@@ -303,6 +244,8 @@ namespace Jiwar.Account
 
             return Ok(profile);
         }
+
+
 
 
 

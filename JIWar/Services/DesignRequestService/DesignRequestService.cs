@@ -127,6 +127,12 @@ namespace Jiwar.Services.DesignRequestService
                 var designerId = acceptedProposal.DesignerID;
                 var propertyId = request.PropertyID;
 
+                Console.WriteLine($"💬 CHAT QUERY DEBUG:");
+                Console.WriteLine($"   PropertyID: {propertyId}");
+                Console.WriteLine($"   OwnerID: {ownerId}");
+                Console.WriteLine($"   DesignerID: {designerId}");
+                Console.WriteLine($"   CurrentUserID: {currentUserId}");
+
                 var chats = await _context.Chats
                     .Include(c => c.Sender)
                     .Include(c => c.Receiver)
@@ -136,12 +142,19 @@ namespace Jiwar.Services.DesignRequestService
                     .OrderBy(c => c.SentDate)
                     .ToListAsync();
 
+                Console.WriteLine($"   Total Chats Found: {chats.Count}");
+                foreach (var chat in chats)
+                {
+                    Console.WriteLine($"      - From: {chat.SenderID} To: {chat.ReceiverID} | {chat.MessageText.Substring(0, Math.Min(30, chat.MessageText.Length))}...");
+                }
+
                 // Auto-mark messages as read when workspace is opened
                 if (!string.IsNullOrEmpty(currentUserId))
                 {
                     var unreadMessages = chats.Where(c => c.ReceiverID == currentUserId && !c.IsRead).ToList();
                     if (unreadMessages.Any())
                     {
+                        Console.WriteLine($"   Marking {unreadMessages.Count} messages as read for user: {currentUserId}");
                         foreach (var msg in unreadMessages)
                         {
                             msg.IsRead = true;
