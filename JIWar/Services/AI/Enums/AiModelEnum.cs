@@ -2,8 +2,8 @@
 {
     public enum AiModelEnum
     {
-        //Gpt4o,
-        Gpt4oMini,
+        Gpt4o,
+        /*Gpt4oMini*/
         DallE3
     }
 }

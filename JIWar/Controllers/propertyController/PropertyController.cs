@@ -152,20 +152,48 @@ public class PropertyController : ControllerBase
 
 
 
+    //[HttpPost("compare")]
+    //[AllowAnonymous]
+    //public async Task<IActionResult> Compare([FromBody] PropertyComparisonRequestDTO request)
+    //{
+    //    if (request.PropertyIds.Count < 2 || request.PropertyIds.Count > 5)
+    //        return BadRequest("Choose between 2 and 5 properties.");
+
+    //    var comparisonDtos = (await _propertyService.GetPropertiesForComparisonAsync(request.PropertyIds))
+    //                         .ToList();
+
+    //    var aiResult = await _propertyComparisonAiService.CompareAsync(comparisonDtos, request.UserType);
+
+    //    return Ok(aiResult);
+    //}
+
     [HttpPost("compare")]
     [AllowAnonymous]
-    public async Task<IActionResult> Compare([FromBody] PropertyComparisonRequestDTO request)
+    public async Task<ActionResult<AiComparisonResultDTO>> Compare(
+    [FromBody] PropertyComparisonRequestDTO request)
     {
-        if (request.PropertyIds.Count < 2 || request.PropertyIds.Count > 5)
-            return BadRequest("Choose between 2 and 5 properties.");
+        if (request.PropertyIds == null || request.PropertyIds.Count < 2)
+            return BadRequest("Select at least 2 properties");
 
-        var comparisonDtos = (await _propertyService.GetPropertiesForComparisonAsync(request.PropertyIds))
-                             .ToList();
+        // 1️⃣ Get properties data
+        var properties = await _propertyService
+            .GetPropertiesForComparisonAsync(request.PropertyIds);
 
-        var aiResult = await _propertyComparisonAiService.CompareAsync(comparisonDtos, request.UserType);
+        if (properties == null || !properties.Any())
+            return BadRequest("No properties found for comparison");
 
-        return Ok(aiResult);
+        // 2️⃣ Call AI service (MATCHES INTERFACE)
+        var result = await _propertyComparisonAiService.CompareAsync(
+            properties.ToList(),
+            request.UserType
+        );
+
+        if (result == null)
+            return BadRequest("Comparison result is null");
+
+        return Ok(result);
     }
+
 
 
     [HttpGet("district/{district}/price-history")]

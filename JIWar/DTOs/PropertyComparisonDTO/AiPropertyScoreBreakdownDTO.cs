@@ -4,12 +4,28 @@
     {
         public int PropertyId { get; set; }
 
-        public int PriceValue { get; set; }
-        public int Location { get; set; }
-        public int Space { get; set; }
-        public int InvestmentPotential { get; set; }
-        public int Comfort { get; set; }
+        // Price Value
+        public double PriceValueScore { get; set; }
+        public string PriceValueDescription { get; set; } = string.Empty;
 
-        public int TotalScore { get; set; }
+        // Location
+        public double LocationScore { get; set; }
+        public string LocationDescription { get; set; } = string.Empty;
+
+        // Space & Layout
+        public double SpaceAndLayoutScore { get; set; }
+        public string SpaceAndLayoutDescription { get; set; } = string.Empty;
+
+        // Features
+        public double FeaturesScore { get; set; }
+        public string FeaturesDescription { get; set; } = string.Empty;
+
+        // Investment Potential
+        public double InvestmentPotentialScore { get; set; }
+        public string InvestmentPotentialDescription { get; set; } = string.Empty;
+
+        // Overall score & reason
+        public double TotalScore { get; set; }
+        public string OverallReason { get; set; } = string.Empty;
     }
 }

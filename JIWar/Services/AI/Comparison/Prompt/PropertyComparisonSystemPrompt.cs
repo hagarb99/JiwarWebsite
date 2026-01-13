@@ -38,6 +38,11 @@ Evaluation Logic:
 - Consider city, property type, number of rooms, and features where relevant
 - Apply different weighting based on UserTypeInstruction
 
+IMPORTANT:
+- Return ONLY raw JSON.
+- Do NOT wrap the response in markdown.
+- Do NOT use ```json or ``` under any circumstances.
+
 Your response MUST follow this JSON structure exactly:
 
 {
