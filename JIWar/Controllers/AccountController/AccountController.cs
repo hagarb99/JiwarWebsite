@@ -2,6 +2,10 @@
 using GEWAR.Models;
 using Jiwar.Account.DTOs;
 using Jiwar.Account.Services;
+using Jiwar.Service;
+using Microsoft.AspNetCore.SignalR;
+using Jiwar.Hubs;
+using Jiwar.DTOs.ChatDTOs;
 using Jiwar.DTOs;
 using Jiwar.DTOs.AccountDTOs.EditProfileDtos;
 using Jiwar.DTOs.ChatDTOs;
@@ -26,17 +30,25 @@ namespace Jiwar.Account
         private readonly IAccountService accountService;
         private readonly IConfiguration _config;
         private readonly UserManager<User> userManager;
+
         private readonly IPropertyService _propertyService;
+        private readonly IHubContext<ChatHub> _chatHubContext;
+        private readonly IHubContext<NotificationHub> _notificationHubContext;
+
         public AccountController(
             IAccountService accountService,
             IConfiguration config,
             UserManager<User> userManager,
-            IPropertyService _propertyService)
+            IPropertyService propertyService,
+            IHubContext<ChatHub> chatHubContext,
+            IHubContext<NotificationHub> notificationHubContext)
         {
             this.accountService = accountService;
             this._config = config;
             this.userManager = userManager;
-            this._propertyService = _propertyService;
+            this._propertyService = propertyService;
+            this._chatHubContext = chatHubContext;
+            this._notificationHubContext = notificationHubContext;
         }
 
         [HttpPost("register")]
@@ -160,29 +172,9 @@ namespace Jiwar.Account
             return NoContent();
         }
 
-        [HttpPost("{propertyId}/chat/send")]
-        public async Task<IActionResult> SendMessage(int propertyId, [FromBody] ChatMessageDTO dto)
-        {
-            var chat = new Chat
-            {
-                PropertyID = propertyId,
-                SenderID = dto.SenderID,
-                ReceiverID = dto.ReceiverID,
-                MessageText = dto.MessageText,
-                MessageType = dto.MessageType,
-                SentDate = DateTime.UtcNow
-            };
-
-            await _propertyService.SendMessageAsync(chat);
-            return Ok("Message sent successfully");
-        }
-
-        [HttpGet("{propertyId}/chat/{senderId}/{receiverId}")]
-        public async Task<IActionResult> GetChatHistory(int propertyId, string senderId, string receiverId)
-        {
-            var history = await _propertyService.GetChatHistoryAsync(senderId, receiverId, propertyId);
-            return Ok(history);
-        }
+        // ❌ REMOVED: Chat endpoints moved to DesignRequestController
+        // Chat is part of the DesignRequest Workspace business logic
+        // and should NOT be in AccountController
 
 
         [Authorize(Roles = "PropertyOwner")]

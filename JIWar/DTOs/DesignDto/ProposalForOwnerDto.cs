@@ -13,5 +13,6 @@ namespace Jiwar.DTOs.DesignDto
         public virtual InteriorDesigner InteriorDesigner { get; set; }
 
         public string DesignerEmail { get; set; }
+        public StatusEnumReqPro Status { get; set; }
     }
 }

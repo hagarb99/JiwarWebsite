@@ -10,11 +10,12 @@ namespace GEWAR.Models
 
     public class Chat : BaseModel
     {
-        public string SenderID { get; set; }          // FK → User.UserID (sender)
-        public string ReceiverID { get; set; }        // FK → User.UserID (receiver)
-        public string MessageText { get; set; }    // Message content
+        public string SenderID { get; set; } = null!;          // FK → User.UserID (sender)
+        public string ReceiverID { get; set; } = null!;        // FK → User.UserID (receiver)
+        public string MessageText { get; set; } = string.Empty;    // Message content
         public MessageType MessageType { get; set; }  // Text, Image, or File
         public DateTime SentDate { get; set; }  // When sent
+        public bool IsRead { get; set; } = false;
 
         // 🔗 Navigation Properties
         public virtual User Sender { get; set; } = null!;

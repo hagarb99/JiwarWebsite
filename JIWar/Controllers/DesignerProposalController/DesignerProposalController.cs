@@ -68,6 +68,25 @@ namespace Jiwar.Controllers.DesignerProposalController
             return Ok(result);
         }
 
+        [Authorize(Roles = "InteriorDesigner")]
+        [HttpPost("deliver/{proposalId}")]
+        public async Task<IActionResult> Deliver(int proposalId, [FromBody] DeliveryRequestDto dto)
+        {
+            var designerId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            try
+            {
+                var result = await _service.DeliverProposalAsync(proposalId, designerId, dto.DeliveryNotes);
+                return Ok(new { success = true, message = "Project marked as delivered" });
+            }
+            catch (System.Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
     }
 
+    public class DeliveryRequestDto
+    {
+        public string DeliveryNotes { get; set; }
+    }
 }

@@ -74,8 +74,15 @@ namespace Jiwar.Services.DesignerProposalService
                 _context.Notifications.Add(notification);
                 await _context.SaveChangesAsync();
 
-                // 2. Send Real-time Notification
-                await _hubContext.Clients.User(request.UserID).SendAsync("ReceiveNotification", notification.Title, notification.Message);
+                // 2. Send Real-time Notification WITH SOUND trigger
+                await _hubContext.Clients.User(request.UserID).SendAsync("ReceiveNotification", new 
+                {
+                    title = notification.Title,
+                    message = notification.Message,
+                    type = notification.NotificationType.ToString(),
+                    sentDate = notification.SentDate,
+                    playSound = true
+                });
             }
 
             return _mapper.Map<ProposalDto>(proposal);
@@ -93,7 +100,8 @@ namespace Jiwar.Services.DesignerProposalService
                     EstimatedDays = p.EstimatedDays,
                     ProposalDescription = p.ProposalDescription,
                     DesignerName = p.Designer.User.Name,
-                    DesignerEmail = p.Designer.User.Email
+                    DesignerEmail = p.Designer.User.Email,
+                    Status = p.StatusEnumReq
                 })
                 .ToListAsync();
 
@@ -109,7 +117,7 @@ namespace Jiwar.Services.DesignerProposalService
             return _mapper.Map<IEnumerable<ProposalDto>>(proposals);
         }
 
-        public async Task<ProposalDto> ChooseProposalAsync(int proposalId, string ownerId)
+        public async Task<List<ProposalForOwnerDto>> ChooseProposalAsync(int proposalId, string ownerId)
         {
             var selected = await _context.DesignerProposals
                 .Include(p => p.DesignRequest)
@@ -139,7 +147,85 @@ namespace Jiwar.Services.DesignerProposalService
 
             await _context.SaveChangesAsync();
 
-            return _mapper.Map<ProposalDto>(selected);
+            // Notify the designer that their proposal was accepted
+            if (selected.Designer != null && !string.IsNullOrEmpty(selected.DesignerID))
+            {
+                var notification = new Notification
+                {
+                    UserID = selected.Designer.InteriorDesignerID, 
+                    Title = "Proposal Accepted!",
+                    Message = $"Your proposal for request #{selected.DesignRequestID} ({selected.DesignRequest.PreferredStyle}) has been accepted by the owner.",
+                    NotificationType = NotificationType.Offer,
+                    SentDate = DateTime.Now,
+                    IsRead = false,
+                    RelatedId = selected.DesignRequestID.ToString()
+                };
+
+                _context.Notifications.Add(notification);
+                await _context.SaveChangesAsync();
+
+                // Send Real-time Notification WITH SOUND trigger for frontend
+                await _hubContext.Clients.User(selected.Designer.InteriorDesignerID).SendAsync("ReceiveNotification", new 
+                {
+                    title = notification.Title,
+                    message = notification.Message,
+                    type = notification.NotificationType.ToString(),
+                    relatedId = notification.RelatedId,
+                    sentDate = notification.SentDate,
+                    playSound = true // Hint for frontend to play the 'tin tin' sound
+                });
+            }
+
+            return await GetProposalsForRequestAsync(selected.DesignRequestID);
+        }
+
+        public async Task<bool> DeliverProposalAsync(int proposalId, string designerId, string notes)
+        {
+            var proposal = await _context.DesignerProposals
+                .Include(p => p.DesignRequest)
+                .FirstOrDefaultAsync(p => p.Id == proposalId && p.DesignerID == designerId);
+
+            if (proposal == null)
+                throw new Exception("Proposal not found or you are not the designer of this proposal.");
+
+            if (proposal.StatusEnumReq != GEWAR.Models.StatusEnumReqPro.Accepted)
+                throw new Exception("Only accepted proposals can be delivered.");
+
+            proposal.StatusEnumReq = GEWAR.Models.StatusEnumReqPro.Delivered;
+            proposal.DeliveredAt = DateTime.UtcNow;
+            proposal.DeliveryNotes = notes;
+            proposal.DesignRequest.Status = "Completed";
+
+            await _context.SaveChangesAsync();
+
+            // Notify the Property Owner
+            if (!string.IsNullOrEmpty(proposal.DesignRequest.UserID))
+            {
+                var notification = new Notification
+                {
+                    UserID = proposal.DesignRequest.UserID,
+                    Title = "Project Delivered! 🎉",
+                    Message = $"Designer has completed your project (Request #{proposal.DesignRequestID}). Please review the final designs.",
+                    NotificationType = NotificationType.Request,
+                    SentDate = DateTime.Now,
+                    IsRead = false,
+                    RelatedId = proposalId.ToString()
+                };
+
+                _context.Notifications.Add(notification);
+                await _context.SaveChangesAsync();
+
+                await _hubContext.Clients.User(proposal.DesignRequest.UserID).SendAsync("ReceiveNotification", new
+                {
+                    title = notification.Title,
+                    message = notification.Message,
+                    type = "Success",
+                    relatedId = proposalId,
+                    playSound = true
+                });
+            }
+
+            return true;
         }
     }
 }

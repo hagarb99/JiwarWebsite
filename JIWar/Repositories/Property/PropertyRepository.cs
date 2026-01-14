@@ -137,7 +137,10 @@ namespace Jiwar.Repositories
             if (filter.PropertyType.HasValue)
                 query = query.Where(p => p.PropertyType == filter.PropertyType.Value);
 
-            return await query.ToListAsync();
+            if (filter.ListingType.HasValue)
+                query = query.Where(p => p.ListingType == filter.ListingType.Value);
+
+            return await query.OrderByDescending(p => p.PropertyID).ToListAsync();
         }
 
         public async Task<IEnumerable<Property>> GetPropertiesByIdsAsync(List<int> ids)

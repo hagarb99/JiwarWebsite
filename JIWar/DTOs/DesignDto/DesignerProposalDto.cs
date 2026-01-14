@@ -7,7 +7,7 @@ namespace Jiwar.DTOs.DesignDto
 
     public int RequestID { get; set; }
 
-    public string Status { get; set; }
+    public int Status { get; set; }
 
     public decimal? PriceEstimate { get; set; }
 

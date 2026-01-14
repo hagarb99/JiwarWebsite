@@ -322,12 +322,28 @@ namespace Jiwar.Account.Services
 
         public async Task UpdateInteriorDesignerProfileAsync(string userId, InteriorDesignerEditProfileDto dto)
         {
-            //var designer = new InteriorDesigner
-            //{
+            var user = await repo.GetUserByIdAsync(userId);
+            if (user == null) throw new Exception("User not found.");
 
-            //};
-            //await repo.AddInteriorDesignerAsync(designer);
-            throw new NotImplementedException();
+            var designer = await repo.GetInteriorDesignerByUserIdAsync(userId);
+            if (designer == null)
+            {
+                designer = new InteriorDesigner { InteriorDesignerID = userId };
+                await repo.AddInteriorDesignerAsync(designer);
+            }
+
+            // Update User fields (Name, Bio, etc.)
+            mapper.Map(dto, user);
+            await repo.UpdateUserAsync(user);
+
+            // Update Designer fields
+            designer.PortfolioURL = dto.PortfolioUrl;
+            designer.ExperienceYears = dto.YearsOfExperience;
+            designer.Specialization = dto.Specialization;
+            designer.Specializations = dto.Specializations;
+            designer.Certifications = dto.Certifications;
+
+            await repo.UpdateInteriorDesignerAsync(designer);
         }
 
         public Task UpdateAdminProfileAsync(string userId, AdminEditProfileDto dto)
@@ -340,7 +356,9 @@ namespace Jiwar.Account.Services
             var user = await repo.GetUserByIdAsync(userId);
             if (user == null) return null;
 
-            return mapper.Map<UserProfileDto>(user);
+            var profile = mapper.Map<UserProfileDto>(user);
+            profile.Normalize();
+            return profile;
         }
         public async Task<PropertyOwnerPublicProfileDto?> GetPropertyOwnerPublicProfileAsync(string userId)
         {

@@ -9,5 +9,6 @@ namespace Jiwar.Services.NotificationService
         Task<IEnumerable<NotificationDto>> GetUserNotificationsAsync(string userId);
         Task MarkAsReadAsync(int notificationId);
         Task MarkAllAsReadAsync(string userId);
+        Task CreateNotificationAsync(string userId, string title, string message, string relatedId, string type);
     }
 }
