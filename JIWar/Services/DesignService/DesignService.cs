@@ -36,6 +36,8 @@ namespace Jiwar.Services.DesignService
 
             _context.Designs.Add(design);
 
+            proposal.StatusEnumReq = GEWAR.Models.StatusEnumReqPro.Delivered;
+            proposal.DeliveredAt = DateTime.UtcNow;
             proposal.DesignRequest.Status = "Completed";
 
             await _context.SaveChangesAsync();

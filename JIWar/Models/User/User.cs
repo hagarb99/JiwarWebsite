@@ -40,5 +40,9 @@ namespace GEWAR.Models
         public virtual ICollection<SimulationChatMessage> SimulationChatMessages { get; set; } = new List<SimulationChatMessage>();
 
 
+        // For Designers
+        public double? AverageRating { get; set; }
+        public int? TotalReviews { get; set; }
+
     }
 }

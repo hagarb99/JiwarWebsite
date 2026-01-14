@@ -351,7 +351,9 @@ namespace Jiwar.Account.Services
             var user = await repo.GetUserByIdAsync(userId);
             if (user == null) return null;
 
-            return mapper.Map<UserProfileDto>(user);
+            var profile = mapper.Map<UserProfileDto>(user);
+            profile.Normalize();
+            return profile;
         }
         public async Task<PropertyOwnerPublicProfileDto?> GetPropertyOwnerPublicProfileAsync(string userId)
         {

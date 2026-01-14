@@ -126,7 +126,7 @@ namespace Jiwar
 
             // Authentication
 
-            var key = builder.Configuration["Jwt:Key"];
+            var key = builder.Configuration["Jwt:Key"] ?? "vY7fG9pQ2zR5xW8mK3nB1vC4xZ6mN9bV"; // Default fallback for development
             builder.Services.AddAuthentication(opt =>
             {
                 opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -154,7 +154,8 @@ namespace Jiwar
                             // If the request is for our hub...
                             var path = context.HttpContext.Request.Path;
                             if (!string.IsNullOrEmpty(accessToken) &&
-                                (path.StartsWithSegments("/notificationHub")))
+                                (path.StartsWithSegments("/notificationHub", StringComparison.OrdinalIgnoreCase) ||
+                                 path.StartsWithSegments("/chathub", StringComparison.OrdinalIgnoreCase)))
                             {
                                 // Read the token out of the query string
                                 context.Token = accessToken;
@@ -205,6 +206,7 @@ namespace Jiwar
             builder.Services.AddScoped<IDesignService, DesignService>();
             builder.Services.AddScoped<IProposalService, ProposalService>();
             builder.Services.AddScoped<IRequestService, RequestService>();
+            builder.Services.AddScoped<Jiwar.Services.ReviewService.IReviewService, Jiwar.Services.ReviewService.ReviewService>();
 
 
             builder.Services.AddScoped<IRenovationSimulationService, RenovationSimulationService>();

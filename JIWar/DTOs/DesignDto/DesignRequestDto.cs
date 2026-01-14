@@ -3,7 +3,7 @@
     public class DesignRequestDto
     {
         public int Id { get; set; }
-        //public string UserID { get; set; }
+        public string UserID { get; set; } // Owner ID
         public int PropertyID { get; set; }
         public string PreferredStyle { get; set; }
         public decimal? Budget { get; set; }

@@ -42,6 +42,17 @@
         public string? Location { get; set; }
         public string? Bio { get; set; }
 
+        public void Normalize()
+        {
+            Bio ??= "No bio information provided yet.";
+            
+            if (InteriorDesigner != null)
+            {
+                InteriorDesigner.Specializations ??= new List<string>();
+                InteriorDesigner.Certifications ??= new List<string>();
+                InteriorDesigner.Specialty ??= "Not specified";
+            }
+        }
     }
 
 }

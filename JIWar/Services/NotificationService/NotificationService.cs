@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using GEWAR;
 using GEWAR.Models;
 using Microsoft.EntityFrameworkCore;
+using Jiwar.Enum;
 
 namespace Jiwar.Services.NotificationService
 {
@@ -25,13 +26,24 @@ namespace Jiwar.Services.NotificationService
                                  .OrderByDescending(n => n.SentDate)
                                  .ToListAsync();
 
+            // Auto-mark all unread notifications as read when user views them
+            var unreadNotifications = notifications.Where(n => !n.IsRead).ToList();
+            if (unreadNotifications.Any())
+            {
+                foreach (var notification in unreadNotifications)
+                {
+                    notification.IsRead = true;
+                }
+                await _context.SaveChangesAsync();
+            }
+
             return notifications.Select(n => new NotificationDto
             {
                 NotificationID = n.NotificationID,
                 Title = n.Title,
                 Message = n.Message,
                 NotificationType = n.NotificationType.ToString(),
-                IsRead = n.IsRead,
+                IsRead = true, // Always return true since we just marked them as read
                 SentDate = n.SentDate,
                 TimeAgo = GetTimeAgo(n.SentDate),
                 RelatedId = n.RelatedId
@@ -71,6 +83,31 @@ namespace Jiwar.Services.NotificationService
                 }
                 await _context.SaveChangesAsync();
             }
+        }
+
+        public async Task CreateNotificationAsync(string userId, string title, string message, string relatedId, string type)
+        {
+            if (!System.Enum.TryParse(type, true, out NotificationType notType))
+            {
+                notType = NotificationType.System;
+            }
+
+            var notification = new Notification
+            {
+                UserID = userId,
+                Title = title,
+                Message = message,
+                RelatedId = relatedId,
+                NotificationType = notType,
+                SentDate = DateTime.Now,
+                IsRead = false
+            };
+
+            // Ensure User exists to avoid foreign key errors? 
+            // Usually we assume userId is valid as it comes from Identity.
+            
+            _context.Notifications.Add(notification);
+            await _context.SaveChangesAsync();
         }
     }
 }
