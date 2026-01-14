@@ -36,7 +36,8 @@ namespace Jiwar.Repositories
             return await _dbSet
          .Include(p => p.PropertyMedia.Where(media => !media.IsDeleted))
          .Include(p => p.PriceHistory)
-         .Include(p => p.PropertyOwner) 
+         .Include(p => p.PropertyOwner)
+         .ThenInclude(po => po.Owneruser)
          .FirstOrDefaultAsync(p => p.PropertyID == id && p.IsDeleted == false);
 
         }

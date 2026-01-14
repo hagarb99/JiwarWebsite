@@ -30,14 +30,15 @@ using Jiwar.Services.RequestService;
 using Jiwar.Services.ValuationService;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.Threading.Tasks;
 using static Jiwar.Services.AI.Comparison.IPropertyComparisonAiService;
 using IPropertyComparisonAiService = Jiwar.Services.AI.Comparison.IPropertyComparisonAiService;
-using Microsoft.AspNetCore.SignalR;
 
 namespace Jiwar
 {
@@ -65,13 +66,11 @@ namespace Jiwar
             var builder = WebApplication.CreateBuilder(args);
 
             // Controllers & Swagger
-            builder.Services.AddControllers()
-                .AddJsonOptions(options =>
-                {
-                    options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
-                    options.JsonSerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase;
-                    options.JsonSerializerOptions.DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull;
-                });
+            builder.Services.AddControllers();
+            //.AddJsonOptions(options =>
+            //{
+            //    options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+            //});
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen(c =>
             {
@@ -220,12 +219,12 @@ namespace Jiwar
 
 
 
-            builder.Services.AddControllers()
-                .AddJsonOptions(x =>
-                {
-                    x.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
-                    x.JsonSerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase;
-                });
+            builder.Services.AddControllers();
+                //.AddJsonOptions(x =>
+                //{
+                //    x.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+                //    x.JsonSerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase;
+                //});
 
             // Other Services
             builder.Services.AddScoped<TokenService>();
@@ -267,12 +266,12 @@ namespace Jiwar
             }
 
             app.UseHttpsRedirection();
+            app.UseStaticFiles();
             app.UseWebSockets();
             app.UseRouting();
             app.UseCors();
             app.UseAuthentication();
             app.UseAuthorization();
-            app.UseStaticFiles();
            
 
                         app.UseEndpoints(endpoints =>

@@ -251,14 +251,29 @@ namespace Jiwar.Account
         [HttpPost("profile/upload-image")]
         public async Task<IActionResult> UploadProfileImage([FromForm] IFormFile image) // الحقل يجب أن يسمى image
         {
+            //var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            //if (string.IsNullOrEmpty(userId)) return Unauthorized("User ID not found in token.");
+
+            //var result = await accountService.UploadProfileImageAsync(userId, image);
+
+            //if (!result.Success) return BadRequest(result);
+
+            //return Ok(result);
+            // سحب الملف من الـ Request مباشرة بغض النظر عن اسمه (image أو file)
+            var file = Request.Form.Files.FirstOrDefault();
+
+            if (file == null || file.Length == 0)
+                return BadRequest(new { message = "No file uploaded." });
+
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (string.IsNullOrEmpty(userId)) return Unauthorized("User ID not found in token.");
+            if (string.IsNullOrEmpty(userId)) return Unauthorized();
 
-            var result = await accountService.UploadProfileImageAsync(userId, image);
+            var result = await accountService.UploadProfileImageAsync(userId, file);
 
-            if (!result.Success) return BadRequest(result);
+            if (result.Success)
+                return Ok(new { profilePicURL = result.Data });
 
-            return Ok(result);
+            return BadRequest(result);
         }
 
 
