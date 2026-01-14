@@ -11,11 +11,22 @@
         public string PlanType { get; set; }
         public string Status { get; set; }
         public List<PropertyDto> Properties { get; set; } = new List<PropertyDto>();
+        public string UserId { get; set; }
+        public string Name { get; set; }
+        public string ProfilePicURL { get; set; }
+        public string Location { get; set; } // أضيفي هذا
+        public string Bio { get; set; }      // أضيفي هذا
+        public string Title { get; set; }
     }
+
 
     public class InteriorDesignerDto
     {
-        public string Specialty { get; set; }
+        public string Specialty { get; set; } // تأكدي إن الاسم ده هو اللي بتستخدميه أو غيريه لـ Specialization
+        public string? Name { get; set; }      // أضيفي هذا
+        public string? ProfilePicURL { get; set; } // أضيفي هذا
+        public int? ExperienceYears { get; set; }  // أضيفي هذا
+        public string? PortfolioURL { get; set; }
     }
     public class UserProfileDto
     {

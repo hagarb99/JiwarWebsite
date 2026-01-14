@@ -179,9 +179,12 @@ namespace Jiwar.Account.Services
             mapper.Map(dto, user);
 
             var result = await repo.UpdateUserAsync(user);
-
             if (!result.Succeeded)
                 return ResultViewModel<UserResponseDTO>.Fail("Failed to update profile.");
+            if (dto is InteriorDesignerEditProfileDto designerDto)
+            {
+                await UpdateInteriorDesignerProfileAsync(user.Id, designerDto);
+            }
 
             return ResultViewModel<UserResponseDTO>.Ok(
                 "Profile updated successfully.",
@@ -322,12 +325,20 @@ namespace Jiwar.Account.Services
 
         public async Task UpdateInteriorDesignerProfileAsync(string userId, InteriorDesignerEditProfileDto dto)
         {
-            //var designer = new InteriorDesigner
-            //{
+            var designer = await repo.GetInteriorDesignerByUserIdAsync(userId);
 
-            //};
-            //await repo.AddInteriorDesignerAsync(designer);
-            throw new NotImplementedException();
+            if (designer == null)
+            {
+                // إذا لم يكن له سجل كـ Designer (حالة نادرة)، نقوم بإنشائه
+                designer = new InteriorDesigner { InteriorDesignerID = userId };
+                await repo.AddInteriorDesignerAsync(designer);
+            }
+
+            // عمل Mapping للبيانات الإضافية (Portfolio, YearsOfExperience, Specialization)
+            mapper.Map(dto, designer);
+
+            // ملاحظة: الـ Repo يحتاج ميثود UpdateInteriorDesignerAsync مشابهة للـ PropertyOwner
+            await repo.UpdateInteriorDesignerAsync(designer);
         }
 
         public Task UpdateAdminProfileAsync(string userId, AdminEditProfileDto dto)
