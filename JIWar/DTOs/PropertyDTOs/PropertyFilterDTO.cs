@@ -13,7 +13,7 @@ namespace Jiwar.DTOs.PropertyDTOs
         public int? NumBedrooms { get; set; }
         public int? NumBathrooms { get; set; }
         public ListingTypeEnum? ListingType { get; set; }
-        public PropertyType? PropertyType { get; set; } 
+        public PropertyTypeEnum? PropertyType { get; set; } 
     }
 
 }

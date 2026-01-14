@@ -54,25 +54,42 @@ namespace Jiwar.Services
 
             // Property Metrics
             var properties = await _propertyRepo.GetAllAsync();
+
             var propertyMetrics = new PropertyMetricsDTO
             {
                 TotalProperties = properties.Count(),
+
                 ActiveListings = properties.Count(p => p.statusEnum == PropEnum.Active),
-                SoldOrRentedUnits = properties.Count(p =>
-                    p.statusEnum == PropEnum.Sold || p.statusEnum == PropEnum.Rented),
+
+                ForSaleListings = properties.Count(p =>
+                    p.ListingType == ListingTypeEnum.Sell),
+
+                ForRentListings = properties.Count(p =>
+                    p.ListingType == ListingTypeEnum.Rent),
+
                 TopCategories = properties
-                    .GroupBy(p => p.PropertyType.ToString())
-                    .Select(g => new TopCategoryDTO { CategoryName = g.Key, Count = g.Count() })
-                    .OrderByDescending(x => x.Count)
-                    .Take(5)
-                    .ToList(),
+    .GroupBy(p => p.PropertyType)
+    .Select(g => new TopCategoryDTO
+    {
+        PropertyType = g.Key.ToString(),
+        Count = g.Count()
+    })
+    .OrderByDescending(x => x.Count)
+    .Take(5)
+    .ToList(),
+
                 TopDistricts = properties
-                    .GroupBy(p => p.District)
-                    .Select(g => new TopDistrictDTO { DistrictName = g.Key, Count = g.Count() })
-                    .OrderByDescending(x => x.Count)
-                    .Take(5)
-                    .ToList()
+           .GroupBy(p => p.District)
+           .Select(g => new TopDistrictDTO
+           {
+               DistrictName = g.Key,
+               Count = g.Count()
+           })
+           .OrderByDescending(x => x.Count)
+           .Take(5)
+           .ToList()
             };
+
 
             // Valuation Metrics
             var valuationMetrics = new ValuationMetricsDTO
@@ -121,8 +138,8 @@ namespace Jiwar.Services
                 PaymentMetrics = paymentMetrics,
                 EngagementMetrics = new EngagementMetricsDTO
                 {
-                    PageVisits = 0,
-                    PropertyViews = 0,
+                    PageVisits = 50,
+                    PropertyViews = 100,
                     SearchTrends = new Dictionary<string, int>()
                 }
             };

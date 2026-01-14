@@ -44,6 +44,7 @@ namespace Jiwar.Service
 
             var property = new Property
             {
+                PropertyType = dto.PropertyType.Value,
                 Title = dto.Title,
                 Description = dto.Description,
                 Price = dto.Price,
@@ -59,6 +60,7 @@ namespace Jiwar.Service
                 LocationLang = dto.LocationLang,
                 OwnerID = owner.UserID,
                 ListingType = dto.ListingType,
+             
                 IsAvaliable = true
             };
 
