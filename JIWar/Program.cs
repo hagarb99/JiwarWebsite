@@ -162,6 +162,7 @@ namespace Jiwar
 
 
             builder.Services.AddScoped<IRenovationSimulationService, RenovationSimulationService>();
+            builder.Services.AddScoped<IImgService, ImgService>();
 
 
             // Other Services
@@ -172,7 +173,7 @@ namespace Jiwar
             builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
             // Build App
-            var app = builder.Build();
+                    var app = builder.Build();
 
             //await SeedRolesAsync(app);
             // Apply pending EF Core migrations at startup to ensure database schema is up-to-date
