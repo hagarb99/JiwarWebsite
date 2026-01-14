@@ -17,7 +17,12 @@
 
         Your goal is to maximize property value within budget.
 
-        JSON SCHEMA:
+        IMPORTANT:
+        - Respond ONLY with raw JSON.
+        - Do NOT wrap the response in code blocks or add any text outside the JSON.
+        - The root should be a JSON object nothing else.
+
+        YOU MUST FOLLOW THIS EXACT SCHEMA:
         {
           "renovation_recommendations": [
             {
