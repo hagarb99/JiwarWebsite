@@ -193,6 +193,9 @@ namespace Jiwar.Controllers
                 Console.WriteLine($"   OwnerID: {workspace.DesignRequest.UserID}");
                 Console.WriteLine($"   SignalR Room: {propertyId}");
 
+                // Ensure sender and receiver are different (self-messages should not be unread)
+                bool isSelfMessage = senderId == receiverId;
+                
                 var chat = new Chat
                 {
                     PropertyID = propertyId,
@@ -200,10 +203,21 @@ namespace Jiwar.Controllers
                     ReceiverID = receiverId, 
                     MessageText = messageContent,
                     MessageType = dto.MessageType,
-                    SentDate = DateTime.UtcNow
+                    SentDate = DateTime.UtcNow,
+                    IsRead = isSelfMessage // If self-message, mark as read; otherwise false (unread)
                 };
 
                 await _propertyService.SendMessageAsync(chat);
+                
+                // 📊 UNREAD COUNT LOGGING
+                if (!isSelfMessage)
+                {
+                    Console.WriteLine($"📬 Message marked as UNREAD for receiver: {receiverId}");
+                }
+                else
+                {
+                    Console.WriteLine($"📨 Self-message detected (sender == receiver), marked as READ");
+                }
                 Console.WriteLine("✅ Message saved to database");
 
                 var sender = await _userManager.FindByIdAsync(senderId);
@@ -223,38 +237,56 @@ namespace Jiwar.Controllers
                 };
 
                 Console.WriteLine($"📡 Broadcasting to SignalR Group: {propertyId}");
-                _logger.LogInformation("📡 Hub SendToRoom (DesignRequest): ToGroup={GroupId}, Sender={SenderId}", propertyId, senderId);
-                await _chatHubContext.Clients.Group(propertyId.ToString()).SendAsync("ReceiveMessage", responseData);
+                                                                                            _logger.LogInformation("📡 Hub SendToRoom (DesignRequest): ToGroup={GroupId}, Sender={SenderId}", propertyId, senderId);
+                                                                                            await _chatHubContext.Clients.Group(propertyId.ToString()).SendAsync("ReceiveMessage", responseData);
 
-                // Send Notification to the Receiver (Realtime + Persistence)
-                try 
-                {
-                    string notTitle = sender?.Name ?? "New Message";
-                    string notMessage = messageContent.Length > 30 ? messageContent.Substring(0, 30) + "..." : messageContent;
+                                                                                            // Send Notification to the Receiver (Realtime + Persistence)
+                                                                                            // Only if sender != receiver (not a self-message)
+                                                                                            if (!isSelfMessage)
+                                                                                            {
+                                                                                                try 
+                                                                                                {
+                                                                                                    string notTitle = sender?.Name ?? "New Message";
+                                                                                                    string notMessage = messageContent.Length > 30 ? messageContent.Substring(0, 30) + "..." : messageContent;
 
-                    // 1. Create DB Notification
-                    await _notificationService.CreateNotificationAsync(receiverId, notTitle, notMessage, requestId.ToString(), "Chat");
+                                                                                                    // 1. Create DB Notification
+                                                                                                    await _notificationService.CreateNotificationAsync(receiverId, notTitle, notMessage, requestId.ToString(), "Chat");
 
-                    // 2. Send Realtime Notification
-                    int totalUnread = await _service.GetTotalUnreadMessagesCountAsync(receiverId);
-                    Console.WriteLine($"🔔 Sending notification to User: {receiverId}, Unread Count: {totalUnread}");
-                    await _notificationHubContext.Clients.User(receiverId).SendAsync("ReceiveChatNotification", new 
-                    {
-                        title = notTitle,
-                        message = notMessage,
-                        sentDate = DateTime.Now,
-                        relatedId = requestId.ToString(),
-                        type = "Chat",
-                        unreadCount = totalUnread
-                    });
-                }
-                catch (Exception ex)
-                {
-                     Console.WriteLine($"❌ Error sending notification: {ex.Message}");
-                }
+                                                                                                    // 2. Get updated unread count for receiver
+                                                                                                    int totalUnread = await _service.GetTotalUnreadMessagesCountAsync(receiverId);
+                                                                                                    Console.WriteLine($"📊 UNREAD COUNT AFTER INSERT: Receiver={receiverId}, Count={totalUnread}");
+                                                                                                    
+                                                                                                    // 3. Send Realtime Chat Notification (existing event)
+                                                                                                    Console.WriteLine($"🔔 Sending ReceiveChatNotification to User: {receiverId}");
+                                                                                                    await _notificationHubContext.Clients.User(receiverId).SendAsync("ReceiveChatNotification", new 
+                                                                                                    {
+                                                                                                        title = notTitle,
+                                                                                                        message = notMessage,
+                                                                                                        sentDate = DateTime.Now,
+                                                                                                        relatedId = requestId.ToString(),
+                                                                                                        type = "Chat",
+                                                                                                        unreadCount = totalUnread
+                                                                                                    });
 
-                Console.WriteLine($"✅ Message sent successfully");
-                return Ok(new { message = "Message sent successfully", data = responseData });
+                                                                                                    // 4. Send dedicated unread count update event (NEW EVENT for badge updates)
+                                                                                                    Console.WriteLine($"📢 Sending ReceiveUnreadCountUpdated to User: {receiverId}, totalUnreadCount={totalUnread}");
+                                                                                                    await _notificationHubContext.Clients.User(receiverId).SendAsync("ReceiveUnreadCountUpdated", new 
+                                                                                                    {
+                                                                                                        totalUnreadCount = totalUnread
+                                                                                                    });
+                                                                                                }
+                                                                                                catch (Exception ex)
+                                                                                                {
+                                                                                                    Console.WriteLine($"❌ Error sending notification: {ex.Message}");
+                                                                                                }
+                                                                                            }
+                                                                                            else
+                                                                                            {
+                                                                                                Console.WriteLine($"⏭️ Skipping notification for self-message (sender == receiver)");
+                                                                                            }
+
+                                                                                            Console.WriteLine($"✅ Message sent successfully");
+                                                                                            return Ok(new { message = "Message sent successfully", data = responseData });
             }
             catch (Exception ex)
             {
