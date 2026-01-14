@@ -70,4 +70,20 @@ public class ImgService : IImgService
         return $"/images/profiles/{fileName}";
     }
 
+    public async Task<string> SaveChatFileAsync(IFormFile file)
+    {
+        if (file == null || file.Length == 0) return null;
+
+        var folderPath = Path.Combine(webHostEnvironment.WebRootPath, "uploads", "chat");
+        Directory.CreateDirectory(folderPath);
+
+        var fileName = $"{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
+        var fullPath = Path.Combine(folderPath, fileName);
+
+        using var stream = new FileStream(fullPath, FileMode.Create);
+        await file.CopyToAsync(stream);
+
+        return $"/uploads/chat/{fileName}";
+    }
+
 }
