@@ -65,9 +65,25 @@ namespace Jiwar.Controllers
         public async Task<IActionResult> Create([FromBody] CreateBookingDto dto)
         {
             var customerId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            try
+            {
+                var result = await _service.CreateAsync(dto, customerId);
+                return CreatedAtAction(nameof(Get), new { id = result.Id }, result);
+            }
+            catch (Exception ex) when (ex.Message == "FREE_LIMIT_REACHED")
+            {
+                // 403 Forbidden تعني أن الوصول ممنوع حالياً إلا بشرط (الاشتراك)
+                return StatusCode(403, new
+                {
+                    message = "لقد استنفدت الحجز المجاني الواحد. يرجى الاشتراك للمتابعة.",
+                    redirectTo = "/subscriptions"
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { error = ex.Message });
+            }
 
-            var result = await _service.CreateAsync(dto, customerId);
-            return CreatedAtAction(nameof(Get), new { id = result.Id }, result);
         }
 
 

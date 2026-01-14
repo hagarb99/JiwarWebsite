@@ -102,6 +102,11 @@ namespace Jiwar.Repositories
                 .Where(b => b.Property.OwnerID == ownerId)
                 .ToListAsync();
         }
+        public async Task<bool> HasAnyPreviousBookingAsync(string customerId)
+        {
+            // بنشوف لو فيه أي حجز مسجل للمستخدم ده في قاعدة البيانات
+            return await giwarContext.Set<Booking>().AnyAsync(b => b.CustomerID == customerId);
+        }
 
     }
 }
