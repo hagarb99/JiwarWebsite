@@ -28,13 +28,13 @@ namespace Jiwar.Services.CustomerPropertyChat
     public class CustomerPropertyChatService : ICustomerPropertyChatService
     {
         private readonly GiwarContext _context;
-        private readonly IHubContext<PropertyChatHub> _hubContext;
+        private readonly IHubContext<CustomerPropertyChatHub> _hubContext;
         public CustomerPropertyChatService(GiwarContext context,
-            IHubContext<PropertyChatHub> hubContext
+            IHubContext<CustomerPropertyChatHub> _hubContext
             )
         {
             _context = context;
-            _hubContext = hubContext;
+           this._hubContext = _hubContext;
         }
 
         public async Task<CustomerMessageDto> SendMessageAsync(SendMessageDto dto, string senderId, bool isSystemInitiated = false)

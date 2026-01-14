@@ -131,7 +131,14 @@ namespace Jiwar.Services
 
             // Send real-time notification using the same event & args as proposals
             await _hubContext.Clients.User(property.OwnerID)
-                .SendAsync("ReceiveNotification", notification.Title, notification.Message);
+                .SendAsync("ReceiveNotification", new
+                {
+                    title = notification.Title,
+                    message = notification.Message,
+                    type = notification.NotificationType.ToString(),
+                    relatedId = notification.RelatedId,
+                    notificationID = notification.NotificationID
+                });
 
             return mapper.Map<BookingDto>(created);
         }
@@ -223,8 +230,24 @@ namespace Jiwar.Services
 
                 // Send real-time notification using same event as proposals
                 await _hubContext.Clients.User(booking.CustomerID)
-                    .SendAsync("ReceiveNotification", notification.Title, notification.Message);
+                    .SendAsync("ReceiveNotification", new
+                    {
+                        title = notification.Title,
+                        message = notification.Message,
+                        type = notification.NotificationType.ToString(),
+                        relatedId = notification.RelatedId,
+                        notificationID = notification.NotificationID
+                    });
             }
+            // أضيفي هذا السطر لإخبار صفحة الشات أو تفاصيل العقار بالتحديث فوراً
+            await _hubContext.Clients.User(booking.CustomerID)
+                .SendAsync("BookingStatusChanged", new
+                {
+                    PropertyId = booking.PropertyID,
+                    Status = status.ToString(),
+                    CanChat = (status == StatusEnum.Confirmed)
+                });
+
 
             return updated;
         }
