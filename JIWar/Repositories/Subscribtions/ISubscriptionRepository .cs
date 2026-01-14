@@ -24,5 +24,7 @@ namespace Jiwar.Repositories.Interfaces
         Task<decimal> GetTodayRevenueAsync();
         Task<decimal> GetWeekRevenueAsync();
         Task<decimal> GetMonthRevenueAsync();
+        Task<bool> HasActiveSubscriptionAsync(string userId);
+
     }
 }

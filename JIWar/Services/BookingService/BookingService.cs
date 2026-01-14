@@ -7,6 +7,8 @@ using Jiwar.Enum;
 using Jiwar.Hubs;
 using Jiwar.Models;
 using Jiwar.Repositories;
+using Jiwar.Repositories.Interfaces;
+using Jiwar.Services.CustomerPropertyChat;
 using Microsoft.AspNetCore.SignalR;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,7 +20,9 @@ namespace Jiwar.Services
     {
         private readonly IBookingRepository _bookingRepo;
         private readonly IPropertyRepository _propertyRepo;
-        private readonly IHubContext<NotificationHub> _hubContext; 
+        private readonly IHubContext<NotificationHub> _hubContext;
+        private readonly ISubscriptionRepository _subscriptionRepository;
+        private readonly ICustomerPropertyChatService _chatService;
         private readonly IMapper mapper;
         private readonly GiwarContext _context;
         public BookingService(
@@ -26,14 +30,18 @@ namespace Jiwar.Services
             IPropertyRepository _propertyRepo,
             IMapper mapper,
             IHubContext<NotificationHub> hubContext,
-            GiwarContext context
+            GiwarContext context,
+            ISubscriptionRepository subscriptionRepository,
+            ICustomerPropertyChatService _chatService
             )
         {
             _bookingRepo = bookingRepo;
             this._propertyRepo = _propertyRepo;
             this.mapper = mapper;
+            _subscriptionRepository = subscriptionRepository;
             _hubContext = hubContext;
             _context = context;
+            this._chatService = _chatService;
         }
 
         public async Task<BookingDto> GetByIdAsync(int id)
@@ -52,6 +60,19 @@ namespace Jiwar.Services
 
         public async Task<BookingDto> CreateAsync(CreateBookingDto dto, string customerId)
         {
+            // 1. التحقق هل المستخدم حجز قبل ذلك؟
+            var hasBookedBefore = await _bookingRepo.HasAnyPreviousBookingAsync(customerId);
+
+            // 2. التحقق هل لدى المستخدم اشتراك فعال حالياً؟
+            var hasActiveSub = await _subscriptionRepository.HasActiveSubscriptionAsync(customerId);
+
+            // 3. المنطق: إذا كان لديه حجز سابق "و" ليس لديه اشتراك فعال -> ارفض الحجز
+            if (hasBookedBefore && !hasActiveSub)
+            {
+                // يجب أن تتطابق هذه الرسالة مع ما كتبتيه في الـ Catch داخل الـ Controller
+                throw new Exception("FREE_LIMIT_REACHED");
+            }
+
             // 1. Get property details
             var property = await _propertyRepo.GetPropertyDetailsAsync(dto.PropertyID);
 
@@ -170,6 +191,19 @@ namespace Jiwar.Services
 
             if (updated)
             {
+                if (status == StatusEnum.Confirmed)
+                {
+                    try
+                    {
+                        await _chatService.InitializeChatOnAcceptAsync(booking.PropertyID, booking.CustomerID, ownerId);
+                    }
+                    catch (Exception ex)
+                    {
+                        // نستخدم try-catch هنا حتى لا يتوقف تحديث الحجز إذا حدث خطأ بسيط في إرسال أول رسالة
+                        Console.WriteLine($"Error initializing chat: {ex.Message}");
+                    }
+                }
+
                 var notifTitle = status == StatusEnum.Confirmed ? "Booking Accepted" : "Booking Rejected";
                 var notifMessage = $"Your booking for {booking.Property?.Title ?? "the property"} was {status.ToString().ToLower()}";
 

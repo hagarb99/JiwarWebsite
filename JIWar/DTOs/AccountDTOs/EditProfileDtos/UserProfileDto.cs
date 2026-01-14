@@ -29,7 +29,6 @@
         public string? PortfolioURL { get; set; }
         public List<string> Specializations { get; set; } = new List<string>();
         public List<string> Certifications { get; set; }
-        public string PortfolioUrl { get; set; }
     }
     public class UserProfileDto
     {

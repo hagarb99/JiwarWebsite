@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Jiwar.Services.CustomerPropertyChat;
 using Jiwar.DTOs.CustomerPropertyChat;
 using Microsoft.AspNetCore.SignalR;
@@ -7,7 +7,6 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using System.Threading.Tasks;
 using System;
-using System.Collections.Generic;
 
 namespace Jiwar.Controllers
 {
@@ -17,12 +16,10 @@ namespace Jiwar.Controllers
     public class CustomerPropertyChatController : ControllerBase
     {
         private readonly ICustomerPropertyChatService _chatService;
-        private readonly IHubContext<CustomerPropertyChatHub> _hubContext;
 
-        public CustomerPropertyChatController(ICustomerPropertyChatService chatService, IHubContext<CustomerPropertyChatHub> hubContext)
+        public CustomerPropertyChatController(ICustomerPropertyChatService chatService)
         {
             _chatService = chatService;
-            _hubContext = hubContext;
         }
 
         [HttpPost("send")]
@@ -31,18 +28,15 @@ namespace Jiwar.Controllers
             try
             {
                 var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+                // الـ Service هنا هتحفظ في الـ DB وتبعت SignalR في نفس الوقت
                 var result = await _chatService.SendMessageAsync(dto, userId);
 
-                // Determining users to notify: Sender and Receiver.
-                // This ensures both parties receive the message if online.
-                   
-                await _hubContext.Clients.Users(new[] { result.SenderId, result.ReceiverId }).SendAsync("ReceiveMessage", result);
-                   
                 return Ok(result);
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest(new { message = ex.Message });
             }
         }
 
@@ -50,16 +44,20 @@ namespace Jiwar.Controllers
         public async Task<IActionResult> GetHistory(int propertyId, string customerId = null)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if(string.IsNullOrEmpty(customerId)) customerId = userId;
-            
+
+            // لو اللي بينادي المالك، لازم يبعت customerId بتاع العميل اللي بيكلمه
+            // لو اللي بينادي العميل، الـ customerId هو نفسه الـ userId
+            if (string.IsNullOrEmpty(customerId)) customerId = userId;
+
             var msgs = await _chatService.GetChatHistoryAsync(propertyId, customerId, userId);
-            
+
+            // بمجرد فتح التاريخ، بنعلم على الرسائل إنها مقروءة
             await _chatService.MarkAsReadAsync(propertyId, customerId, userId);
-            
+
             return Ok(msgs);
         }
 
-        [HttpGet("my-chats")] // For Customers
+        [HttpGet("my-chats")] // للعملاء: عرض قائمة العقارات اللي سألوا عليها
         public async Task<IActionResult> GetMyChats()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -67,20 +65,20 @@ namespace Jiwar.Controllers
             return Ok(threads);
         }
 
-        [HttpGet("owner-chats")] // For Owners
+        [HttpGet("owner-chats")] // للملاك: عرض قائمة العملاء اللي سألوا على عقاراتهم
         public async Task<IActionResult> GetOwnerChats()
         {
-             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-             var threads = await _chatService.GetOwnerChatsAsync(userId);
-             return Ok(threads);
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var threads = await _chatService.GetOwnerChatsAsync(userId);
+            return Ok(threads);
         }
 
         [HttpGet("unread-count")]
         public async Task<IActionResult> GetUnreadCount()
         {
-             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-             var count = await _chatService.GetUnreadCountAsync(userId);
-             return Ok(new { Count = count });
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var count = await _chatService.GetUnreadCountAsync(userId);
+            return Ok(new { count = count });
         }
     }
 }

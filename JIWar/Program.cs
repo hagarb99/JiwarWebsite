@@ -106,12 +106,12 @@ namespace Jiwar
             // CORS
             builder.Services.AddCors(options =>
             {
-                options.AddDefaultPolicy(policy =>
+                options.AddPolicy("SignalRPolicy", policy =>
                 {
-                    policy.WithOrigins("http://localhost:4200")
-                           .AllowAnyMethod()
+                    policy.WithOrigins("http://localhost:4200") // حددي رابط الأنجولار بدقة هنا
                           .AllowAnyHeader()
-                     .AllowCredentials();
+                          .AllowAnyMethod()
+                          .AllowCredentials(); // ضروري جداً لعمل SignalR مع التوكن
                 });
             });
 
@@ -213,12 +213,6 @@ namespace Jiwar
 
 
             builder.Services.AddScoped<IRenovationSimulationService, RenovationSimulationService>();
-            builder.Services.AddScoped<IMailService, MailService>();
-            builder.Services.AddScoped<IImgService, ImgService>();
-            builder.Services.AddScoped<IAiChatService, AiChatService>();
-            builder.Services.AddScoped<IPropertyComparisonAiService, PropertyComparisonAiService>();
-
-
 
 
             // Other Services
@@ -235,7 +229,7 @@ namespace Jiwar
             builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
             // Build App
-            var app = builder.Build();
+                    var app = builder.Build();
 
             //await SeedRolesAsync(app);
             // Apply pending EF Core migrations at startup to ensure database schema is up-to-date
@@ -259,12 +253,11 @@ namespace Jiwar
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
-
+            app.UseCors("SignalRPolicy");
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseWebSockets();
             app.UseRouting();
-            app.UseCors();
             app.UseAuthentication();
             app.UseAuthorization();
            

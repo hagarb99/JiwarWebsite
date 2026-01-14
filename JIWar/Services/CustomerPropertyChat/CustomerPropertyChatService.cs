@@ -1,4 +1,4 @@
-using Jiwar.DTOs.CustomerPropertyChat;
+﻿using Jiwar.DTOs.CustomerPropertyChat;
 using Jiwar.Models.CustomerPropertyChat;
 using Jiwar.Models; 
 using GEWAR; // Context
@@ -6,80 +6,101 @@ using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using System.Linq; // Add this
 using System.Collections.Generic; // Add this
-using System.Threading.Tasks; // Add this
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.SignalR;
+using Jiwar.Hubs; // Add this
 
 namespace Jiwar.Services.CustomerPropertyChat
 {
     public interface ICustomerPropertyChatService
     {
-        Task<CustomerMessageDto> SendMessageAsync(SendMessageDto dto, string senderId);
+        Task<CustomerMessageDto> SendMessageAsync(SendMessageDto dto, string senderId, bool isSystemInitiated = false);
         Task<List<CustomerMessageDto>> GetChatHistoryAsync(int propertyId, string customerId, string currentUserId);
         Task MarkAsReadAsync(int propertyId, string customerId, string readerId);
         Task<int> GetUnreadCountAsync(string userId);
         Task<List<ChatThreadDto>> GetOwnerChatsAsync(string ownerId);
         Task<List<ChatThreadDto>> GetCustomerChatsAsync(string customerId);
+        Task InitializeChatOnAcceptAsync(int propertyId, string customerId, string ownerId);
+
+
     }
 
     public class CustomerPropertyChatService : ICustomerPropertyChatService
     {
         private readonly GiwarContext _context;
-
-        public CustomerPropertyChatService(GiwarContext context)
+        private readonly IHubContext<PropertyChatHub> _hubContext;
+        public CustomerPropertyChatService(GiwarContext context,
+            IHubContext<PropertyChatHub> hubContext
+            )
         {
             _context = context;
+            _hubContext = hubContext;
         }
 
-        public async Task<CustomerMessageDto> SendMessageAsync(SendMessageDto dto, string senderId)
+        public async Task<CustomerMessageDto> SendMessageAsync(SendMessageDto dto, string senderId, bool isSystemInitiated = false)
         {
-             var property = await _context.Properties.FindAsync(dto.PropertyId);
-             if(property == null) throw new Exception("Property not found");
-             
-             var isSenderOwner = property.OwnerID == senderId;
-             string receiverId; 
+            var property = await _context.Properties.FindAsync(dto.PropertyId);
+            if (property == null) throw new Exception("Property not found");
 
-             if(isSenderOwner)
-             {
-                 if(string.IsNullOrEmpty(dto.ReceiverId)) throw new Exception("ReceiverId required for owner reply");
-                 receiverId = dto.ReceiverId;
-                 
-                 bool exists = await _context.CustomerPropertyMessages.AnyAsync(m => m.PropertyId == dto.PropertyId && (m.SenderId == receiverId || m.ReceiverId == receiverId));
-                 if(!exists) throw new Exception("Owner cannot initiate chat");
-             }
-             else
-             {
-                 receiverId = property.OwnerID;
-             }
-             
-             var msg = new CustomerPropertyMessage
-             {
-                 SenderId = senderId,
-                 ReceiverId = receiverId,
-                 PropertyId = dto.PropertyId,
-                 MessageText = dto.MessageText,
-                 CreatedAt = DateTime.UtcNow,
-                 IsRead = false
-             };
-             
-             _context.CustomerPropertyMessages.Add(msg);
-             await _context.SaveChangesAsync();
-             
-             var senderUser = await _context.Users.FindAsync(senderId);
-             
-             return new CustomerMessageDto
-             {
-                 Id = msg.Id,
-                 SenderId = msg.SenderId,
-                 SenderName = senderUser?.UserName ?? "Unknown",
-                 SenderProfilePicURL = senderUser?.ProfilePicURL ?? "",
-                 ReceiverId = msg.ReceiverId,
-                 PropertyId = msg.PropertyId,
-                 MessageText = msg.MessageText,
-                 CreatedAt = msg.CreatedAt,
-                 IsRead = msg.IsRead,
-                 IsMine = true 
-             };
+            var isSenderOwner = property.OwnerID == senderId;
+            string receiverId;
+
+            if (isSenderOwner)
+            {
+                if (string.IsNullOrEmpty(dto.ReceiverId)) throw new Exception("ReceiverId required for owner reply");
+                receiverId = dto.ReceiverId;
+
+                if (!isSystemInitiated)
+                {
+                    bool exists = await _context.CustomerPropertyMessages.AnyAsync(m => m.PropertyId == dto.PropertyId && (m.SenderId == receiverId || m.ReceiverId == receiverId));
+                    if (!exists) throw new Exception("Owner cannot initiate chat");
+                }
+            }
+            else
+            {
+                receiverId = property.OwnerID;
+            }
+
+            var msg = new CustomerPropertyMessage
+            {
+                SenderId = senderId,
+                ReceiverId = receiverId,
+                PropertyId = dto.PropertyId,
+                MessageText = dto.MessageText,
+                CreatedAt = DateTime.UtcNow,
+                IsRead = false
+            };
+
+            _context.CustomerPropertyMessages.Add(msg);
+            await _context.SaveChangesAsync();
+
+            var senderUser = await _context.Users.FindAsync(senderId);
+
+            var resultDto = new CustomerMessageDto
+            {
+                Id = msg.Id,
+                SenderId = msg.SenderId,
+                SenderName = senderUser?.UserName ?? "Unknown",
+                ReceiverId = msg.ReceiverId,
+                PropertyId = msg.PropertyId,
+                MessageText = msg.MessageText,
+                CreatedAt = msg.CreatedAt,
+                IsRead = msg.IsRead,
+                IsMine = false // ستتغير في الـ Frontend بناءً على الـ ID
+            };
+
+            // --- التعديل الجوهري هنا لضمان عمل الـ SignalR ---
+
+            // تحديد من هو العميل في هذه المحادثة لتحديد اسم الغرفة الصحيح
+            string chatCustomerId = isSenderOwner ? receiverId : senderId;
+            string groupName = $"PropertyChat_{dto.PropertyId}_{chatCustomerId}";
+
+            // الإرسال للمجموعة بالكامل (المالك والعميل المنضمين للغرفة)
+            await _hubContext.Clients.Group(groupName).SendAsync("ReceiveMessage", resultDto);
+
+            resultDto.IsMine = true; // للمرسل تكون true
+            return resultDto;
         }
-
         public async Task<List<CustomerMessageDto>> GetChatHistoryAsync(int propertyId, string customerId, string currentUserId)
         {
             var msgs = await _context.CustomerPropertyMessages
@@ -216,5 +237,20 @@ namespace Jiwar.Services.CustomerPropertyChat
              }
              return result;
         }
+        public async Task InitializeChatOnAcceptAsync(int propertyId, string customerId, string ownerId)
+        {
+            // رسالة ترحيبية تلقائية تفتح الشات
+            var welcomeMsg = new SendMessageDto
+            {
+                PropertyId = propertyId,
+                ReceiverId = customerId, // المالك بيبعت للعميل
+                MessageText = "لقد تم قبول طلب المعاينة الخاص بك. يمكنك الآن التواصل مع المالك."
+            };
+
+            // نستخدم الدالة اللي عندنا فعلاً لإرسال أول رسالة
+            // ملاحظة: لازم نشيل شرط (exists) من SendMessageAsync في حالة إن النظام هو اللي بيبدأ
+            await SendMessageAsync(welcomeMsg, ownerId, true);
+        }
+
     }
 }

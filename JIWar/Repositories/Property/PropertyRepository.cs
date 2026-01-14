@@ -243,17 +243,18 @@ namespace Jiwar.Repositories
             //    })
             //    .ToListAsync();
 
-            //return new PagedResult<PropertyListBDTO>
-            //{
-            //    Items = items,
-            //    TotalCount = totalCount,
-            //    Page = page,
-            //    PageSize = pageSize
-            //};
-            var baseQuery = _context.Properties
-      .AsNoTracking()
-      .Where(p => !p.IsDeleted)
-      .OrderByDescending(p => p.PropertyID);
+        public async Task<PagedResult<PropertyListBDTO>> GetAllPropertiesPagedAsync(int page, int pageSize)
+        {
+            var query = _context.Properties
+                .AsNoTracking()
+                .Where(p => !p.IsDeleted && p.IsAvaliable == true)
+                .Include(p => p.PropertyMedia
+                    .Where(media => !media.IsDeleted)
+                    .OrderBy(media => media.Order)
+                    .Take(1))  
+                .OrderByDescending(p => p.PropertyID);
+                .Include(p => p.PropertyMedia.Where(m => !m.IsDeleted))
+                .OrderByDescending(p => p.PropertyID);  
 
             var totalCount = await baseQuery.CountAsync();
 
