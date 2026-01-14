@@ -12,6 +12,8 @@ using Jiwar.Services;
 using Microsoft.AspNetCore.Identity;
 using Jiwar.Services.NotificationService;
 
+using Microsoft.Extensions.Logging;
+
 namespace Jiwar.Controllers
 {
     [Authorize]
@@ -26,6 +28,7 @@ namespace Jiwar.Controllers
         private readonly IImgService _imgService;
         private readonly INotificationService _notificationService;
         private readonly UserManager<User> _userManager;
+        private readonly ILogger<DesignRequestController> _logger;
 
         public DesignRequestController(
             IDesignRequestService service, 
@@ -34,7 +37,8 @@ namespace Jiwar.Controllers
             IImgService imgService,
             UserManager<User> userManager,
             IHubContext<NotificationHub> notificationHubContext,
-            INotificationService notificationService)
+            INotificationService notificationService,
+            ILogger<DesignRequestController> logger)
         {
             _service = service;
             _chatHubContext = chatHubContext;
@@ -43,6 +47,7 @@ namespace Jiwar.Controllers
             _userManager = userManager;
             _notificationHubContext = notificationHubContext;
             _notificationService = notificationService;
+            _logger = logger;
         }
 
         [Authorize(Roles = "PropertyOwner,Customer,InteriorDesigner")]
@@ -218,6 +223,7 @@ namespace Jiwar.Controllers
                 };
 
                 Console.WriteLine($"📡 Broadcasting to SignalR Group: {propertyId}");
+                _logger.LogInformation("📡 Hub SendToRoom (DesignRequest): ToGroup={GroupId}, Sender={SenderId}", propertyId, senderId);
                 await _chatHubContext.Clients.Group(propertyId.ToString()).SendAsync("ReceiveMessage", responseData);
 
                 // Send Notification to the Receiver (Realtime + Persistence)

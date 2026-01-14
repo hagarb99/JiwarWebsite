@@ -79,6 +79,7 @@ namespace GEWAR
         public DbSet<SimulationChatMessage> SimulationChatMessages { get; set; }
 
         public DbSet<UserChatQuota> UserChatQuotas { get; set; }
+        public DbSet<Jiwar.Models.CustomerPropertyChat.CustomerPropertyMessage> CustomerPropertyMessages { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -153,6 +154,18 @@ namespace GEWAR
             modelBuilder.ApplyConfiguration(new SimulationChatMessageConfiguration());
 
 
+
+            modelBuilder.Entity<Jiwar.Models.CustomerPropertyChat.CustomerPropertyMessage>()
+                .HasOne(m => m.Sender)
+                .WithMany()
+                .HasForeignKey(m => m.SenderId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Jiwar.Models.CustomerPropertyChat.CustomerPropertyMessage>()
+                .HasOne(m => m.Receiver)
+                .WithMany()
+                .HasForeignKey(m => m.ReceiverId)
+                .OnDelete(DeleteBehavior.Restrict);
 
             base.OnModelCreating(modelBuilder);
             modelBuilder.Entity<User>()

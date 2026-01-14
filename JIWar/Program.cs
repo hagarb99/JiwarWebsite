@@ -155,7 +155,8 @@ namespace Jiwar
                             var path = context.HttpContext.Request.Path;
                             if (!string.IsNullOrEmpty(accessToken) &&
                                 (path.StartsWithSegments("/notificationHub", StringComparison.OrdinalIgnoreCase) ||
-                                 path.StartsWithSegments("/chathub", StringComparison.OrdinalIgnoreCase)))
+                                 path.StartsWithSegments("/chathub", StringComparison.OrdinalIgnoreCase) ||
+                                 path.StartsWithSegments("/customerPropertyChatHub", StringComparison.OrdinalIgnoreCase)))
                             {
                                 // Read the token out of the query string
                                 context.Token = accessToken;
@@ -206,6 +207,7 @@ namespace Jiwar
             builder.Services.AddScoped<IDesignService, DesignService>();
             builder.Services.AddScoped<IProposalService, ProposalService>();
             builder.Services.AddScoped<IRequestService, RequestService>();
+            builder.Services.AddScoped<Jiwar.Services.CustomerPropertyChat.ICustomerPropertyChatService, Jiwar.Services.CustomerPropertyChat.CustomerPropertyChatService>();
             builder.Services.AddScoped<Jiwar.Services.ReviewService.IReviewService, Jiwar.Services.ReviewService.ReviewService>();
 
 
@@ -276,6 +278,7 @@ namespace Jiwar
                         { 
                 endpoints.MapControllers();
                 endpoints.MapHub<ChatHub>("/chathub");
+                endpoints.MapHub<Jiwar.Hubs.CustomerPropertyChatHub>("/customerPropertyChatHub");
                 endpoints.MapHub<NotificationHub>("/notificationHub");
             });
             //app.MapControllers();
