@@ -2,9 +2,16 @@
 {
     public class InteriorDesignerEditProfileDto : EditProfileBaseDto
     {
-       // Designer-specific editable fields
-        public string? PortfolioUrl { get; set; }
+
+
+        public string? Website { get; set; } // Ant Gravity يرسل هذا الآن
+        public List<string>? Specializations { get; set; } // يرسل مصفوفة
         public int? YearsOfExperience { get; set; }
+
+        // سنحتفظ بهذين الحقلين لضمان عدم حدوث Error أثناء الـ Mapping
+        public string? PortfolioUrl { get; set; }
         public string? Specialization { get; set; }
+     
+        public string? Certifications { get; set; }
     }
 }

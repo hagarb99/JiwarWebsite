@@ -112,7 +112,25 @@ namespace Jiwar.Repositories
             _context.PropertyOwners.Update(owner);
             await _context.SaveChangesAsync();
         }
+        public async Task<PropertyOwner?> GetPropertyOwnerPublicAsync(string userId)
+        {
+            return await _context.PropertyOwners
+        .Include(po => po.Owneruser)
+        .AsNoTracking()
+        .FirstOrDefaultAsync(po => po.UserID == userId);
+        }
+        public async Task<InteriorDesigner?> GetInteriorDesignerByUserIdAsync(string userId)
+        {
+            return await _context.InteriorDesigners
+                .Include(id => id.User)
+                .FirstOrDefaultAsync(id => id.InteriorDesignerID == userId);
+        }
 
+        public async Task UpdateInteriorDesignerAsync(InteriorDesigner designer)
+        {
+            _context.InteriorDesigners.Update(designer);
+            await _context.SaveChangesAsync();
+        }
 
 
     }

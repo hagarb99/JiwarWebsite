@@ -4,7 +4,8 @@
         {
             Pending,
             Accepted,
-            Rejected
+            Rejected,
+            Delivered = 3
         }
     
 }

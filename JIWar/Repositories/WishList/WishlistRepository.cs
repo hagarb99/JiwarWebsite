@@ -1,7 +1,8 @@
-﻿using Jiwar.DTOs.WishlistDTOs;
+﻿using GEWAR;
 using GEWAR.Models;
+using Jiwar.DTOs.AdminAnalytics;
+using Jiwar.DTOs.WishlistDTOs;
 using Microsoft.EntityFrameworkCore;
-using GEWAR;
 
 namespace Jiwar.Repositories
 {
@@ -17,8 +18,8 @@ namespace Jiwar.Repositories
         public async Task AddAsync(string userId, int propertyId, string? notes = null)
         {
             // Check if property exists in Properties table
-            var propertyExists = await _context.Properties.AnyAsync(p => p.Id == propertyId);
-            if (!propertyExists)
+            var propertyExists = _context.Properties.FirstOrDefault(p => p.PropertyID == propertyId);
+            if (propertyExists == null)
                 throw new Exception("Property does not exist.");
 
             // Check if already in wishlist
@@ -65,5 +66,24 @@ namespace Jiwar.Repositories
             await _context.SaveChangesAsync();
             return true;
         }
+
+
+        public async Task<List<AdminWishlistDto>> GetAllWishlistsForAdminAsync()
+        {
+            return await _context.WishLists
+                .Include(w => w.User)
+                .Include(w => w.Property)
+                .Select(w => new AdminWishlistDto
+                {
+                    UserId = w.UserID,
+                    UserName = w.User.UserName,
+                    PropertyId = w.PropertyID,
+                    PropertyTitle = w.Property.Title,
+                    AddedDate = w.AddedDate,
+                    Notes = w.Notes
+                })
+                .ToListAsync();
+        }
+
     }
 }

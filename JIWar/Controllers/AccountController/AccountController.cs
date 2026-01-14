@@ -2,8 +2,11 @@
 using GEWAR.Models;
 using Jiwar.Account.DTOs;
 using Jiwar.Account.Services;
+using Jiwar.Service;
+using Microsoft.AspNetCore.SignalR;
+using Jiwar.Hubs;
+using Jiwar.DTOs.ChatDTOs;
 using Jiwar.DTOs;
-using Jiwar.DTOs.AccountDTOs.EditProfileDtos;
 using Jiwar.DTOs.AccountDTOs.EditProfileDtos;
 using Jiwar.DTOs.ChatDTOs;
 using Jiwar.Service;
@@ -27,17 +30,25 @@ namespace Jiwar.Account
         private readonly IAccountService accountService;
         private readonly IConfiguration _config;
         private readonly UserManager<User> userManager;
+
         private readonly IPropertyService _propertyService;
+        private readonly IHubContext<ChatHub> _chatHubContext;
+        private readonly IHubContext<NotificationHub> _notificationHubContext;
+
         public AccountController(
             IAccountService accountService,
             IConfiguration config,
             UserManager<User> userManager,
-            IPropertyService _propertyService)
+            IPropertyService propertyService,
+            IHubContext<ChatHub> chatHubContext,
+            IHubContext<NotificationHub> notificationHubContext)
         {
             this.accountService = accountService;
             this._config = config;
             this.userManager = userManager;
-            this._propertyService = _propertyService;
+            this._propertyService = propertyService;
+            this._chatHubContext = chatHubContext;
+            this._notificationHubContext = notificationHubContext;
         }
 
         [HttpPost("register")]
@@ -106,7 +117,8 @@ namespace Jiwar.Account
         }
 
 
-        [HttpPost("forget-password")]
+        [HttpPost("forgot-password")]
+        [AllowAnonymous]
         public async Task<IActionResult> ForgetPassword([FromBody] ForgetPasswordDto dto)
         {
             var result = await accountService.ForgetPasswordAsync(dto);
@@ -160,29 +172,9 @@ namespace Jiwar.Account
             return NoContent();
         }
 
-        [HttpPost("{propertyId}/chat/send")]
-        public async Task<IActionResult> SendMessage(int propertyId, [FromBody] ChatMessageDTO dto)
-        {
-            var chat = new Chat
-            {
-                PropertyID = propertyId,
-                SenderID = dto.SenderID,
-                ReceiverID = dto.ReceiverID,
-                MessageText = dto.MessageText,
-                MessageType = dto.MessageType,
-                SentDate = DateTime.UtcNow
-            };
-
-            await _propertyService.SendMessageAsync(chat);
-            return Ok("Message sent successfully");
-        }
-
-        [HttpGet("{propertyId}/chat/{senderId}/{receiverId}")]
-        public async Task<IActionResult> GetChatHistory(int propertyId, string senderId, string receiverId)
-        {
-            var history = await _propertyService.GetChatHistoryAsync(senderId, receiverId, propertyId);
-            return Ok(history);
-        }
+        // ❌ REMOVED: Chat endpoints moved to DesignRequestController
+        // Chat is part of the DesignRequest Workspace business logic
+        // and should NOT be in AccountController
 
 
         [Authorize(Roles = "PropertyOwner")]
@@ -241,6 +233,47 @@ namespace Jiwar.Account
                 return NotFound(new { message = "Profile not found." });
 
             return Ok(profile);
+        }
+
+        [HttpGet("property-owner/{userId}/public-profile")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetPropertyOwnerPublicProfile(string userId)
+        {
+            var profile = await accountService.GetPropertyOwnerPublicProfileAsync(userId);
+
+            if (profile == null)
+                return NotFound(new { message = "Property owner not found" });
+
+            return Ok(profile);
+        }
+
+        [Authorize]
+        [HttpPost("profile/upload-image")]
+        public async Task<IActionResult> UploadProfileImage([FromForm] IFormFile image) // الحقل يجب أن يسمى image
+        {
+            //var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            //if (string.IsNullOrEmpty(userId)) return Unauthorized("User ID not found in token.");
+
+            //var result = await accountService.UploadProfileImageAsync(userId, image);
+
+            //if (!result.Success) return BadRequest(result);
+
+            //return Ok(result);
+            // سحب الملف من الـ Request مباشرة بغض النظر عن اسمه (image أو file)
+            var file = Request.Form.Files.FirstOrDefault();
+
+            if (file == null || file.Length == 0)
+                return BadRequest(new { message = "No file uploaded." });
+
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userId)) return Unauthorized();
+
+            var result = await accountService.UploadProfileImageAsync(userId, file);
+
+            if (result.Success)
+                return Ok(new { profilePicURL = result.Data });
+
+            return BadRequest(result);
         }
 
 

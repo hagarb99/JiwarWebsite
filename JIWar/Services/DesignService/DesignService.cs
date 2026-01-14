@@ -31,11 +31,13 @@ namespace Jiwar.Services.DesignService
 
             var design = _mapper.Map<Design>(dto);
             design.DesignerID = designerId;
-           
+            design.RequestID = proposal.DesignRequestID;
             design.CreationDate = DateTime.UtcNow;
 
             _context.Designs.Add(design);
 
+            proposal.StatusEnumReq = GEWAR.Models.StatusEnumReqPro.Delivered;
+            proposal.DeliveredAt = DateTime.UtcNow;
             proposal.DesignRequest.Status = "Completed";
 
             await _context.SaveChangesAsync();

@@ -8,8 +8,8 @@ namespace Jiwar.Models
         public int DesignRequestID { get; set; }
         public virtual DesignRequest DesignRequest { get; set; } = null!;
 
-        public string DesignerID { get; set; }
-        public virtual InteriorDesigner Designer { get; set; }
+        public string DesignerID { get; set; } = null!;
+        public virtual InteriorDesigner Designer { get; set; } = null!;
 
         public decimal EstimatedCost { get; set; }
 
@@ -22,6 +22,8 @@ namespace Jiwar.Models
         public StatusEnumReqPro StatusEnumReq { get; set; }
 
         public DateTime CreatedDate { get; set; }
+        public DateTime? DeliveredAt { get; set; }
+        public string? DeliveryNotes { get; set; }
 
     }
 

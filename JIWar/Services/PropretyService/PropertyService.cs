@@ -2,14 +2,17 @@
 using GEWAR;
 using GEWAR.Models;
 using Jiwar.DTOs;
+using Jiwar.DTOs.PropertyComparisonDTO;
 using Jiwar.DTOs.PropertyDTOs;
 using Jiwar.Enum;
 using Jiwar.Models;
 using Jiwar.Repositories;
 using Jiwar.Repositories.Interfaces;
 using Jiwar.Services;
+using Jiwar.Services.AI.Comparison;
 using JIWar.PropertyOwner;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
 namespace Jiwar.Service
 {
     public class PropertyService : IPropertyService
@@ -18,6 +21,8 @@ namespace Jiwar.Service
         private readonly IPropertyAnalyticsService propertyAnalyticsService;
         private readonly IImgService imgService;
         private readonly IMapper mapper;
+        private readonly IPropertyComparisonAiService _propertyComparisonAiService;
+
         public PropertyService(
             IPropertyRepository propertyRepo,
             IPropertyAnalyticsService analyticsService,
@@ -169,7 +174,7 @@ namespace Jiwar.Service
                 NumBedrooms = p.NumBedrooms,
                 NumBathrooms = p.NumBathrooms,
                 PropertyType = p.PropertyType.ToString(),
-                Status = p.statusEnum.ToString(),
+                Status = p.statusEnum,
                 ThumbnailUrl = p.PropertyMedia.FirstOrDefault()?.MediaURL,
                 Features = p.PropertyFeatures?
             .Where(pf => pf.Feature != null)
@@ -193,6 +198,30 @@ namespace Jiwar.Service
             if (property == null || property.IsDeleted) return null;
 
             return mapper.Map<PropertyDetailsDTO>(property);
+        }
+
+        public async Task<AiComparisonResultDTO> CompareWithAiAsync(List<int> propertyIds,PropertyComparisonUserType userType)
+        {
+            var entities = await _propertyRepo.GetByIdsAsync(propertyIds);
+
+            var propertiesDto = entities.Select(p => new PropertyComparisonDTO
+            {
+                PropertyID = p.PropertyID,
+                Title = p.Title,
+                City = p.City,
+                Address = p.Address,
+                Price = p.Price,
+                Area_sqm = p.Area_sqm,
+                NumBedrooms = p.NumBedrooms,
+                NumBathrooms = p.NumBathrooms,
+                PropertyType = p.PropertyType.ToString(),
+                Status = p.statusEnum,
+                ThumbnailUrl = p.PropertyMedia.FirstOrDefault()?.MediaURL,
+                Features = (List<string>)p.PropertyFeatures
+                
+            }).ToList();
+
+            return await _propertyComparisonAiService.CompareAsync(propertiesDto, userType);
         }
 
     }

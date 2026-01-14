@@ -2,6 +2,7 @@
 using Jiwar.Models;
 using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace Jiwar.Repositories
 {
@@ -25,6 +26,9 @@ namespace Jiwar.Repositories
         Task<User> GetUserByIdAsync(string userId);
         Task<PropertyOwner?> GetPropertyOwnerByUserIdAsync(string userId);
         Task UpdatePropertyOwnerAsync(PropertyOwner owner);
+        Task<PropertyOwner?> GetPropertyOwnerPublicAsync(string userId);
+        Task<InteriorDesigner?> GetInteriorDesignerByUserIdAsync(string userId);
+        Task UpdateInteriorDesignerAsync(InteriorDesigner designer);
 
     }
 }

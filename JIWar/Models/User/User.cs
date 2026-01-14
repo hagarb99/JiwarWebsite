@@ -1,4 +1,5 @@
 ﻿using Jiwar.Models;
+using Jiwar.Models.ChatAi;
 using JIWAR.Models;
 using Microsoft.AspNetCore.Identity;
 using System;
@@ -23,6 +24,7 @@ namespace GEWAR.Models
         public virtual PropertyOwner propertyOwner { get; set; }
 
         public string? GoogleId { get; set; }
+        public string? Bio {  get; set; }
 
 
         public virtual ICollection<DesignRequest> DesignRequests { get; set; } = new List<DesignRequest>();
@@ -34,6 +36,13 @@ namespace GEWAR.Models
         public virtual ICollection<BookingRating> BookingRatings { get; set; } = new List<BookingRating>();
         public virtual ICollection<Subscription> Subscriptions { get; set; } = new List<Subscription>();
         public virtual ICollection<WishList> WishLists { get; set; } = new List<WishList>();
+
+        public virtual ICollection<SimulationChatMessage> SimulationChatMessages { get; set; } = new List<SimulationChatMessage>();
+
+
+        // For Designers
+        public double? AverageRating { get; set; }
+        public int? TotalReviews { get; set; }
 
     }
 }

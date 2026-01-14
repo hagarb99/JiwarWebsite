@@ -126,6 +126,8 @@ namespace Jiwar.Services
         {
             var payload = new { api_key = _apiKey };
             var response = await _http.PostAsJsonAsync("https://accept.paymob.com/api/auth/tokens", payload);
+            var content = await response.Content.ReadAsStringAsync();
+
             response.EnsureSuccessStatusCode();
             var json = await response.Content.ReadAsStringAsync();
             dynamic data = JsonConvert.DeserializeObject(json)!;
@@ -135,16 +137,29 @@ namespace Jiwar.Services
         // Helper: Create Order
         private async Task<long> CreateOrder(string authToken, int amountCents, string merchantOrderId)
         {
+            
             var payload = new
             {
                 auth_token = authToken,
                 delivery_needed = false,
-                amount_cents = amountCents,
+                amount_cents = $"{amountCents}", // MUST be string
                 currency = "EGP",
-                merchant_order_id = merchantOrderId
+                merchant_order_id = merchantOrderId,
+                items = new[]
+                {
+                    new
+                    {
+                        name = "Subscription Plan",
+                        amount_cents = $"{amountCents}", // MUST be string
+                        description = "Monthly subscription",
+                        quantity = 1
+                    }
+                }
             };
 
             var response = await _http.PostAsJsonAsync("https://accept.paymob.com/api/ecommerce/orders", payload);
+            var content = await response.Content.ReadAsStringAsync();
+
             response.EnsureSuccessStatusCode();
             var json = await response.Content.ReadAsStringAsync();
             dynamic data = JsonConvert.DeserializeObject(json)!;
@@ -167,21 +182,25 @@ namespace Jiwar.Services
                 postal_code = "NA",
                 city = "NA",
                 country = "EG",
-                last_name = "NA"
+                last_name = "NA",
+                state = "Cairo"
             };
 
             var payload = new
             {
                 auth_token = authToken,
-                amount_cents = amountCents,
+                amount_cents = $"{amountCents}", // MUST be string
                 expiration = 3600,
-                order_id = orderId,
+                order_id = orderId.ToString(),
                 billing_data = billingData,
                 currency = "EGP",
-                integration_id = _integrationId
+                integration_id = _integrationId,
+                lock_order_when_paid = false
             };
 
             var response = await _http.PostAsJsonAsync("https://accept.paymob.com/api/acceptance/payment_keys", payload);
+            var content = await response.Content.ReadAsStringAsync();
+
             response.EnsureSuccessStatusCode();
             var json = await response.Content.ReadAsStringAsync();
             dynamic data = JsonConvert.DeserializeObject(json)!;
@@ -220,5 +239,32 @@ namespace Jiwar.Services
 
             return computedHmac == dto.Hmac.ToLower();
         }
+
+      //buy the plan 
+        private int GetPlanPrice(int subscriptionPlanId)
+        {
+            return subscriptionPlanId switch
+            {
+                1 => 100,   // Basic
+                2 => 250,   // Silver
+                3 => 500,   // Golden
+                _ => throw new Exception("Invalid subscription plan")
+            };
+        }
+
+        public async Task<string> CreateSubscriptionPaymentAsync(string userId, int subscriptionPlanId)
+        {
+            // هنا السعر ييجي من plan (static أو DB)
+            int amountCents = GetPlanPrice(subscriptionPlanId) * 100;
+
+            string authToken = await GetAuthToken();
+
+            long orderId = await CreateOrder(authToken, amountCents, $"SUB_{subscriptionPlanId}_{userId}");
+
+            string paymentKey = await CreatePaymentKey(authToken, amountCents, orderId, userId);
+
+            return $"{_iframeBaseUrl}?payment_token={paymentKey}";
+        }
+
     }
 }

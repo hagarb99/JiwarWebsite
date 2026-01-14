@@ -5,10 +5,13 @@ using Jiwar.Account.DTOs;
 using Jiwar.Controllers;
 using Jiwar.DTOs;
 using Jiwar.DTOs.AccountDTOs.EditProfileDtos;
+using Jiwar.DTOs.AccountDTOs.ProfileDTOs;
 using Jiwar.Helpers;
 using Jiwar.Models;
 using Jiwar.Repositories;
+using Jiwar.Services;
 using Jiwar.Services.GoogleService;
+using Jiwar.Services.MailService;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
@@ -23,18 +26,26 @@ namespace Jiwar.Account.Services
         private readonly GoogleAuthService _googleAuthService;
         private readonly UserManager<User> _userManager;
         private readonly IMapper mapper;
+        private readonly IMailService _mailService;
+        private readonly IImgService imgService;
         public AccountService(
             IAccountRepository repo,
             TokenService tokenService ,
             GoogleAuthService _googleAuthService,
             UserManager<User> _userManager,
-            IMapper mapper)
+            IMapper mapper,
+            IMailService mailService,
+            IImgService imgService
+            
+            )
         {
             this.repo = repo;
             _tokenService = tokenService;
             this._googleAuthService = _googleAuthService;
             this._userManager = _userManager;
             this.mapper = mapper;
+            _mailService = mailService;
+            this.imgService = imgService;
         }
         public async Task<ResultViewModel<UserResponseDTO>> RegisterAsync(RegisterDto dto)
         {
@@ -119,11 +130,28 @@ namespace Jiwar.Account.Services
             var user = await repo.FindByEmailAsync(dto.Email);
 
             if (user == null)
-                return ResultViewModel<string>.Fail("Email not found.");
+            {
+                return ResultViewModel<string>.Ok(
+                    "If the email exists, a reset link has been sent.",
+                    ""
+                );
+            }
 
             var token = await repo.GenerateResetTokenAsync(user);
+            var resetLink = $"https://localhost:4200/reset-password?token={token}&email={user.Email}";
 
-            return ResultViewModel<string>.Ok("Reset token generated.", token);
+            // Send email via MailService
+            await _mailService.SendMailAsync(
+                user.Email,
+                "Reset Your Password",
+                $"Click here to reset your password: <a href='{resetLink}'>Reset Password</a>"
+            );
+
+            return ResultViewModel<string>.Ok(
+        "If the email exists, a reset link has been sent.",
+        ""
+    );
+
         }
         public async Task<ResultViewModel<string>> ResetPasswordAsync(ResetPasswordDto dto)
         {
@@ -151,9 +179,12 @@ namespace Jiwar.Account.Services
             mapper.Map(dto, user);
 
             var result = await repo.UpdateUserAsync(user);
-
             if (!result.Succeeded)
                 return ResultViewModel<UserResponseDTO>.Fail("Failed to update profile.");
+            if (dto is InteriorDesignerEditProfileDto designerDto)
+            {
+                await UpdateInteriorDesignerProfileAsync(user.Id, designerDto);
+            }
 
             return ResultViewModel<UserResponseDTO>.Ok(
                 "Profile updated successfully.",
@@ -294,12 +325,20 @@ namespace Jiwar.Account.Services
 
         public async Task UpdateInteriorDesignerProfileAsync(string userId, InteriorDesignerEditProfileDto dto)
         {
-            //var designer = new InteriorDesigner
-            //{
+            var designer = await repo.GetInteriorDesignerByUserIdAsync(userId);
 
-            //};
-            //await repo.AddInteriorDesignerAsync(designer);
-            throw new NotImplementedException();
+            if (designer == null)
+            {
+                // إذا لم يكن له سجل كـ Designer (حالة نادرة)، نقوم بإنشائه
+                designer = new InteriorDesigner { InteriorDesignerID = userId };
+                await repo.AddInteriorDesignerAsync(designer);
+            }
+
+            // عمل Mapping للبيانات الإضافية (Portfolio, YearsOfExperience, Specialization)
+            mapper.Map(dto, designer);
+
+            // ملاحظة: الـ Repo يحتاج ميثود UpdateInteriorDesignerAsync مشابهة للـ PropertyOwner
+            await repo.UpdateInteriorDesignerAsync(designer);
         }
 
         public Task UpdateAdminProfileAsync(string userId, AdminEditProfileDto dto)
@@ -312,7 +351,38 @@ namespace Jiwar.Account.Services
             var user = await repo.GetUserByIdAsync(userId);
             if (user == null) return null;
 
-            return mapper.Map<UserProfileDto>(user);
+            var profile = mapper.Map<UserProfileDto>(user);
+            profile.Normalize();
+            return profile;
+        }
+        public async Task<PropertyOwnerPublicProfileDto?> GetPropertyOwnerPublicProfileAsync(string userId)
+        {
+            var owner = await repo.GetPropertyOwnerPublicAsync(userId);
+            if (owner == null) return null;
+
+            return new PropertyOwnerPublicProfileDto
+            {
+                UserId = owner.UserID,
+                Name = owner.Owneruser.Name,
+                ProfilePicURL = owner.Owneruser.ProfilePicURL,
+                Bio = owner.Owneruser.Bio,
+                PhoneNumber = owner.Owneruser.PhoneNumber
+            };
+        }
+        public async Task<ResultViewModel<string>> UploadProfileImageAsync(string userId, IFormFile image)
+        {
+            // استخدام السيرفس المتخصصة في الصور
+            var imageUrl = await imgService.SaveUserProfileImageAsync(userId, image);
+
+            if (string.IsNullOrEmpty(imageUrl))
+                return ResultViewModel<string>.Fail("Failed to save image.");
+
+            var user = await repo.FindByIdAsync(userId);
+            user.ProfilePicURL = imageUrl;
+
+            await repo.UpdateUserAsync(user);
+
+            return ResultViewModel<string>.Ok("Success", imageUrl);
         }
 
     }

@@ -93,5 +93,20 @@ namespace Jiwar.Repositories
                 .Include(b => b.Offer)
                 .ToListAsync();
         }
+
+        public async Task<IEnumerable<Booking>> GetBookingsForOwner(string ownerId)
+        {
+            return await giwarContext.Booking
+                .Include(b => b.Property)
+                .Include(b => b.Customer)
+                .Where(b => b.Property.OwnerID == ownerId)
+                .ToListAsync();
+        }
+        public async Task<bool> HasAnyPreviousBookingAsync(string customerId)
+        {
+            // بنشوف لو فيه أي حجز مسجل للمستخدم ده في قاعدة البيانات
+            return await giwarContext.Set<Booking>().AnyAsync(b => b.CustomerID == customerId);
+        }
+
     }
 }

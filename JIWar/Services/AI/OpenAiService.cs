@@ -1,4 +1,5 @@
-﻿using Jiwar.Models;
+﻿using Azure;
+using Jiwar.Models;
 using Jiwar.Services.AI.Enums;
 using System.Text;
 using System.Text.Json;
@@ -24,27 +25,27 @@ namespace Jiwar.Services.AI
         // ============================
         // TEXT (GPT-4o / GPT-4o-mini)
         // ============================
-        public async Task<string> SendAsync(string prompt, AiRequestContext context)
+        public async Task<string> SendAsync(string systemPrompt, AiRequestContext context)
 {
     var request = new
     {
         model = ResolveModel(context.Model),
         messages = new[]
         {
-            new { role = "system", content = context.Purpose },
-            new { role = "user", content = prompt }
+            new { role = "system", content = systemPrompt },
+            new { role = "user", content = context.Purpose }
         }
     };
 
-    var json = await SendRawAsync(request, ChatEndpoint);
+            var json = await SendRawAsync(request, ChatEndpoint);
 
-    using var doc = JsonDocument.Parse(json);
-    return doc.RootElement
-        .GetProperty("choices")[0]
-        .GetProperty("message")
-        .GetProperty("content")
-        .GetString()!;
-}
+            using var doc = JsonDocument.Parse(json);
+            return doc.RootElement
+                .GetProperty("choices")[0]
+                .GetProperty("message")
+                .GetProperty("content")
+                .GetString()!;
+        }
 
         // ============================
         // VISION (GPT-4o)
@@ -130,6 +131,7 @@ namespace Jiwar.Services.AI
             }
 
             return await response.Content.ReadAsStringAsync();
+
         }
 
         // ============================
@@ -160,7 +162,7 @@ namespace Jiwar.Services.AI
         {
             return model switch
             {
-                /*AiModelEnum.Gpt4o => "gpt-4o"*/
+                AiModelEnum.Gpt4o => "gpt-4o",
                 AiModelEnum.Gpt4oMini => "gpt-4o-mini",
                 AiModelEnum.DallE3 => "dall-e-3",
                 _ => throw new Exception("Unsupported AI Model")

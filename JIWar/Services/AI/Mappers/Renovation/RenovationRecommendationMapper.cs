@@ -1,6 +1,6 @@
 ﻿using GEWAR.Models;
 using System.Text.Json;
-using GEWAR.Models.Jiwar.Enum;
+//using GEWAR.Models.Jiwar.Enum;
 using Jiwar.Enum;
 
 
@@ -14,55 +14,87 @@ namespace Jiwar.Services.AI.Mappers.Renovation
         {
             var recommendations = new List<SimulationRecommendation>();
 
+            // 1️⃣ حماية أولى: null أو فاضي
             if (string.IsNullOrWhiteSpace(aiJson))
                 return recommendations;
 
-            using var doc = JsonDocument.Parse(aiJson);
-
-            if (!doc.RootElement.TryGetProperty("recommendations", out var items))
+            // 2️⃣ حماية تانية: مش JSON أصلاً
+            var trimmed = aiJson.TrimStart();
+            if (!trimmed.StartsWith("{") && !trimmed.StartsWith("["))
                 return recommendations;
 
-            foreach (var item in items.EnumerateArray())
+            try
             {
-                if (!TryParse(item, simulationId, out var rec))
-                    continue;
+                // 3️⃣ السطر الخطر بقى آمن
+                using var doc = JsonDocument.Parse(aiJson);
 
-                recommendations.Add(rec);
+                if (!doc.RootElement.TryGetProperty("renovation_recommendations", out var items))
+                    return recommendations;
+
+                foreach (var item in items.EnumerateArray())
+                {
+                    if (!TryParse(item, simulationId, out var rec))
+                        continue;
+
+                    recommendations.Add(rec);
+                }
+            }
+            catch (JsonException ex)
+            {
+                // 4️⃣ لو AI رجّع JSON مضروب
+                // log لو حابة، لكن متوقفيش السيستم
+                Console.WriteLine($"Invalid AI JSON: {ex.Message}");
+                return recommendations;
             }
 
             return recommendations;
         }
 
-          private static bool TryParse(
-            JsonElement item,
-            int simulationId,
-            out SimulationRecommendation recommendation)
-        {
-            recommendation = null!;
-
-            if (!System.Enum.TryParse(
-                    item.GetProperty("category").GetString(),
-                    true,
-                    out RecommendationCategoryEnum category))
-                return false;
-
-            if (!System.Enum.TryParse(
-                    item.GetProperty("severity").GetString(),
-                    true,
-                    out RecommendationSeverityEnum severity))
-                return false;
-
-            recommendation = new SimulationRecommendation
+        private static bool TryParse(
+        JsonElement item,
+        int simulationId,
+        out SimulationRecommendation recommendation)
             {
-                RenovationSimulationID = simulationId,
-                Category = category,
-                Severity = severity,
-                Title = item.GetProperty("title").GetString() ?? string.Empty,
-                Description = item.GetProperty("description").GetString() ?? string.Empty,
-                IsAIGenerated = true
-            };
+                recommendation = null!;
 
-            return true;
+                // 🔐 mandatory fields
+                if (!item.TryGetProperty("title", out var titleProp) ||
+                    !item.TryGetProperty("description", out var descProp))
+                    return false;
+
+                var severityString =
+                    item.TryGetProperty("severity", out var sevProp)
+                        ? sevProp.GetString()
+                        : "Low";
+
+                var categoryString =
+                        item.TryGetProperty("category", out var categoryprop)
+                            ? categoryprop.GetString()
+                            : "Design";
+
+                System.Enum.TryParse<RecommendationSeverityEnum>(
+                        severityString,
+                        ignoreCase: true,
+                        out var severity);
+
+                System.Enum.TryParse<RecommendationCategoryEnum>(
+                        categoryString,
+                        ignoreCase: true,
+                        out var category);
+
+                recommendation = new SimulationRecommendation
+                    {
+                        RenovationSimulationID = simulationId,
+                        Category = category,
+                        Title = titleProp.GetString() ?? "",
+                        Description = descProp.GetString() ?? "",
+                        Severity = severity,
+                        IsAIGenerated = item.TryGetProperty("IsAIGenerated", out var aiProp)
+                            && aiProp.GetBoolean()
+                    };
+
+                    return true;
+                }
+
         }
-    }
 }

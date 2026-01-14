@@ -1,35 +1,87 @@
+using AutoMapper;
+using Jiwar.DTOs.AccountDTOs.EditProfileDtos;
+using Jiwar.DTOs.AdminAnalytics;
+using Jiwar.Enum;
+using Jiwar.Repositories;
 using Jiwar.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 
-namespace Jiwar.Controllers
+namespace Jiwar.Controllers.Admin
 {
     [ApiController]
-    [Route("api/admin/analytics")]
-  
-
-    public class AdminAnalyticsController : ControllerBase
+    [Route("api/admin/dashboard")]
+    [Authorize(Roles = "Admin")]
+    public class AdminDashboardController : ControllerBase
     {
+        private readonly IUserRepository _userRepo;
+        private readonly IPropertyRepository _propertyRepo;
+        private readonly IWishlistRepository _wishlistRepo;
         private readonly IAdminAnalyticsService _analyticsService;
+        private readonly IMapper _mapper;
+      
 
-        public AdminAnalyticsController(IAdminAnalyticsService analyticsService)
+        public AdminDashboardController(
+            IUserRepository userRepo,
+            IPropertyRepository propertyRepo,
+            IWishlistRepository wishlistRepo,
+            IAdminAnalyticsService adminService,
+            IMapper mapper)
         {
-            _analyticsService = analyticsService;
+            _userRepo = userRepo;
+            _propertyRepo = propertyRepo;
+            _wishlistRepo = wishlistRepo;
+            _analyticsService = adminService;
+            _mapper = mapper;
         }
 
-        [HttpGet("admin/all")]
-        [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> GetAnalytics()
+        //  USERS
+        [HttpGet("users")]
+        public async Task<IActionResult> GetAllUsers()
         {
-            var data = await _analyticsService.GetAnalyticsAsync();
-            
-            return Ok(data);
+            var users = await _userRepo.GetAllUsersForAdminAsync();
+            var dto = _mapper.Map<List<AdminUserDTO>>(users);
+            return Ok(dto);
+        }
+
+        [HttpDelete("users/{id}")]
+        public async Task<IActionResult> DeleteUser(string id)
+        {
+            await _userRepo.DeleteUserAsync(id);
+            return Ok("User deleted successfully");
+        }
+
+        // PROPERTIES
+        [HttpGet("properties")]
+        public async Task<IActionResult> GetAllProperties()
+        {
+            var properties = await _propertyRepo.GetAllPropertiesForAdminAsync();
+            return Ok(properties);
+        }
+
+        [HttpPut("properties/{id}/status")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> UpdatePropertyStatus(
+       int id,
+       PropEnum statusEnum)
+        {
+            await _propertyRepo.UpdatePropertyStatusAsync(id, statusEnum);
+           
+
+            return Ok("Property status updated successfully");
+        }
+
+
+        // WISHLIST
+        [HttpGet("wishlists")]
+        public async Task<IActionResult> GetAllWishlists()
+        {
+            var list = await _wishlistRepo.GetAllWishlistsForAdminAsync();
+            return Ok(list);
         }
 
      
-    
-         
-
+     
     }
 }

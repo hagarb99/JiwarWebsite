@@ -96,5 +96,13 @@ namespace Jiwar.Repositories
                 .Where(s => s.statusEnum2 == StatusEnum2.Active && s.StartDate >= startOfMonth)
                 .SumAsync(s => s.Price);
         }
+        public async Task<bool> HasActiveSubscriptionAsync(string userId)
+        {
+            var now = DateTime.UtcNow;
+            return await _context.Subscriptions.AnyAsync(s =>
+                s.UserID == userId &&
+                s.statusEnum2 == StatusEnum2.Active &&
+                s.EndDate > now);
+        }
     }
 }

@@ -1,5 +1,6 @@
 using GEWAR.Models;
 using Jiwar.DTOs;
+using Jiwar.DTOs.PropertyComparisonDTO;
 using Jiwar.DTOs.PropertyDTOs;
 using Jiwar.Enum;
 using Jiwar.Models;
@@ -31,8 +32,10 @@ namespace Jiwar.Service
 
        public Task<IEnumerable<PropertyListBDTO>> GetFilteredPropertiesAsync(PropertyFilterDTO filter);
 
-        public Task<IEnumerable<PropertyComparisonDTO>> GetPropertiesForComparisonAsync(List<int> propertyIds);
+       public Task<IEnumerable<PropertyComparisonDTO>> GetPropertiesForComparisonAsync(List<int> propertyIds);
        public Task<PagedResult<PropertyListBDTO>> GetAllPropertiesAsync(int page, int pageSize);
        public Task<PropertyDetailsDTO> GetPropertyDetailsDTOAsync(int id);
+
+       public Task<AiComparisonResultDTO> CompareWithAiAsync(List<int> propertyIds,PropertyComparisonUserType userType);
     }
 }

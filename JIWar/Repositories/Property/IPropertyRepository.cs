@@ -1,4 +1,5 @@
 using GEWAR.Models;
+using Jiwar.DTOs.AdminAnalytics;
 using Jiwar.DTOs.PropertyDTOs;
 using Jiwar.Enum;
 using Jiwar.Models;
@@ -24,5 +25,8 @@ public interface IPropertyRepository : IGenericRepository<Property>
     Task UpdateAsync(Property property);
     Task<PropertyOwner> GetOwnerByIdAsync(string ownerId);
     Task<PropertyOwner> CreateOwnerAsync(string ownerId);
+    Task<List<AdminPropertyDTO>> GetAllPropertiesForAdminAsync();
+
     Task<PagedResult<PropertyListBDTO>> GetAllPropertiesPagedAsync(int page, int pageSize);
+    Task<List<Property>> GetByIdsAsync(List<int> propertyIds);
 }

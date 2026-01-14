@@ -22,6 +22,8 @@ namespace GEWAR.Models
         public int? NumBedrooms { get; set; }
         public int? NumBathrooms { get; set; }
 
+        public ConditionEnum? Condition { get; set; }
+
         public string? Tour360Url { get; set; }
 
         public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
@@ -61,6 +63,7 @@ namespace GEWAR.Models
 
         public virtual ICollection<RenovationSimulation> RenovationSimulations { get; set; }
         public ListingTypeEnum ListingType { get; set; }
+        public virtual ICollection<Booking> Bookings { get; set; } = new List<Booking>();
 
 
     }

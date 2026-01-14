@@ -4,26 +4,41 @@ using GEWAR.Models;
 using Jiwar.Account;
 using Jiwar.Account.Services;
 using Jiwar.Controllers;
+using Jiwar.Hubs;
+using Jiwar.Hubs;
 using Jiwar.Mappings;
 using Jiwar.Models;
 using Jiwar.Repositories;
+using Jiwar.Repositories.ChatAi;
 using Jiwar.Repositories.DistrictAnalyticService;
 using Jiwar.Repositories.Interfaces;
+using Jiwar.Repositories.SimulationChatAI;
 using Jiwar.Repositories.Valuation;
 using Jiwar.Service;
 using Jiwar.Services;
 using Jiwar.Services.AI;
+using Jiwar.Services.AI.Chat;
+using Jiwar.Services.AI.Comparison;
 using Jiwar.Services.DesignerProposalService;
+using Jiwar.Services.DesignRequestService;
+using Jiwar.Services.DesignService;
 using Jiwar.Services.GoogleService;
+using Jiwar.Services.MailService;
+using Jiwar.Services.NotificationService; // Ensure namespace is available
+using Jiwar.Services.ProposalService;
+using Jiwar.Services.RequestService;
 using Jiwar.Services.ValuationService;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using Jiwar.Services.DesignRequestService;
-
 using System.Text;
+using System.Threading.Tasks;
+using static Jiwar.Services.AI.Comparison.IPropertyComparisonAiService;
+using IPropertyComparisonAiService = Jiwar.Services.AI.Comparison.IPropertyComparisonAiService;
 
 namespace Jiwar
 {
@@ -52,7 +67,10 @@ namespace Jiwar
 
             // Controllers & Swagger
             builder.Services.AddControllers();
-
+            //.AddJsonOptions(options =>
+            //{
+            //    options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+            //});
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen(c =>
             {
@@ -83,14 +101,16 @@ namespace Jiwar
 
             });
 
+
             // CORS
             builder.Services.AddCors(options =>
             {
-                options.AddDefaultPolicy(policy =>
+                options.AddPolicy("SignalRPolicy", policy =>
                 {
-                    policy.AllowAnyOrigin()
+                    policy.WithOrigins("http://localhost:4200") // حددي رابط الأنجولار بدقة هنا
+                          .AllowAnyHeader()
                           .AllowAnyMethod()
-                          .AllowAnyHeader();
+                          .AllowCredentials(); // ضروري جداً لعمل SignalR مع التوكن
                 });
             });
 
@@ -106,7 +126,7 @@ namespace Jiwar
 
             // Authentication
 
-            var key = builder.Configuration["Jwt:Key"];
+            var key = builder.Configuration["Jwt:Key"] ?? "vY7fG9pQ2zR5xW8mK3nB1vC4xZ6mN9bV"; // Default fallback for development
             builder.Services.AddAuthentication(opt =>
             {
                 opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -124,6 +144,26 @@ namespace Jiwar
                         ValidateIssuer = false,
                         ValidateAudience = false
                     };
+                    
+                    options.Events = new JwtBearerEvents
+                    {
+                        OnMessageReceived = context =>
+                        {
+                            var accessToken = context.Request.Query["access_token"];
+
+                            // If the request is for our hub...
+                            var path = context.HttpContext.Request.Path;
+                            if (!string.IsNullOrEmpty(accessToken) &&
+                                (path.StartsWithSegments("/notificationHub", StringComparison.OrdinalIgnoreCase) ||
+                                 path.StartsWithSegments("/chathub", StringComparison.OrdinalIgnoreCase) ||
+                                 path.StartsWithSegments("/customerPropertyChatHub", StringComparison.OrdinalIgnoreCase)))
+                            {
+                                // Read the token out of the query string
+                                context.Token = accessToken;
+                            }
+                            return Task.CompletedTask;
+                        }
+                    };
                 });
 
             builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
@@ -140,6 +180,10 @@ namespace Jiwar
             builder.Services.AddScoped<IValuationHistoryRepository, ValuationHistoryRepository>();
             builder.Services.AddScoped<IAnalyticsRepository, AnalyticsRepository>();
             builder.Services.AddScoped<IRenovationSimulationRepository, RenovationSimulationRepository>();
+            builder.Services.AddScoped<ISimulationChatRepository, SimulationChatRepository>();
+            builder.Services.AddScoped<IQuotaRepository, QuotaRepository>();
+
+
 
             // Services
             builder.Services.AddHttpClient<IAiService, OpenAiService>();
@@ -147,6 +191,7 @@ namespace Jiwar
             builder.Services.AddHttpClient(); // Registers IHttpClientFactory
             builder.Services.AddScoped<IAccountService, AccountService>();
             builder.Services.AddScoped<IPropertyService, PropertyService>();
+            builder.Services.AddScoped<IImgService, ImgService>();
             builder.Services.AddScoped<IBookingService, BookingService>();
             builder.Services.AddScoped<IPaymentService, PaymobPaymentService>();
             builder.Services.AddScoped<ISubscriptionService, SubscriptionService>();
@@ -159,15 +204,31 @@ namespace Jiwar
             // Add this line in your Program.cs
             builder.Services.AddScoped<IWishlistService, WishlistService>();
             builder.Services.AddScoped<IDesignRequestService, DesignRequestService>();
+            builder.Services.AddScoped<IDesignService, DesignService>();
+            builder.Services.AddScoped<IProposalService, ProposalService>();
+            builder.Services.AddScoped<IRequestService, RequestService>();
+            builder.Services.AddScoped<Jiwar.Services.CustomerPropertyChat.ICustomerPropertyChatService, Jiwar.Services.CustomerPropertyChat.CustomerPropertyChatService>();
+            builder.Services.AddScoped<Jiwar.Services.ReviewService.IReviewService, Jiwar.Services.ReviewService.ReviewService>();
 
 
             builder.Services.AddScoped<IRenovationSimulationService, RenovationSimulationService>();
-            builder.Services.AddScoped<IImgService, ImgService>();
 
+            builder.Services.AddControllers();
+                //.AddJsonOptions(x =>
+                //{
+                //    x.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+                //    x.JsonSerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase;
+                //});
 
             // Other Services
             builder.Services.AddScoped<TokenService>();
             builder.Services.AddScoped<GoogleAuthService>();
+            builder.Services.AddScoped<INotificationService, NotificationService>(); // Register service
+            
+            // SignalR
+            builder.Services.AddSignalR();
+            builder.Services.AddSingleton<IUserIdProvider, CustomUserIdProvider>();
+
 
             // AutoMapper
             builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
@@ -197,13 +258,23 @@ namespace Jiwar
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
-
+            app.UseCors("SignalRPolicy");
             app.UseHttpsRedirection();
-            app.UseCors();
+            app.UseStaticFiles();
+            app.UseWebSockets();
+            app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();
-            app.UseStaticFiles();
-            app.MapControllers();
+           
+
+                        app.UseEndpoints(endpoints =>
+                        { 
+                endpoints.MapControllers();
+                endpoints.MapHub<ChatHub>("/chathub");
+                endpoints.MapHub<Jiwar.Hubs.CustomerPropertyChatHub>("/customerPropertyChatHub");
+                endpoints.MapHub<NotificationHub>("/notificationHub");
+            });
+            //app.MapControllers();
             app.Run();
         }
     }

@@ -3,6 +3,7 @@ using GEWAR.Data.Configurations;
 using GEWAR.Models;
 using GEWAR.Models.Configurations;
 using Jiwar.Models;
+using Jiwar.Models.ChatAi;
 using Jiwar.Models.Offers;
 using Jiwar.Models.Valuation;
 using JIWAR.Models;
@@ -56,6 +57,7 @@ namespace GEWAR
         public DbSet<VirtualTour> VirtualTours { get; set; }
         public DbSet<WishList> WishLists { get; set; }
         public DbSet<PropertyOwner> PropertyOwners { get; set; }
+        public DbSet<DesignerReview> DesignerReviews { get; set; }
 
         public DbSet<PropertyFeature> PropertyFeatures{get;set;}
 
@@ -74,9 +76,10 @@ namespace GEWAR
 
         public DbSet<SimulationDetails> SimulationDetails { get; set;}
 
+        public DbSet<SimulationChatMessage> SimulationChatMessages { get; set; }
 
-
-
+        public DbSet<UserChatQuota> UserChatQuotas { get; set; }
+        public DbSet<Jiwar.Models.CustomerPropertyChat.CustomerPropertyMessage> CustomerPropertyMessages { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -138,6 +141,7 @@ namespace GEWAR
             modelBuilder.ApplyConfiguration(new VirtualTourConfiguration());
             modelBuilder.ApplyConfiguration(new WishListConfiguration());
             modelBuilder.ApplyConfiguration(new PropertyOwnerConfiguration());
+            modelBuilder.ApplyConfiguration(new DesignerReviewConfiguration());
             modelBuilder.ApplyConfiguration(new FeatureConfiguration());
             modelBuilder.ApplyConfiguration(new PropertyFeatureConfiguration());
             modelBuilder.ApplyConfiguration(new ReportOrderConfiguration());
@@ -146,9 +150,22 @@ namespace GEWAR
             modelBuilder.ApplyConfiguration(new RenovationSimulationConfiguration());
             modelBuilder.ApplyConfiguration(new SimulationMediaConfiguration());
             modelBuilder.ApplyConfiguration(new SimulationRecommendationConfiguration());
+            modelBuilder.ApplyConfiguration(new UserChatQuotaConfiguration());
+            modelBuilder.ApplyConfiguration(new SimulationChatMessageConfiguration());
 
 
 
+            modelBuilder.Entity<Jiwar.Models.CustomerPropertyChat.CustomerPropertyMessage>()
+                .HasOne(m => m.Sender)
+                .WithMany()
+                .HasForeignKey(m => m.SenderId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Jiwar.Models.CustomerPropertyChat.CustomerPropertyMessage>()
+                .HasOne(m => m.Receiver)
+                .WithMany()
+                .HasForeignKey(m => m.ReceiverId)
+                .OnDelete(DeleteBehavior.Restrict);
 
             base.OnModelCreating(modelBuilder);
             modelBuilder.Entity<User>()
