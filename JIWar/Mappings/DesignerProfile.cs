@@ -35,7 +35,7 @@ namespace Jiwar.Mappings
             CreateMap<InteriorDesigner, InteriorDesignerDto>()
                 .ForMember(dest => dest.Specialty, opt => opt.MapFrom(src => src.Specialization))
                 .ForMember(dest => dest.PortfolioUrl, opt => opt.MapFrom(src => src.PortfolioURL))
-                .ForMember(dest => dest.YearsOfExperience, opt => opt.MapFrom(src => src.ExperienceYears))
+                //.ForMember(dest => dest.YearsOfExperience, opt => opt.MapFrom(src => src.ExperienceYears))
                 .ForMember(dest => dest.Specializations, opt => opt.MapFrom(src => 
                     string.IsNullOrEmpty(src.Specializations) ? new List<string>() : src.Specializations.Split(',', StringSplitOptions.RemoveEmptyEntries).ToList()))
                 .ForMember(dest => dest.Certifications, opt => opt.MapFrom(src => 

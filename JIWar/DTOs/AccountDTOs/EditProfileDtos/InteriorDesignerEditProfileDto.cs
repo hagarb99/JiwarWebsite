@@ -11,7 +11,6 @@
         // سنحتفظ بهذين الحقلين لضمان عدم حدوث Error أثناء الـ Mapping
         public string? PortfolioUrl { get; set; }
         public string? Specialization { get; set; }
-        public string? Specializations { get; set; }
         public string? Certifications { get; set; }
     }
 }
