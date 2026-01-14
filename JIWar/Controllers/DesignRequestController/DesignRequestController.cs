@@ -275,14 +275,14 @@ namespace Jiwar.Controllers
             return Ok(new { count });
         }
 
-        [HttpPost("chat/upload")]
-        public async Task<IActionResult> UploadChatFile(IFormFile file)
-        {
-            if (file == null || file.Length == 0) return BadRequest("No file uploaded.");
+        //[HttpPost("chat/upload")]
+        //public async Task<IActionResult> UploadChatFile(IFormFile file)
+        //{
+        //    if (file == null || file.Length == 0) return BadRequest("No file uploaded.");
 
-            var fileUrl = await _imgService.SaveChatFileAsync(file);
-            return Ok(new { url = fileUrl });
-        }
+        //    var fileUrl = await _imgService.SaveChatFileAsync(file);
+        //    return Ok(new { url = fileUrl });
+        //}
 
         [HttpPost("chat/mark-read/{propertyId}")]
         public async Task<IActionResult> MarkChatAsRead(int propertyId)
