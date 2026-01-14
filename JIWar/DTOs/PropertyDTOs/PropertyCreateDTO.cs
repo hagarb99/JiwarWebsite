@@ -1,4 +1,6 @@
+using GEWAR.Models;
 using Jiwar.Enum;
+using System.ComponentModel.DataAnnotations;
 
 namespace JIWar.PropertyOwner
 {
@@ -19,6 +21,8 @@ public class PropertyCreateDTO
         public decimal? LocationLang { get; set; }   // optional
         public string? District { get; set; }
         public List<IFormFile>? Images { get; set; }
+        [Required]
+        public PropertyTypeEnum? PropertyType { get; set; }
         public ListingTypeEnum ListingType { get; set; }
     }
 

@@ -66,11 +66,12 @@ namespace Jiwar
             var builder = WebApplication.CreateBuilder(args);
 
             // Controllers & Swagger
-            builder.Services.AddControllers();
-            //.AddJsonOptions(options =>
-            //{
-            //    options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
-            //});
+            builder.Services.AddControllers()
+                .AddJsonOptions(options =>
+                {
+                    options.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
+                    options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+                });
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen(c =>
             {
@@ -212,19 +213,7 @@ namespace Jiwar
 
 
             builder.Services.AddScoped<IRenovationSimulationService, RenovationSimulationService>();
-            builder.Services.AddScoped<IMailService, MailService>();
-            builder.Services.AddScoped<IImgService, ImgService>();
-            builder.Services.AddScoped<IAiChatService, AiChatService>();
-            builder.Services.AddScoped<IPropertyComparisonAiService, PropertyComparisonAiService>();
 
-
-
-            builder.Services.AddControllers();
-                //.AddJsonOptions(x =>
-                //{
-                //    x.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
-                //    x.JsonSerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase;
-                //});
 
             // Other Services
             builder.Services.AddScoped<TokenService>();
@@ -240,7 +229,7 @@ namespace Jiwar
             builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
             // Build App
-            var app = builder.Build();
+                    var app = builder.Build();
 
             //await SeedRolesAsync(app);
             // Apply pending EF Core migrations at startup to ensure database schema is up-to-date

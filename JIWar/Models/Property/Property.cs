@@ -10,6 +10,7 @@ namespace GEWAR.Models
 {
     public class Property : BaseModel
     {
+        public PropertyTypeEnum PropertyType { get; set; }
 
         public int PropertyID { get; set; }
         public string OwnerID { get; set; } // FK → PropertyOwner
@@ -48,7 +49,7 @@ namespace GEWAR.Models
         //make relation-many prop-prop one prop owner
         //
         public virtual PropertyOwner PropertyOwner { get; set; }
-        public PropertyType PropertyType { get; set; }
+     
         public string Title { get; internal set; }
         public int CategoryId { get; set; }
         public string Description { get; set; }

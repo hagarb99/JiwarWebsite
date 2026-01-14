@@ -67,6 +67,11 @@ namespace GEWAR.Models.Configurations
        .HasMaxLength(50)
        .IsRequired();
 
+            // Removed string conversion to avoid database migration.
+            // EF will map enums to INT by default, matching the existing schema.
+            // If the column is nvarchar, we would need a specific converter, 
+            // but the goal is "No Migrations".
+
           
 
             builder.Property(p => p.LocationLat)

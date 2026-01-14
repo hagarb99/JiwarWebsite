@@ -1,4 +1,6 @@
-﻿namespace Jiwar.DTOs
+﻿using GEWAR.Models;
+
+namespace Jiwar.DTOs
 {
     public class AdminAnalyticsDTO
     {
@@ -26,7 +28,10 @@
         public int TotalProperties { get; set; }
         public int ActiveListings { get; set; }
         public int PendingListings { get; set; }
-        public int SoldOrRentedUnits { get; set; }
+      
+        public int ForSaleListings { get; set; }
+        public int ForRentListings { get; set; }
+
         public List<TopCategoryDTO> TopCategories { get; set; }
         public List<TopDistrictDTO> TopDistricts { get; set; }
     }
@@ -68,7 +73,10 @@
 
     public class TopCategoryDTO
     {
-        public string CategoryName { get; set; }
+       // public string CategoryName { get; set; }
+  
+     
+        public string PropertyType { get; set; }
         public int Count { get; set; }
     }
 
