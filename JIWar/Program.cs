@@ -208,9 +208,10 @@ namespace Jiwar
             builder.Services.AddScoped<IDesignService, DesignService>();
             builder.Services.AddScoped<IProposalService, ProposalService>();
             builder.Services.AddScoped<IRequestService, RequestService>();
+            builder.Services.AddScoped<IMailService, MailService>();
             builder.Services.AddScoped<Jiwar.Services.CustomerPropertyChat.ICustomerPropertyChatService, Jiwar.Services.CustomerPropertyChat.CustomerPropertyChatService>();
             builder.Services.AddScoped<Jiwar.Services.ReviewService.IReviewService, Jiwar.Services.ReviewService.ReviewService>();
-
+            builder.Services.AddScoped<IPropertyComparisonAiService, PropertyComparisonAiService>();
 
             builder.Services.AddScoped<IRenovationSimulationService, RenovationSimulationService>();
 

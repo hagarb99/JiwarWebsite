@@ -20,8 +20,8 @@ namespace Jiwar.Repositories
         }
 
         public async Task<IEnumerable<Property>> GetMyPropertiesAsync(string ownerId)
-{
-          
+        {
+
             return await _dbSet
                 .Where(p => p.OwnerID == ownerId && p.IsDeleted == false)
                 .Include(p => p.PropertyMedia.Where(media => !media.IsDeleted))
@@ -52,11 +52,11 @@ namespace Jiwar.Repositories
         public async Task RemovePropertyMediaAsync(int mediaId)
         {
             var media = await _context.Set<PropertyMedia>()
-        .FirstOrDefaultAsync(m => m.Id == mediaId); 
+        .FirstOrDefaultAsync(m => m.Id == mediaId);
 
             if (media != null)
             {
-                media.IsDeleted = true; 
+                media.IsDeleted = true;
                 _context.Set<PropertyMedia>().Update(media);
                 await _context.SaveChangesAsync();
             }
@@ -69,13 +69,13 @@ namespace Jiwar.Repositories
             return await _context.Properties
                 .AsNoTracking() // مهم لتجنب تتبع EF Core للحلقات
                 .Select(p => new AdminPropertyDTO
-                {  
+                {
                     Id = p.PropertyID,
                     Title = p.Title,
                     City = p.City,
-                   status = p.statusEnum,  // استخدمي الحقل الصحيح في Property
-                    CreatedDate =p.CreatedDate,
-                    Price=p.Price,
+                    status = p.statusEnum,  // استخدمي الحقل الصحيح في Property
+                    CreatedDate = p.CreatedDate,
+                    Price = p.Price,
                     OwnerName = p.PropertyOwner.Owneruser.Name // فقط الاسم
                 })
                 .ToListAsync();
@@ -243,18 +243,17 @@ namespace Jiwar.Repositories
             //    })
             //    .ToListAsync();
 
-        public async Task<PagedResult<PropertyListBDTO>> GetAllPropertiesPagedAsync(int page, int pageSize)
-        {
-            var query = _context.Properties
-                .AsNoTracking()
-                .Where(p => !p.IsDeleted && p.IsAvaliable == true)
-                .Include(p => p.PropertyMedia
-                    .Where(media => !media.IsDeleted)
-                    .OrderBy(media => media.Order)
-                    .Take(1))  
-                .OrderByDescending(p => p.PropertyID);
-                .Include(p => p.PropertyMedia.Where(m => !m.IsDeleted))
-                .OrderByDescending(p => p.PropertyID);  
+            //return new PagedResult<PropertyListBDTO>
+            //{
+            //    Items = items,
+            //    TotalCount = totalCount,
+            //    Page = page,
+            //    PageSize = pageSize
+            //};
+            var baseQuery = _context.Properties
+      .AsNoTracking()
+      .Where(p => !p.IsDeleted)
+      .OrderByDescending(p => p.PropertyID);
 
             var totalCount = await baseQuery.CountAsync();
 
@@ -295,7 +294,7 @@ namespace Jiwar.Repositories
             return await _context.Properties
                 .Where(p => propertyIds.Contains(p.Id))
                 .ToListAsync();
-        
+
         }
 
         public async Task<List<PropertyComparisonDTO>> GetPropertiesForComparisonAsync(List<int> propertyIds)
